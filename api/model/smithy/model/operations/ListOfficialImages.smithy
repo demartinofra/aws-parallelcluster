@@ -51,7 +51,7 @@ structure AmiInfo {
     @required
     architecture: String,
     @required
-    imageId: String,
+    amiId: String,
     @required
     name: String,
     @required

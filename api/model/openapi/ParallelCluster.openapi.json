@@ -2207,7 +2207,7 @@
             "AmiInfo": {
                 "type": "object",
                 "properties": {
-                    "imageId": {
+                    "amiId": {
                         "type": "string"
                     },
                     "os": {
@@ -2221,8 +2221,8 @@
                     }
                 },
                 "required": [
+                    "amiId",
                     "architecture",
-                    "imageId",
                     "name",
                     "os"
                 ]
