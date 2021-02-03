@@ -7,42 +7,63 @@ string ImageId
 
 structure ImageInfo {
     @required
-    @documentation("Name of the cluster")
-    clusterId: String,
-    @required
-    @documentation("AWS region where the cluster is created")
-    region: Region,
-    @required
-    @documentation("ParallelCluster version used to create the cluster")
-    version: Version,
-    @required
-    @documentation("Status of the cluster. This corresponds to the CloudFormation stack status.")
-    CloudFormationStatus: CloudFormationStatus,
-    @required
-    @documentation("ARN of the main CloudFormation stack")
-    cloudformationStackArn: String,
-    @required
-    @documentation("Timestamp representing the cluster creation time")
-    creationTime: String,
-    @required
-    @documentation("Timestamp representing the last cluster update time")
-    lastUpdatedTime: String,
-    @required
-    clusterConfiguration: ClusterConfigurationStructure,
-    @required
-    computeFleetStatus: ComputeFleetStatus,
-    headnode: EC2Instance,
-}
-
-structure ImageInfoSummary {
-    @required
-    @documentation("Name of the cluster")
-    imageId: ImageId,
+    @documentation("Name of the Image")
+    imageId: String,
     @required
     @documentation("AWS region where the image is created")
     region: Region,
     @required
-    @documentation("ParallelCluster version used to create the image")
+    @documentation("ParallelCluster version used to build the image")
+    version: Version,
+    @required
+    @documentation("Status of the image build.")
+    imageBuildStatus: ImageBuildStatus,
+    @required
+    @documentation("Status of the CloudFormation stack for the image build process.")
+    cloudformationStackStatus: CloudFormationStatus,
+    @required
+    @documentation("ARN of the main CloudFormation stack")
+    cloudformationStackArn: String,
+    @required
+    @documentation("Timestamp representing the image creation time")
+    creationTime: String,
+    @required
+    @documentation("Configuration for the image build process")
+    imageConfiguration: ImageConfigurationData,
+    @required
+    @documentation("Tags of the infrastructure to build the Image")
+    tags: Tags,
+    @documentation("Status of the ImageBuilder Image resource for the image build process.")
+    imagebuilderImageStatus: ImageBuilderImageStatus,
+    // ImageBuilderImageArn or ImageBuilderImageInfo structure
+    @documentation("EC2 ami info")
+    ec2AmiInfo: Ec2AmiInfo
+}
+
+structure Ec2AmiInfo {
+    @required
+    @documentation("EC2 AMI id")
+    amiId: String,
+    @required
+    @documentation("EC2 AMI Tags")
+    tags: Tags,
+    @required
+    @documentation("EC2 AMI name")
+    amiName: String,
+    @required
+    @documentation("EC2 AMI architecture")
+    architecture: String,
+}
+
+structure ImageInfoSummary {
+    @required
+    @documentation("Name of the image")
+    imageId: ImageId,
+    @required
+    @documentation("AWS region where the image is built")
+    region: Region,
+    @required
+    @documentation("ParallelCluster version used to build the image")
     version: Version,
     @required
     @documentation("ARN of the main CloudFormation stack")
@@ -55,11 +76,11 @@ structure ImageInfoSummary {
     cloudformationStackStatus: CloudFormationStatus,
 }
 
-structure ClusterConfigurationStructure {
-    data: ClusterConfigurationData,
-    version: String,
-    creationTime: String,
-}
+// structure ImageConfigurationStructure {
+//     data: ImageConfigurationData,
+//     version: String,
+//     creationTime: String,
+// }
 
 @documentation("Image configuration as a YAML document")
 blob ImageConfigurationData
@@ -73,3 +94,18 @@ blob ImageConfigurationData
     {value: "DELETE_COMPLETE"},
 ])
 string ImageBuildStatus
+
+@enum([
+    {value: "PENDING"},
+    {value: "CREATING"},
+    {value: "BUILDING"},
+    {value: "TESTING"},
+    {value: "DISTRIBUTING"},
+    {value: "INTEGRATING"},
+    {value: "AVAILABLE"},
+    {value: "CANCELLED"},
+    {value: "FAILED"},
+    {value: "DEPRECATED"},
+    {value: "DELETED"},
+])
+string ImageBuilderImageStatus
