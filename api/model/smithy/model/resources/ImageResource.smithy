@@ -7,8 +7,14 @@ resource OfficialImage {
 resource CustomImage {
     identifiers: { imageId: ImageId },
     create: BuildImage,
-//     list: ListClusters,
-//     read: DescribeCluster,
-//     delete: DeleteCluster,
-//     update: UpdateCluster,
+    list: ListImages,
+    read: DescribeImage,
+    delete: DeleteImage,
 }
+
+// resource ImageConfiguration {
+//     identifiers: {
+//         imageId: ImageId,
+//     },
+//     read: DescribeImageConfiguration,
+// }

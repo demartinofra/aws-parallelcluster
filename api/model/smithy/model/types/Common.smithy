@@ -10,6 +10,17 @@ list Versions {
     member: Version
 }
 
+list Tags {
+    member: Tag
+}
+
+structure Tag {
+    @documentation("Tag name")
+    key: String,
+    @documentation("Tag value")
+    value: String,
+}
+
 structure ConfigValidationMessage {
     @documentation("Id of the validator")
     id: String,

@@ -1514,6 +1514,115 @@
             }
         },
         "/images/custom": {
+            "get": {
+                "description": "Retrieve the list of existing custom images managed by the API.",
+                "operationId": "ListImages",
+                "parameters": [
+                    {
+                        "name": "region",
+                        "in": "query",
+                        "description": "List Images built into a given AWS Region",
+                        "schema": {
+                            "type": "string",
+                            "description": "List Images built into a given AWS Region"
+                        },
+                        "required": true
+                    },
+                    {
+                        "name": "nextToken",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "showDeleted",
+                        "in": "query",
+                        "description": "List deleted images.",
+                        "schema": {
+                            "type": "boolean",
+                            "description": "List deleted images.",
+                            "nullable": true
+                        }
+                    },
+                    {
+                        "name": "x-parallelcluster-version",
+                        "in": "header",
+                        "description": "Forces a specific ParallelCluster version to be used when handling this request.",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+                            "description": "Forces a specific ParallelCluster version to be used when handling this request."
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ListImages 200 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ListImagesResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "BadRequestException 400 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BadRequestExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "UnauthorizedClientError 401 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedClientErrorResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "LimitExceededException 429 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LimitExceededExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServiceException 500 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InternalServiceExceptionResponseContent"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Image CRUD"
+                ],
+                "x-amazon-apigateway-integration": {
+                    "credentials": {
+                        "Fn::Sub": "${APIGatewayExecutionRole.Arn}"
+                    },
+                    "httpMethod": "POST",
+                    "payloadFormatVersion": "2.0",
+                    "type": "aws_proxy",
+                    "uri": {
+                        "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
+                    }
+                }
+            },
             "post": {
                 "description": "Create a custom ParallelCluster image in a given region.",
                 "operationId": "BuildImage",
@@ -1618,6 +1727,238 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ConflictExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "LimitExceededException 429 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LimitExceededExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServiceException 500 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InternalServiceExceptionResponseContent"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Image CRUD"
+                ],
+                "x-amazon-apigateway-integration": {
+                    "credentials": {
+                        "Fn::Sub": "${APIGatewayExecutionRole.Arn}"
+                    },
+                    "httpMethod": "POST",
+                    "payloadFormatVersion": "2.0",
+                    "type": "aws_proxy",
+                    "uri": {
+                        "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
+                    }
+                }
+            }
+        },
+        "/images/custom/{imageId}": {
+            "delete": {
+                "description": "Initiate the deletion of an image.",
+                "operationId": "DeleteImage",
+                "parameters": [
+                    {
+                        "name": "imageId",
+                        "in": "path",
+                        "description": "Name of the image",
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 60,
+                            "minLength": 5,
+                            "pattern": "^[a-zA-Z][a-zA-Z0-9-]+$",
+                            "description": "Name of the image"
+                        },
+                        "required": true
+                    },
+                    {
+                        "name": "region",
+                        "in": "query",
+                        "description": "AWS Region",
+                        "schema": {
+                            "type": "string",
+                            "description": "AWS Region"
+                        },
+                        "required": true
+                    },
+                    {
+                        "name": "x-parallelcluster-version",
+                        "in": "header",
+                        "description": "Forces a specific ParallelCluster version to be used when handling this request.",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+                            "description": "Forces a specific ParallelCluster version to be used when handling this request."
+                        }
+                    }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "DeleteImage 202 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DeleteImageResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "BadRequestException 400 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BadRequestExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "UnauthorizedClientError 401 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedClientErrorResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "NotFoundException 404 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotFoundExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "LimitExceededException 429 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LimitExceededExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "InternalServiceException 500 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/InternalServiceExceptionResponseContent"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Image CRUD"
+                ],
+                "x-amazon-apigateway-integration": {
+                    "credentials": {
+                        "Fn::Sub": "${APIGatewayExecutionRole.Arn}"
+                    },
+                    "httpMethod": "POST",
+                    "payloadFormatVersion": "2.0",
+                    "type": "aws_proxy",
+                    "uri": {
+                        "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
+                    }
+                }
+            },
+            "get": {
+                "description": "Get detailed information about an existing image.",
+                "operationId": "DescribeImage",
+                "parameters": [
+                    {
+                        "name": "imageId",
+                        "in": "path",
+                        "description": "Name of the image",
+                        "schema": {
+                            "type": "string",
+                            "maxLength": 60,
+                            "minLength": 5,
+                            "pattern": "^[a-zA-Z][a-zA-Z0-9-]+$",
+                            "description": "Name of the image"
+                        },
+                        "required": true
+                    },
+                    {
+                        "name": "region",
+                        "in": "query",
+                        "description": "AWS Region",
+                        "schema": {
+                            "type": "string",
+                            "description": "AWS Region"
+                        },
+                        "required": true
+                    },
+                    {
+                        "name": "x-parallelcluster-version",
+                        "in": "header",
+                        "description": "Forces a specific ParallelCluster version to be used when handling this request.",
+                        "schema": {
+                            "type": "string",
+                            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+                            "description": "Forces a specific ParallelCluster version to be used when handling this request."
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "DescribeImage 200 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DescribeImageResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "BadRequestException 400 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BadRequestExceptionResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "UnauthorizedClientError 401 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedClientErrorResponseContent"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "NotFoundException 404 response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotFoundExceptionResponseContent"
                                 }
                             }
                         }
@@ -2178,6 +2519,17 @@
                     "cluster"
                 ]
             },
+            "DeleteImageResponseContent": {
+                "type": "object",
+                "properties": {
+                    "image": {
+                        "$ref": "#/components/schemas/ImageInfoSummary"
+                    }
+                },
+                "required": [
+                    "image"
+                ]
+            },
             "DescribeClusterConfigurationResponseContent": {
                 "type": "object",
                 "properties": {
@@ -2248,6 +2600,13 @@
                     },
                     "clusterConfiguration": {
                         "$ref": "#/components/schemas/ClusterConfigurationStructure"
+                    },
+                    "tags": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Tag"
+                        },
+                        "description": "Tags of the Image"
                     }
                 },
                 "required": [
@@ -2259,6 +2618,7 @@
                     "creationTime",
                     "lastUpdatedTime",
                     "region",
+                    "tags",
                     "version"
                 ]
             },
@@ -2291,6 +2651,67 @@
                     "clientId",
                     "clientSecret",
                     "sessionManagerEndpoint"
+                ]
+            },
+            "DescribeImageResponseContent": {
+                "type": "object",
+                "properties": {
+                    "imageConfiguration": {
+                        "type": "string",
+                        "description": "Configuration for the image build process",
+                        "format": "byte"
+                    },
+                    "imageId": {
+                        "type": "string",
+                        "description": "Name of the Image"
+                    },
+                    "imagebuilderImageStatus": {
+                        "$ref": "#/components/schemas/ImageBuilderImageStatus"
+                    },
+                    "creationTime": {
+                        "type": "string",
+                        "description": "Timestamp representing the image creation time"
+                    },
+                    "imageBuildStatus": {
+                        "$ref": "#/components/schemas/ImageBuildStatus"
+                    },
+                    "cloudformationStackStatus": {
+                        "$ref": "#/components/schemas/CloudFormationStatus"
+                    },
+                    "cloudformationStackArn": {
+                        "type": "string",
+                        "description": "ARN of the main CloudFormation stack"
+                    },
+                    "region": {
+                        "type": "string",
+                        "description": "AWS region where the image is created"
+                    },
+                    "ec2AmiInfo": {
+                        "$ref": "#/components/schemas/Ec2AmiInfo"
+                    },
+                    "version": {
+                        "type": "string",
+                        "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+                        "description": "ParallelCluster version used to build the image"
+                    },
+                    "tags": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Tag"
+                        },
+                        "description": "Tags of the infrastructure to build the Image"
+                    }
+                },
+                "required": [
+                    "cloudformationStackArn",
+                    "cloudformationStackStatus",
+                    "creationTime",
+                    "imageBuildStatus",
+                    "imageConfiguration",
+                    "imageId",
+                    "region",
+                    "tags",
+                    "version"
                 ]
             },
             "DescribeParallelClusterVersionsResponseContent": {
@@ -2345,6 +2766,36 @@
                     "state"
                 ]
             },
+            "Ec2AmiInfo": {
+                "type": "object",
+                "properties": {
+                    "amiName": {
+                        "type": "string",
+                        "description": "EC2 AMI name"
+                    },
+                    "amiId": {
+                        "type": "string",
+                        "description": "EC2 AMI id"
+                    },
+                    "tags": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Tag"
+                        },
+                        "description": "EC2 AMI Tags"
+                    },
+                    "architecture": {
+                        "type": "string",
+                        "description": "EC2 AMI architecture"
+                    }
+                },
+                "required": [
+                    "amiId",
+                    "amiName",
+                    "architecture",
+                    "tags"
+                ]
+            },
             "ImageBuildStatus": {
                 "type": "string",
                 "enum": [
@@ -2356,6 +2807,22 @@
                     "DELETE_COMPLETE"
                 ]
             },
+            "ImageBuilderImageStatus": {
+                "type": "string",
+                "enum": [
+                    "PENDING",
+                    "CREATING",
+                    "BUILDING",
+                    "TESTING",
+                    "DISTRIBUTING",
+                    "INTEGRATING",
+                    "AVAILABLE",
+                    "CANCELLED",
+                    "FAILED",
+                    "DEPRECATED",
+                    "DELETED"
+                ]
+            },
             "ImageInfoSummary": {
                 "type": "object",
                 "properties": {
@@ -2364,7 +2831,7 @@
                         "maxLength": 60,
                         "minLength": 5,
                         "pattern": "^[a-zA-Z][a-zA-Z0-9-]+$",
-                        "description": "Name of the cluster"
+                        "description": "Name of the image"
                     },
                     "imageBuildStatus": {
                         "$ref": "#/components/schemas/ImageBuildStatus"
@@ -2378,12 +2845,12 @@
                     },
                     "region": {
                         "type": "string",
-                        "description": "AWS region where the image is created"
+                        "description": "AWS region where the image is built"
                     },
                     "version": {
                         "type": "string",
                         "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
-                        "description": "ParallelCluster version used to create the image"
+                        "description": "ParallelCluster version used to build the image"
                     }
                 },
                 "required": [
@@ -2458,6 +2925,23 @@
                     "items"
                 ]
             },
+            "ListImagesResponseContent": {
+                "type": "object",
+                "properties": {
+                    "nextToken": {
+                        "type": "string"
+                    },
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ImageInfoSummary"
+                        }
+                    }
+                },
+                "required": [
+                    "items"
+                ]
+            },
             "ListOfficialImagesResponseContent": {
                 "type": "object",
                 "properties": {
@@ -2481,6 +2965,19 @@
                 "properties": {
                     "message": {
                         "type": "string"
+                    }
+                }
+            },
+            "Tag": {
+                "type": "object",
+                "properties": {
+                    "value": {
+                        "type": "string",
+                        "description": "Tag value"
+                    },
+                    "key": {
+                        "type": "string",
+                        "description": "Tag name"
                     }
                 }
             },
