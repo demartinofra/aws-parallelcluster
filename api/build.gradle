@@ -10,6 +10,9 @@ openApiGenerate {
     generatorName = "python-flask"
     inputSpec = "$projectDir/model/openapi/ParallelCluster.openapi.json".toString()
     outputDir = "$projectDir/generated".toString()
+    configOptions = [
+        disallowAdditionalPropertiesIfNotPresent: "false"
+    ]
 }
 
 task generatePythonClient(type:Exec) {

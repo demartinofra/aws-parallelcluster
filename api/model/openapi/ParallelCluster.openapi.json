@@ -3027,12 +3027,12 @@
             "UpdateClusterResponseContent": {
                 "type": "object",
                 "properties": {
-                    "clusterInfo": {
+                    "cluster": {
                         "$ref": "#/components/schemas/ClusterInfoSummary"
                     }
                 },
                 "required": [
-                    "clusterInfo"
+                    "cluster"
                 ]
             },
             "UpdateComputeFleetStatusRequestContent": {

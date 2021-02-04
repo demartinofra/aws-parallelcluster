@@ -1,0 +1,4 @@
+requests
+serverless-wsgi
+flask
+connexion[swagger-ui]

@@ -37,5 +37,5 @@ structure UpdateClusterInput {
 
 structure UpdateClusterOutput {
     @required
-    clusterInfo: ClusterInfoSummary
+    cluster: ClusterInfoSummary
 }

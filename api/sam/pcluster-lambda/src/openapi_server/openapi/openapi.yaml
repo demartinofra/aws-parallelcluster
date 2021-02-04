@@ -1,0 +1,2581 @@
+openapi: 3.0.2
+info:
+  description: ParallelCluster API
+  title: ParallelCluster
+  version: 3.0.0
+servers:
+- url: /v3
+{#security:#}
+{#- aws.auth.sigv4: []#}
+paths:
+  /clusters:
+    get:
+      description: Retrieve the list of existing clusters managed by the API.
+      operationId: list_clusters
+      parameters:
+      - description: List clusters deployed to a given AWS Region
+        explode: true
+        in: query
+        name: region
+        required: true
+        schema:
+          description: List clusters deployed to a given AWS Region
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: nextToken
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: List deleted clusters.
+        explode: true
+        in: query
+        name: showDeleted
+        required: false
+        schema:
+          description: List deleted clusters.
+          nullable: true
+          type: boolean
+        style: form
+      - description: Forces a specific ParallelCluster version to be used when handling
+          this request.
+        explode: false
+        in: header
+        name: x-parallelcluster-version
+        required: false
+        schema:
+          description: Forces a specific ParallelCluster version to be used when handling
+            this request.
+          pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListClustersResponseContent'
+          description: ListClusters 200 response
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestExceptionResponseContent'
+          description: BadRequestException 400 response
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedClientErrorResponseContent'
+          description: UnauthorizedClientError 401 response
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LimitExceededExceptionResponseContent'
+          description: LimitExceededException 429 response
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServiceExceptionResponseContent'
+          description: InternalServiceException 500 response
+      tags:
+      - Cluster CRUD
+      x-amazon-apigateway-integration:
+        credentials:
+          Fn::Sub: "${APIGatewayExecutionRole.Arn}"
+        httpMethod: POST
+        payloadFormatVersion: "2.0"
+        type: aws_proxy
+        uri:
+          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
+      x-openapi-router-controller: openapi_server.controllers.cluster_crud_controller
+    post:
+      description: Create a ParallelCluster managed cluster in a given region.
+      operationId: create_cluster
+      parameters:
+      - description: ParallelCluster version to use when creating the cluster. This
+          option will only be available in case the API has support for multiple ParallelCluster
+          versions
+        explode: true
+        in: query
+        name: version
+        required: false
+        schema:
+          description: ParallelCluster version to use when creating the cluster. This
+            option will only be available in case the API has support for multiple
+            ParallelCluster versions
+          pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+          type: string
+        style: form
+      - description: "Identifies one or more config validators to suppress. Format:\
+          \ ALL|id:$value|level:(info|error|warning)|type:$value"
+        explode: true
+        in: query
+        name: suppressValidators
+        required: false
+        schema:
+          description: "Identifies one or more config validators to suppress. Format:\
+            \ ALL|id:$value|level:(info|error|warning)|type:$value"
+          items:
+            type: string
+          type: array
+        style: form
+      - description: Min validation level that will cause the creation to fail. Defaults
+          to 'error'.
+        explode: true
+        in: query
+        name: validationFailureLevel
+        required: false
+        schema:
+          $ref: '#/components/schemas/ValidationLevel'
+        style: form
+      - description: "Only perform request validation without creating any resource.\
+          \ It can be used to validate the cluster configuration. Response code: 200"
+        explode: true
+        in: query
+        name: dryrun
+        required: false
+        schema:
+          description: "Only perform request validation without creating any resource.\
+            \ It can be used to validate the cluster configuration. Response code:\
+            \ 200"
+          nullable: true
+          type: boolean
+        style: form
+      - description: When set it automatically initiates a cluster stack rollback
+          on failures. Defaults to true.
+        explode: true
+        in: query
+        name: rollbackOnFailure
+        required: false
+        schema:
+          description: When set it automatically initiates a cluster stack rollback
+            on failures. Defaults to true.
+          nullable: true
+          type: boolean
+        style: form
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateClusterRequestContent'
+        required: true
+      responses:
+        "202":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateClusterResponseContent'
+          description: CreateCluster 202 response
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateClusterBadRequestExceptionResponseContent'
+          description: CreateClusterBadRequestException 400 response
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedClientErrorResponseContent'
+          description: UnauthorizedClientError 401 response
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictExceptionResponseContent'
+          description: ConflictException 409 response
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LimitExceededExceptionResponseContent'
+          description: LimitExceededException 429 response
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServiceExceptionResponseContent'
+          description: InternalServiceException 500 response
+      tags:
+      - Cluster CRUD
+      x-amazon-apigateway-integration:
+        credentials:
+          Fn::Sub: "${APIGatewayExecutionRole.Arn}"
+        httpMethod: POST
+        payloadFormatVersion: "2.0"
+        type: aws_proxy
+        uri:
+          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
+      x-openapi-router-controller: openapi_server.controllers.cluster_crud_controller
+  /clusters/{clusterId}:
+    delete:
+      description: Initiate the deletion of a cluster.
+      operationId: delete_cluster
+      parameters:
+      - description: Name of the cluster
+        explode: false
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          description: Name of the cluster
+          maxLength: 60
+          minLength: 5
+          pattern: "^[a-zA-Z][a-zA-Z0-9-]+$"
+          type: string
+        style: simple
+      - description: AWS Region
+        explode: true
+        in: query
+        name: region
+        required: true
+        schema:
+          description: AWS Region
+          type: string
+        style: form
+      - description: Retain cluster logs on delete. Defaults to True.
+        explode: true
+        in: query
+        name: retainLogs
+        required: false
+        schema:
+          description: Retain cluster logs on delete. Defaults to True.
+          nullable: true
+          type: boolean
+        style: form
+      - description: Forces a specific ParallelCluster version to be used when handling
+          this request.
+        explode: false
+        in: header
+        name: x-parallelcluster-version
+        required: false
+        schema:
+          description: Forces a specific ParallelCluster version to be used when handling
+            this request.
+          pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+          type: string
+        style: simple
+      responses:
+        "202":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteClusterResponseContent'
+          description: DeleteCluster 202 response
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestExceptionResponseContent'
+          description: BadRequestException 400 response
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedClientErrorResponseContent'
+          description: UnauthorizedClientError 401 response
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundExceptionResponseContent'
+          description: NotFoundException 404 response
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LimitExceededExceptionResponseContent'
+          description: LimitExceededException 429 response
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServiceExceptionResponseContent'
+          description: InternalServiceException 500 response
+      tags:
+      - Cluster CRUD
+      x-amazon-apigateway-integration:
+        credentials:
+          Fn::Sub: "${APIGatewayExecutionRole.Arn}"
+        httpMethod: POST
+        payloadFormatVersion: "2.0"
+        type: aws_proxy
+        uri:
+          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
+      x-openapi-router-controller: openapi_server.controllers.cluster_crud_controller
+    get:
+      description: Get detailed information about an existing cluster.
+      operationId: describe_cluster
+      parameters:
+      - description: Name of the cluster
+        explode: false
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          description: Name of the cluster
+          maxLength: 60
+          minLength: 5
+          pattern: "^[a-zA-Z][a-zA-Z0-9-]+$"
+          type: string
+        style: simple
+      - description: AWS Region
+        explode: true
+        in: query
+        name: region
+        required: true
+        schema:
+          description: AWS Region
+          type: string
+        style: form
+      - description: Forces a specific ParallelCluster version to be used when handling
+          this request.
+        explode: false
+        in: header
+        name: x-parallelcluster-version
+        required: false
+        schema:
+          description: Forces a specific ParallelCluster version to be used when handling
+            this request.
+          pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DescribeClusterResponseContent'
+          description: DescribeCluster 200 response
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestExceptionResponseContent'
+          description: BadRequestException 400 response
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedClientErrorResponseContent'
+          description: UnauthorizedClientError 401 response
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundExceptionResponseContent'
+          description: NotFoundException 404 response
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LimitExceededExceptionResponseContent'
+          description: LimitExceededException 429 response
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServiceExceptionResponseContent'
+          description: InternalServiceException 500 response
+      tags:
+      - Cluster CRUD
+      x-amazon-apigateway-integration:
+        credentials:
+          Fn::Sub: "${APIGatewayExecutionRole.Arn}"
+        httpMethod: POST
+        payloadFormatVersion: "2.0"
+        type: aws_proxy
+        uri:
+          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
+      x-openapi-router-controller: openapi_server.controllers.cluster_crud_controller
+    patch:
+      operationId: update_cluster
+      parameters:
+      - description: Name of the cluster
+        explode: false
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          description: Name of the cluster
+          maxLength: 60
+          minLength: 5
+          pattern: "^[a-zA-Z][a-zA-Z0-9-]+$"
+          type: string
+        style: simple
+      - description: AWS Region
+        explode: true
+        in: query
+        name: region
+        required: true
+        schema:
+          description: AWS Region
+          type: string
+        style: form
+      - description: "Only perform request validation without creating any resource.\
+          \ It can be used to validate the cluster configuration and update requirements.\
+          \ Response code: 200"
+        explode: true
+        in: query
+        name: dryrun
+        required: false
+        schema:
+          description: "Only perform request validation without creating any resource.\
+            \ It can be used to validate the cluster configuration and update requirements.\
+            \ Response code: 200"
+          nullable: true
+          type: boolean
+        style: form
+      - description: Forces a specific ParallelCluster version to be used when handling
+          this request.
+        explode: false
+        in: header
+        name: x-parallelcluster-version
+        required: false
+        schema:
+          description: Forces a specific ParallelCluster version to be used when handling
+            this request.
+          pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateClusterRequestContent'
+        required: true
+      responses:
+        "202":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateClusterResponseContent'
+          description: UpdateCluster 202 response
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateClusterBadRequestExceptionResponseContent'
+          description: UpdateClusterBadRequestException 400 response
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedClientErrorResponseContent'
+          description: UnauthorizedClientError 401 response
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundExceptionResponseContent'
+          description: NotFoundException 404 response
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictExceptionResponseContent'
+          description: ConflictException 409 response
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LimitExceededExceptionResponseContent'
+          description: LimitExceededException 429 response
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServiceExceptionResponseContent'
+          description: InternalServiceException 500 response
+      tags:
+      - Cluster CRUD
+      x-amazon-apigateway-integration:
+        credentials:
+          Fn::Sub: "${APIGatewayExecutionRole.Arn}"
+        httpMethod: POST
+        payloadFormatVersion: "2.0"
+        type: aws_proxy
+        uri:
+          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
+      x-openapi-router-controller: openapi_server.controllers.cluster_crud_controller
+  /clusters/{clusterId}/computefleet/status:
+    get:
+      description: Describe the status of the compute fleet
+      operationId: describe_compute_fleet_status
+      parameters:
+      - description: Name of the cluster
+        explode: false
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          description: Name of the cluster
+          maxLength: 60
+          minLength: 5
+          pattern: "^[a-zA-Z][a-zA-Z0-9-]+$"
+          type: string
+        style: simple
+      - description: AWS Region
+        explode: true
+        in: query
+        name: region
+        required: true
+        schema:
+          description: AWS Region
+          type: string
+        style: form
+      - description: Forces a specific ParallelCluster version to be used when handling
+          this request.
+        explode: false
+        in: header
+        name: x-parallelcluster-version
+        required: false
+        schema:
+          description: Forces a specific ParallelCluster version to be used when handling
+            this request.
+          pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DescribeComputeFleetStatusResponseContent'
+          description: DescribeComputeFleetStatus 200 response
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestExceptionResponseContent'
+          description: BadRequestException 400 response
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedClientErrorResponseContent'
+          description: UnauthorizedClientError 401 response
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundExceptionResponseContent'
+          description: NotFoundException 404 response
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LimitExceededExceptionResponseContent'
+          description: LimitExceededException 429 response
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServiceExceptionResponseContent'
+          description: InternalServiceException 500 response
+      tags:
+      - Cluster ComputeFleet
+      x-amazon-apigateway-integration:
+        credentials:
+          Fn::Sub: "${APIGatewayExecutionRole.Arn}"
+        httpMethod: POST
+        payloadFormatVersion: "2.0"
+        type: aws_proxy
+        uri:
+          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
+      x-openapi-router-controller: openapi_server.controllers.cluster_compute_fleet_controller
+    patch:
+      description: Update the status of the cluster compute fleet.
+      operationId: update_compute_fleet_status
+      parameters:
+      - description: Name of the cluster
+        explode: false
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          description: Name of the cluster
+          maxLength: 60
+          minLength: 5
+          pattern: "^[a-zA-Z][a-zA-Z0-9-]+$"
+          type: string
+        style: simple
+      - description: AWS Region
+        explode: true
+        in: query
+        name: region
+        required: true
+        schema:
+          description: AWS Region
+          type: string
+        style: form
+      - description: Forces a specific ParallelCluster version to be used when handling
+          this request.
+        explode: false
+        in: header
+        name: x-parallelcluster-version
+        required: false
+        schema:
+          description: Forces a specific ParallelCluster version to be used when handling
+            this request.
+          pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateComputeFleetStatusRequestContent'
+        required: true
+      responses:
+        "202":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateComputeFleetStatusResponseContent'
+          description: UpdateComputeFleetStatus 202 response
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestExceptionResponseContent'
+          description: BadRequestException 400 response
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedClientErrorResponseContent'
+          description: UnauthorizedClientError 401 response
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundExceptionResponseContent'
+          description: NotFoundException 404 response
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LimitExceededExceptionResponseContent'
+          description: LimitExceededException 429 response
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServiceExceptionResponseContent'
+          description: InternalServiceException 500 response
+      tags:
+      - Cluster ComputeFleet
+      x-amazon-apigateway-integration:
+        credentials:
+          Fn::Sub: "${APIGatewayExecutionRole.Arn}"
+        httpMethod: POST
+        payloadFormatVersion: "2.0"
+        type: aws_proxy
+        uri:
+          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
+      x-openapi-router-controller: openapi_server.controllers.cluster_compute_fleet_controller
+  /clusters/{clusterId}/configurations:
+    get:
+      description: Retrieve the history of cluster configurations for a given cluster
+      operationId: list_cluster_configurations
+      parameters:
+      - description: Name of the cluster
+        explode: false
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          description: Name of the cluster
+          maxLength: 60
+          minLength: 5
+          pattern: "^[a-zA-Z][a-zA-Z0-9-]+$"
+          type: string
+        style: simple
+      - description: List clusters deployed to a given AWS Region
+        explode: true
+        in: query
+        name: region
+        required: true
+        schema:
+          description: List clusters deployed to a given AWS Region
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: nextToken
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Forces a specific ParallelCluster version to be used when handling
+          this request.
+        explode: false
+        in: header
+        name: x-parallelcluster-version
+        required: false
+        schema:
+          description: Forces a specific ParallelCluster version to be used when handling
+            this request.
+          pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListClusterConfigurationsResponseContent'
+          description: ListClusterConfigurations 200 response
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestExceptionResponseContent'
+          description: BadRequestException 400 response
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedClientErrorResponseContent'
+          description: UnauthorizedClientError 401 response
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundExceptionResponseContent'
+          description: NotFoundException 404 response
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LimitExceededExceptionResponseContent'
+          description: LimitExceededException 429 response
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServiceExceptionResponseContent'
+          description: InternalServiceException 500 response
+      tags:
+      - Cluster Configuration
+      x-amazon-apigateway-integration:
+        credentials:
+          Fn::Sub: "${APIGatewayExecutionRole.Arn}"
+        httpMethod: POST
+        payloadFormatVersion: "2.0"
+        type: aws_proxy
+        uri:
+          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
+      x-openapi-router-controller: openapi_server.controllers.cluster_configuration_controller
+  /clusters/{clusterId}/configurations/{configVersion}:
+    get:
+      description: Retrieve a specific cluster configuration version.
+      operationId: describe_cluster_configuration
+      parameters:
+      - description: Name of the cluster
+        explode: false
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          description: Name of the cluster
+          maxLength: 60
+          minLength: 5
+          pattern: "^[a-zA-Z][a-zA-Z0-9-]+$"
+          type: string
+        style: simple
+      - description: This can be either the version of the config to retrieve or the
+          'latest' keyword to fetch the latest configuration version.
+        explode: false
+        in: path
+        name: configVersion
+        required: true
+        schema:
+          description: This can be either the version of the config to retrieve or
+            the 'latest' keyword to fetch the latest configuration version.
+          type: string
+        style: simple
+      - description: AWS Region
+        explode: true
+        in: query
+        name: region
+        required: true
+        schema:
+          description: AWS Region
+          type: string
+        style: form
+      - description: Forces a specific ParallelCluster version to be used when handling
+          this request.
+        explode: false
+        in: header
+        name: x-parallelcluster-version
+        required: false
+        schema:
+          description: Forces a specific ParallelCluster version to be used when handling
+            this request.
+          pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DescribeClusterConfigurationResponseContent'
+          description: DescribeClusterConfiguration 200 response
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestExceptionResponseContent'
+          description: BadRequestException 400 response
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedClientErrorResponseContent'
+          description: UnauthorizedClientError 401 response
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundExceptionResponseContent'
+          description: NotFoundException 404 response
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LimitExceededExceptionResponseContent'
+          description: LimitExceededException 429 response
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServiceExceptionResponseContent'
+          description: InternalServiceException 500 response
+      tags:
+      - Cluster Configuration
+      x-amazon-apigateway-integration:
+        credentials:
+          Fn::Sub: "${APIGatewayExecutionRole.Arn}"
+        httpMethod: POST
+        payloadFormatVersion: "2.0"
+        type: aws_proxy
+        uri:
+          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
+      x-openapi-router-controller: openapi_server.controllers.cluster_configuration_controller
+  /clusters/{clusterId}/dcv:
+    get:
+      description: Provides details on how to connect to the DCV session manager endpoint
+        configured for the cluster.
+      operationId: describe_dcv_session_manager_endpoint
+      parameters:
+      - description: Name of the cluster
+        explode: false
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          description: Name of the cluster
+          maxLength: 60
+          minLength: 5
+          pattern: "^[a-zA-Z][a-zA-Z0-9-]+$"
+          type: string
+        style: simple
+      - description: AWS Region
+        explode: true
+        in: query
+        name: region
+        required: true
+        schema:
+          description: AWS Region
+          type: string
+        style: form
+      - description: Forces a specific ParallelCluster version to be used when handling
+          this request.
+        explode: false
+        in: header
+        name: x-parallelcluster-version
+        required: false
+        schema:
+          description: Forces a specific ParallelCluster version to be used when handling
+            this request.
+          pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DescribeDcvSessionManagerEndpointResponseContent'
+          description: DescribeDcvSessionManagerEndpoint 200 response
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestExceptionResponseContent'
+          description: BadRequestException 400 response
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedClientErrorResponseContent'
+          description: UnauthorizedClientError 401 response
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundExceptionResponseContent'
+          description: NotFoundException 404 response
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LimitExceededExceptionResponseContent'
+          description: LimitExceededException 429 response
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServiceExceptionResponseContent'
+          description: InternalServiceException 500 response
+      tags:
+      - DCV
+      x-amazon-apigateway-integration:
+        credentials:
+          Fn::Sub: "${APIGatewayExecutionRole.Arn}"
+        httpMethod: POST
+        payloadFormatVersion: "2.0"
+        type: aws_proxy
+        uri:
+          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
+      x-openapi-router-controller: openapi_server.controllers.dcv_controller
+  /clusters/{clusterId}/instances:
+    delete:
+      description: Initiate the forced termination of all cluster compute nodes. Does
+        not work with AWS Batch clusters
+      operationId: delete_cluster_instances
+      parameters:
+      - description: Name of the cluster
+        explode: false
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          description: Name of the cluster
+          maxLength: 60
+          minLength: 5
+          pattern: "^[a-zA-Z][a-zA-Z0-9-]+$"
+          type: string
+        style: simple
+      - description: AWS Region
+        explode: true
+        in: query
+        name: region
+        required: true
+        schema:
+          description: AWS Region
+          type: string
+        style: form
+      - description: Force the deletion also when the cluster id is not found.
+        explode: true
+        in: query
+        name: force
+        required: false
+        schema:
+          description: Force the deletion also when the cluster id is not found.
+          nullable: true
+          type: boolean
+        style: form
+      - description: Forces a specific ParallelCluster version to be used when handling
+          this request.
+        explode: false
+        in: header
+        name: x-parallelcluster-version
+        required: false
+        schema:
+          description: Forces a specific ParallelCluster version to be used when handling
+            this request.
+          pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+          type: string
+        style: simple
+      responses:
+        "202":
+          description: DeleteClusterInstances 202 response
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestExceptionResponseContent'
+          description: BadRequestException 400 response
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedClientErrorResponseContent'
+          description: UnauthorizedClientError 401 response
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundExceptionResponseContent'
+          description: NotFoundException 404 response
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LimitExceededExceptionResponseContent'
+          description: LimitExceededException 429 response
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServiceExceptionResponseContent'
+          description: InternalServiceException 500 response
+      tags:
+      - Cluster Instances
+      x-amazon-apigateway-integration:
+        credentials:
+          Fn::Sub: "${APIGatewayExecutionRole.Arn}"
+        httpMethod: POST
+        payloadFormatVersion: "2.0"
+        type: aws_proxy
+        uri:
+          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
+      x-openapi-router-controller: openapi_server.controllers.cluster_instances_controller
+    get:
+      description: Describe the instances belonging to a given cluster.
+      operationId: describe_cluster_instances
+      parameters:
+      - description: Name of the cluster
+        explode: false
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          description: Name of the cluster
+          maxLength: 60
+          minLength: 5
+          pattern: "^[a-zA-Z][a-zA-Z0-9-]+$"
+          type: string
+        style: simple
+      - description: AWS Region
+        explode: true
+        in: query
+        name: region
+        required: true
+        schema:
+          description: AWS Region
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: nextToken
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: nodeType
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: queueName
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Forces a specific ParallelCluster version to be used when handling
+          this request.
+        explode: false
+        in: header
+        name: x-parallelcluster-version
+        required: false
+        schema:
+          description: Forces a specific ParallelCluster version to be used when handling
+            this request.
+          pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DescribeClusterInstancesResponseContent'
+          description: DescribeClusterInstances 200 response
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestExceptionResponseContent'
+          description: BadRequestException 400 response
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedClientErrorResponseContent'
+          description: UnauthorizedClientError 401 response
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundExceptionResponseContent'
+          description: NotFoundException 404 response
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LimitExceededExceptionResponseContent'
+          description: LimitExceededException 429 response
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServiceExceptionResponseContent'
+          description: InternalServiceException 500 response
+      tags:
+      - Cluster Instances
+      x-amazon-apigateway-integration:
+        credentials:
+          Fn::Sub: "${APIGatewayExecutionRole.Arn}"
+        httpMethod: POST
+        payloadFormatVersion: "2.0"
+        type: aws_proxy
+        uri:
+          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
+      x-openapi-router-controller: openapi_server.controllers.cluster_instances_controller
+  /images/custom:
+    get:
+      description: Retrieve the list of existing custom images managed by the API.
+      operationId: list_images
+      parameters:
+      - description: List Images built into a given AWS Region
+        explode: true
+        in: query
+        name: region
+        required: true
+        schema:
+          description: List Images built into a given AWS Region
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: nextToken
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: List deleted images.
+        explode: true
+        in: query
+        name: showDeleted
+        required: false
+        schema:
+          description: List deleted images.
+          nullable: true
+          type: boolean
+        style: form
+      - description: Forces a specific ParallelCluster version to be used when handling
+          this request.
+        explode: false
+        in: header
+        name: x-parallelcluster-version
+        required: false
+        schema:
+          description: Forces a specific ParallelCluster version to be used when handling
+            this request.
+          pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListImagesResponseContent'
+          description: ListImages 200 response
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestExceptionResponseContent'
+          description: BadRequestException 400 response
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedClientErrorResponseContent'
+          description: UnauthorizedClientError 401 response
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LimitExceededExceptionResponseContent'
+          description: LimitExceededException 429 response
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServiceExceptionResponseContent'
+          description: InternalServiceException 500 response
+      tags:
+      - Image CRUD
+      x-amazon-apigateway-integration:
+        credentials:
+          Fn::Sub: "${APIGatewayExecutionRole.Arn}"
+        httpMethod: POST
+        payloadFormatVersion: "2.0"
+        type: aws_proxy
+        uri:
+          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
+      x-openapi-router-controller: openapi_server.controllers.image_crud_controller
+    post:
+      description: Create a custom ParallelCluster image in a given region.
+      operationId: build_image
+      parameters:
+      - description: ParallelCluster version to use when creating the image. This
+          option will only be available in case the API has support for multiple ParallelCluster
+          versions
+        explode: true
+        in: query
+        name: version
+        required: false
+        schema:
+          description: ParallelCluster version to use when creating the image. This
+            option will only be available in case the API has support for multiple
+            ParallelCluster versions
+          pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+          type: string
+        style: form
+      - description: "Identifies one or more config validators to suppress. Format:\
+          \ ALL|id:$value|level:(info|error|warning)|type:$value"
+        explode: true
+        in: query
+        name: suppressValidators
+        required: false
+        schema:
+          description: "Identifies one or more config validators to suppress. Format:\
+            \ ALL|id:$value|level:(info|error|warning)|type:$value"
+          items:
+            type: string
+          type: array
+        style: form
+      - description: Min validation level that will cause the creation to fail. Defaults
+          to 'error'.
+        explode: true
+        in: query
+        name: validationFailureLevel
+        required: false
+        schema:
+          $ref: '#/components/schemas/ValidationLevel'
+        style: form
+      - description: "Only perform request validation without creating any resource.\
+          \ It can be used to validate the image configuration. Response code: 200"
+        explode: true
+        in: query
+        name: dryrun
+        required: false
+        schema:
+          description: "Only perform request validation without creating any resource.\
+            \ It can be used to validate the image configuration. Response code: 200"
+          nullable: true
+          type: boolean
+        style: form
+      - description: When set it automatically initiates an image stack rollback on
+          failures. Defaults to true.
+        explode: true
+        in: query
+        name: rollbackOnFailure
+        required: false
+        schema:
+          description: When set it automatically initiates an image stack rollback
+            on failures. Defaults to true.
+          nullable: true
+          type: boolean
+        style: form
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BuildImageRequestContent'
+        required: true
+      responses:
+        "202":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BuildImageResponseContent'
+          description: BuildImage 202 response
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BuildImageBadRequestExceptionResponseContent'
+          description: BuildImageBadRequestException 400 response
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedClientErrorResponseContent'
+          description: UnauthorizedClientError 401 response
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConflictExceptionResponseContent'
+          description: ConflictException 409 response
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LimitExceededExceptionResponseContent'
+          description: LimitExceededException 429 response
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServiceExceptionResponseContent'
+          description: InternalServiceException 500 response
+      tags:
+      - Image CRUD
+      x-amazon-apigateway-integration:
+        credentials:
+          Fn::Sub: "${APIGatewayExecutionRole.Arn}"
+        httpMethod: POST
+        payloadFormatVersion: "2.0"
+        type: aws_proxy
+        uri:
+          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
+      x-openapi-router-controller: openapi_server.controllers.image_crud_controller
+  /images/custom/{imageId}:
+    delete:
+      description: Initiate the deletion of an image.
+      operationId: delete_image
+      parameters:
+      - description: Name of the image
+        explode: false
+        in: path
+        name: imageId
+        required: true
+        schema:
+          description: Name of the image
+          maxLength: 60
+          minLength: 5
+          pattern: "^[a-zA-Z][a-zA-Z0-9-]+$"
+          type: string
+        style: simple
+      - description: AWS Region
+        explode: true
+        in: query
+        name: region
+        required: true
+        schema:
+          description: AWS Region
+          type: string
+        style: form
+      - description: Forces a specific ParallelCluster version to be used when handling
+          this request.
+        explode: false
+        in: header
+        name: x-parallelcluster-version
+        required: false
+        schema:
+          description: Forces a specific ParallelCluster version to be used when handling
+            this request.
+          pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+          type: string
+        style: simple
+      responses:
+        "202":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteImageResponseContent'
+          description: DeleteImage 202 response
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestExceptionResponseContent'
+          description: BadRequestException 400 response
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedClientErrorResponseContent'
+          description: UnauthorizedClientError 401 response
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundExceptionResponseContent'
+          description: NotFoundException 404 response
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LimitExceededExceptionResponseContent'
+          description: LimitExceededException 429 response
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServiceExceptionResponseContent'
+          description: InternalServiceException 500 response
+      tags:
+      - Image CRUD
+      x-amazon-apigateway-integration:
+        credentials:
+          Fn::Sub: "${APIGatewayExecutionRole.Arn}"
+        httpMethod: POST
+        payloadFormatVersion: "2.0"
+        type: aws_proxy
+        uri:
+          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
+      x-openapi-router-controller: openapi_server.controllers.image_crud_controller
+    get:
+      description: Get detailed information about an existing image.
+      operationId: describe_image
+      parameters:
+      - description: Name of the image
+        explode: false
+        in: path
+        name: imageId
+        required: true
+        schema:
+          description: Name of the image
+          maxLength: 60
+          minLength: 5
+          pattern: "^[a-zA-Z][a-zA-Z0-9-]+$"
+          type: string
+        style: simple
+      - description: AWS Region
+        explode: true
+        in: query
+        name: region
+        required: true
+        schema:
+          description: AWS Region
+          type: string
+        style: form
+      - description: Forces a specific ParallelCluster version to be used when handling
+          this request.
+        explode: false
+        in: header
+        name: x-parallelcluster-version
+        required: false
+        schema:
+          description: Forces a specific ParallelCluster version to be used when handling
+            this request.
+          pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DescribeImageResponseContent'
+          description: DescribeImage 200 response
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestExceptionResponseContent'
+          description: BadRequestException 400 response
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedClientErrorResponseContent'
+          description: UnauthorizedClientError 401 response
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundExceptionResponseContent'
+          description: NotFoundException 404 response
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LimitExceededExceptionResponseContent'
+          description: LimitExceededException 429 response
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServiceExceptionResponseContent'
+          description: InternalServiceException 500 response
+      tags:
+      - Image CRUD
+      x-amazon-apigateway-integration:
+        credentials:
+          Fn::Sub: "${APIGatewayExecutionRole.Arn}"
+        httpMethod: POST
+        payloadFormatVersion: "2.0"
+        type: aws_proxy
+        uri:
+          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
+      x-openapi-router-controller: openapi_server.controllers.image_crud_controller
+  /images/official:
+    get:
+      description: Describe ParallelCluster AMIs.
+      operationId: list_official_images
+      parameters:
+      - description: ParallelCluster version to retrieve AMIs for.
+        explode: true
+        in: query
+        name: version
+        required: false
+        schema:
+          description: ParallelCluster version to retrieve AMIs for.
+          pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+          type: string
+        style: form
+      - description: AWS Region
+        explode: true
+        in: query
+        name: region
+        required: true
+        schema:
+          description: AWS Region
+          type: string
+        style: form
+      - description: Filter by OS distribution
+        explode: true
+        in: query
+        name: os
+        required: false
+        schema:
+          description: Filter by OS distribution
+          type: string
+        style: form
+      - description: Filter by architecture
+        explode: true
+        in: query
+        name: architecture
+        required: false
+        schema:
+          description: Filter by architecture
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: nextToken
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Forces a specific ParallelCluster version to be used when handling
+          this request.
+        explode: false
+        in: header
+        name: x-parallelcluster-version
+        required: false
+        schema:
+          description: Forces a specific ParallelCluster version to be used when handling
+            this request.
+          pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfficialImagesResponseContent'
+          description: ListOfficialImages 200 response
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestExceptionResponseContent'
+          description: BadRequestException 400 response
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedClientErrorResponseContent'
+          description: UnauthorizedClientError 401 response
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LimitExceededExceptionResponseContent'
+          description: LimitExceededException 429 response
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServiceExceptionResponseContent'
+          description: InternalServiceException 500 response
+      tags:
+      - Images operations
+      x-amazon-apigateway-integration:
+        credentials:
+          Fn::Sub: "${APIGatewayExecutionRole.Arn}"
+        httpMethod: POST
+        payloadFormatVersion: "2.0"
+        type: aws_proxy
+        uri:
+          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
+      x-openapi-router-controller: openapi_server.controllers.images_operations_controller
+  /versions:
+    get:
+      description: Describe the supported ParallelCluster versions.
+      operationId: describe_parallel_cluster_versions
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DescribeParallelClusterVersionsResponseContent'
+          description: DescribeParallelClusterVersions 200 response
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestExceptionResponseContent'
+          description: BadRequestException 400 response
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedClientErrorResponseContent'
+          description: UnauthorizedClientError 401 response
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LimitExceededExceptionResponseContent'
+          description: LimitExceededException 429 response
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServiceExceptionResponseContent'
+          description: InternalServiceException 500 response
+      tags:
+      - ParallelCluster Versions
+      x-amazon-apigateway-integration:
+        credentials:
+          Fn::Sub: "${APIGatewayExecutionRole.Arn}"
+        httpMethod: POST
+        payloadFormatVersion: "2.0"
+        type: aws_proxy
+        uri:
+          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
+      x-openapi-router-controller: openapi_server.controllers.parallel_cluster_versions_controller
+components:
+  schemas:
+    AmiInfo:
+      example:
+        amiId: amiId
+        os: os
+        name: name
+        architecture: architecture
+      properties:
+        amiId:
+          type: string
+        os:
+          type: string
+        name:
+          type: string
+        architecture:
+          type: string
+      required:
+      - amiId
+      - architecture
+      - name
+      - os
+      type: object
+    BadRequestExceptionResponseContent:
+      description: This exception is thrown when a client calls an API with wrong
+        parameters
+      properties:
+        message:
+          type: string
+      type: object
+    BuildImageBadRequestExceptionResponseContent:
+      description: This exception is thrown when a client calls the BuildImage API
+        with an invalid request. This includes an error due to invalid image configuration.
+      properties:
+        configurationValidationErrors:
+          items:
+            $ref: '#/components/schemas/ConfigValidationMessage'
+          type: array
+        message:
+          type: string
+      type: object
+    BuildImageRequestContent:
+      example:
+        imageConfiguration: imageConfiguration
+        name: name
+        region: region
+      properties:
+        imageConfiguration:
+          description: Image configuration as a YAML document
+          format: byte
+          type: string
+        name:
+          description: Name of the image
+          maxLength: 60
+          minLength: 5
+          pattern: "^[a-zA-Z][a-zA-Z0-9-]+$"
+          type: string
+        region:
+          description: AWS Region
+          type: string
+      required:
+      - imageConfiguration
+      - name
+      - region
+      type: object
+    BuildImageResponseContent:
+      example:
+        image:
+          imageId: imageId
+          imageBuildStatus: null
+          cloudformationStackStatus: null
+          cloudformationStackArn: cloudformationStackArn
+          region: region
+          version: version
+        validationMessages:
+        - level: null
+          id: id
+          type: type
+          message: message
+        - level: null
+          id: id
+          type: type
+          message: message
+      properties:
+        image:
+          $ref: '#/components/schemas/ImageInfoSummary'
+        validationMessages:
+          description: List of messages collected during image config validation whose
+            level is lower than the validationFailureLevel set by the user
+          items:
+            $ref: '#/components/schemas/ConfigValidationMessage'
+          type: array
+      required:
+      - image
+      - validationMessages
+      type: object
+    CloudFormationStatus:
+      enum:
+      - CREATE_IN_PROGRESS
+      - CREATE_FAILED
+      - CREATE_COMPLETE
+      - ROLLBACK_IN_PROGRESS
+      - ROLLBACK_FAILED
+      - ROLLBACK_COMPLETE
+      - DELETE_IN_PROGRESS
+      - DELETE_FAILED
+      - DELETE_COMPLETE
+      - UPDATE_IN_PROGRESS
+      - UPDATE_COMPLETE_CLEANUP_IN_PROGRESS
+      - UPDATE_COMPLETE
+      - UPDATE_ROLLBACK_IN_PROGRESS
+      - UPDATE_ROLLBACK_FAILED
+      - UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS
+      - UPDATE_ROLLBACK_COMPLETE
+      type: string
+    ClusterConfigurationStructure:
+      example:
+        data: data
+        creationTime: creationTime
+        version: version
+      properties:
+        data:
+          description: Cluster configuration as a YAML document
+          format: byte
+          type: string
+        creationTime:
+          type: string
+        version:
+          type: string
+      type: object
+    ClusterConfigurationSummary:
+      example:
+        creationTime: creationTime
+        version: version
+      properties:
+        creationTime:
+          type: string
+        version:
+          type: string
+      type: object
+    ClusterInfoSummary:
+      example:
+        cloudformationStackStatus: null
+        cloudformationStackArn: cloudformationStackArn
+        clusterId: clusterId
+        region: region
+        version: version
+        clusterStatus: null
+      properties:
+        cloudformationStackStatus:
+          $ref: '#/components/schemas/CloudFormationStatus'
+        cloudformationStackArn:
+          description: ARN of the main CloudFormation stack
+          type: string
+        clusterId:
+          description: Name of the cluster
+          maxLength: 60
+          minLength: 5
+          pattern: "^[a-zA-Z][a-zA-Z0-9-]+$"
+          type: string
+        region:
+          description: AWS region where the cluster is created
+          type: string
+        version:
+          description: ParallelCluster version used to create the cluster
+          pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+          type: string
+        clusterStatus:
+          $ref: '#/components/schemas/ClusterStatus'
+      required:
+      - cloudformationStackArn
+      - cloudformationStackStatus
+      - clusterId
+      - clusterStatus
+      - region
+      - version
+      type: object
+    ClusterStatus:
+      enum:
+      - CREATE_IN_PROGRESS
+      - CREATE_FAILED
+      - CREATE_COMPLETE
+      - UPDATE_IN_PROGRESS
+      - UPDATE_FAILED
+      - UPDATE_COMPLETE
+      - DELETE_IN_PROGRESS
+      - DELETE_FAILED
+      - DELETE_COMPLETE
+      type: string
+    ComputeFleetStatus:
+      enum:
+      - START_REQUESTED
+      - STARTING
+      - RUNNING
+      - STOP_REQUESTED
+      - STOPPING
+      - STOPPED
+      - ENABLED
+      - DISABLED
+      type: string
+    ComputeFleetStatusInput:
+      enum:
+      - START_REQUESTED
+      - STOP_REQUESTED
+      - ENABLED
+      - DISABLED
+      type: string
+    ConfigValidationMessage:
+      example:
+        level: null
+        id: id
+        type: type
+        message: message
+      properties:
+        level:
+          $ref: '#/components/schemas/ValidationLevel'
+        id:
+          description: Id of the validator
+          type: string
+        type:
+          description: Type of the validator
+          type: string
+        message:
+          description: Validation message
+          type: string
+      type: object
+    ConflictExceptionResponseContent:
+      description: This exception is thrown when a client request to create/modify
+        content would result in a conflict
+      properties:
+        message:
+          type: string
+      type: object
+    CreateClusterBadRequestExceptionResponseContent:
+      description: This exception is thrown when a client calls the CreateCluster
+        API with an invalid request. This includes an error due to invalid cluster
+        configuration.
+      properties:
+        configurationValidationErrors:
+          items:
+            $ref: '#/components/schemas/ConfigValidationMessage'
+          type: array
+        message:
+          type: string
+      type: object
+    CreateClusterRequestContent:
+      example:
+        name: name
+        region: region
+        clusterConfiguration: clusterConfiguration
+      properties:
+        name:
+          description: Name of the cluster
+          maxLength: 60
+          minLength: 5
+          pattern: "^[a-zA-Z][a-zA-Z0-9-]+$"
+          type: string
+        region:
+          description: AWS Region
+          type: string
+        clusterConfiguration:
+          description: Cluster configuration as a YAML document
+          format: byte
+          type: string
+      required:
+      - clusterConfiguration
+      - name
+      - region
+      type: object
+    CreateClusterResponseContent:
+      example:
+        cluster:
+          cloudformationStackStatus: null
+          cloudformationStackArn: cloudformationStackArn
+          clusterId: clusterId
+          region: region
+          version: version
+          clusterStatus: null
+        validationMessages:
+        - level: null
+          id: id
+          type: type
+          message: message
+        - level: null
+          id: id
+          type: type
+          message: message
+      properties:
+        cluster:
+          $ref: '#/components/schemas/ClusterInfoSummary'
+        validationMessages:
+          description: List of messages collected during cluster config validation
+            whose level is lower than the validationFailureLevel set by the user
+          items:
+            $ref: '#/components/schemas/ConfigValidationMessage'
+          type: array
+      required:
+      - cluster
+      - validationMessages
+      type: object
+    DeleteClusterResponseContent:
+      example:
+        cluster:
+          cloudformationStackStatus: null
+          cloudformationStackArn: cloudformationStackArn
+          clusterId: clusterId
+          region: region
+          version: version
+          clusterStatus: null
+      properties:
+        cluster:
+          $ref: '#/components/schemas/ClusterInfoSummary'
+      required:
+      - cluster
+      type: object
+    DeleteImageResponseContent:
+      example:
+        image:
+          imageId: imageId
+          imageBuildStatus: null
+          cloudformationStackStatus: null
+          cloudformationStackArn: cloudformationStackArn
+          region: region
+          version: version
+      properties:
+        image:
+          $ref: '#/components/schemas/ImageInfoSummary'
+      required:
+      - image
+      type: object
+    DescribeClusterConfigurationResponseContent:
+      example:
+        clusterConfiguration:
+          data: data
+          creationTime: creationTime
+          version: version
+      properties:
+        clusterConfiguration:
+          $ref: '#/components/schemas/ClusterConfigurationStructure'
+      required:
+      - clusterConfiguration
+      type: object
+    DescribeClusterInstancesResponseContent:
+      example:
+        instances:
+        - launchTime: launchTime
+          instanceId: instanceId
+          publicIpAddress: publicIpAddress
+          instanceType: instanceType
+          state: null
+          privateIpAddress: privateIpAddress
+        - launchTime: launchTime
+          instanceId: instanceId
+          publicIpAddress: publicIpAddress
+          instanceType: instanceType
+          state: null
+          privateIpAddress: privateIpAddress
+        nextToken: nextToken
+      properties:
+        instances:
+          items:
+            $ref: '#/components/schemas/EC2Instance'
+          type: array
+        nextToken:
+          type: string
+      required:
+      - instances
+      type: object
+    DescribeClusterResponseContent:
+      example:
+        creationTime: creationTime
+        computeFleetStatus: null
+        headnode:
+          launchTime: launchTime
+          instanceId: instanceId
+          publicIpAddress: publicIpAddress
+          instanceType: instanceType
+          state: null
+          privateIpAddress: privateIpAddress
+        cloudformationStackArn: cloudformationStackArn
+        lastUpdatedTime: lastUpdatedTime
+        clusterId: clusterId
+        region: region
+        version: version
+        CloudFormationStatus: null
+        clusterConfiguration:
+          data: data
+          creationTime: creationTime
+          version: version
+        tags:
+        - value: value
+          key: key
+        - value: value
+          key: key
+      properties:
+        creationTime:
+          description: Timestamp representing the cluster creation time
+          type: string
+        computeFleetStatus:
+          $ref: '#/components/schemas/ComputeFleetStatus'
+        headnode:
+          $ref: '#/components/schemas/EC2Instance'
+        cloudformationStackArn:
+          description: ARN of the main CloudFormation stack
+          type: string
+        lastUpdatedTime:
+          description: Timestamp representing the last cluster update time
+          type: string
+        clusterId:
+          description: Name of the cluster
+          maxLength: 60
+          minLength: 5
+          pattern: "^[a-zA-Z][a-zA-Z0-9-]+$"
+          type: string
+        region:
+          description: AWS region where the cluster is created
+          type: string
+        version:
+          description: ParallelCluster version used to create the cluster
+          pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+          type: string
+        CloudFormationStatus:
+          $ref: '#/components/schemas/CloudFormationStatus'
+        clusterConfiguration:
+          $ref: '#/components/schemas/ClusterConfigurationStructure'
+        tags:
+          description: Tags of the Image
+          items:
+            $ref: '#/components/schemas/Tag'
+          type: array
+      required:
+      - CloudFormationStatus
+      - cloudformationStackArn
+      - clusterConfiguration
+      - clusterId
+      - computeFleetStatus
+      - creationTime
+      - lastUpdatedTime
+      - region
+      - tags
+      - version
+      type: object
+    DescribeComputeFleetStatusResponseContent:
+      example:
+        status: null
+      properties:
+        status:
+          $ref: '#/components/schemas/ComputeFleetStatus'
+      required:
+      - status
+      type: object
+    DescribeDcvSessionManagerEndpointResponseContent:
+      example:
+        clientId: clientId
+        clientSecret: clientSecret
+        sessionManagerEndpoint: sessionManagerEndpoint
+      properties:
+        clientId:
+          type: string
+        clientSecret:
+          type: string
+        sessionManagerEndpoint:
+          description: https://<broker-hostname>:<port>
+          type: string
+      required:
+      - clientId
+      - clientSecret
+      - sessionManagerEndpoint
+      type: object
+    DescribeImageResponseContent:
+      example:
+        imageConfiguration: imageConfiguration
+        imageId: imageId
+        imagebuilderImageStatus: null
+        creationTime: creationTime
+        imageBuildStatus: null
+        cloudformationStackStatus: null
+        cloudformationStackArn: cloudformationStackArn
+        region: region
+        ec2AmiInfo:
+          amiName: amiName
+          amiId: amiId
+          tags:
+          - value: value
+            key: key
+          - value: value
+            key: key
+          architecture: architecture
+        version: version
+        tags:
+        - value: value
+          key: key
+        - value: value
+          key: key
+      properties:
+        imageConfiguration:
+          description: Configuration for the image build process
+          format: byte
+          type: string
+        imageId:
+          description: Name of the Image
+          type: string
+        imagebuilderImageStatus:
+          $ref: '#/components/schemas/ImageBuilderImageStatus'
+        creationTime:
+          description: Timestamp representing the image creation time
+          type: string
+        imageBuildStatus:
+          $ref: '#/components/schemas/ImageBuildStatus'
+        cloudformationStackStatus:
+          $ref: '#/components/schemas/CloudFormationStatus'
+        cloudformationStackArn:
+          description: ARN of the main CloudFormation stack
+          type: string
+        region:
+          description: AWS region where the image is created
+          type: string
+        ec2AmiInfo:
+          $ref: '#/components/schemas/Ec2AmiInfo'
+        version:
+          description: ParallelCluster version used to build the image
+          pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+          type: string
+        tags:
+          description: Tags of the infrastructure to build the Image
+          items:
+            $ref: '#/components/schemas/Tag'
+          type: array
+      required:
+      - cloudformationStackArn
+      - cloudformationStackStatus
+      - creationTime
+      - imageBuildStatus
+      - imageConfiguration
+      - imageId
+      - region
+      - tags
+      - version
+      type: object
+    DescribeParallelClusterVersionsResponseContent:
+      example:
+        enabledParallelClusterVersions:
+        - enabledParallelClusterVersions
+        - enabledParallelClusterVersions
+        defaultParallelClusterVersion: defaultParallelClusterVersion
+      properties:
+        enabledParallelClusterVersions:
+          description: ParallelCluster versions supported by the API.
+          items:
+            pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+            type: string
+          type: array
+        defaultParallelClusterVersion:
+          description: Default version used when version is not specified in the request.
+          pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+          type: string
+      required:
+      - defaultParallelClusterVersion
+      - enabledParallelClusterVersions
+      type: object
+    EC2Instance:
+      example:
+        launchTime: launchTime
+        instanceId: instanceId
+        publicIpAddress: publicIpAddress
+        instanceType: instanceType
+        state: null
+        privateIpAddress: privateIpAddress
+      properties:
+        launchTime:
+          type: string
+        instanceId:
+          type: string
+        publicIpAddress:
+          type: string
+        instanceType:
+          type: string
+        state:
+          $ref: '#/components/schemas/InstanceState'
+        privateIpAddress:
+          type: string
+      required:
+      - instanceId
+      - instanceType
+      - launchTime
+      - privateIpAddress
+      - state
+      type: object
+    Ec2AmiInfo:
+      example:
+        amiName: amiName
+        amiId: amiId
+        tags:
+        - value: value
+          key: key
+        - value: value
+          key: key
+        architecture: architecture
+      properties:
+        amiName:
+          description: EC2 AMI name
+          type: string
+        amiId:
+          description: EC2 AMI id
+          type: string
+        tags:
+          description: EC2 AMI Tags
+          items:
+            $ref: '#/components/schemas/Tag'
+          type: array
+        architecture:
+          description: EC2 AMI architecture
+          type: string
+      required:
+      - amiId
+      - amiName
+      - architecture
+      - tags
+      type: object
+    ImageBuildStatus:
+      enum:
+      - BUILD_IN_PROGRESS
+      - BUILD_FAILED
+      - BUILD_COMPLETE
+      - DELETE_IN_PROGRESS
+      - DELETE_FAILED
+      - DELETE_COMPLETE
+      type: string
+    ImageBuilderImageStatus:
+      enum:
+      - PENDING
+      - CREATING
+      - BUILDING
+      - TESTING
+      - DISTRIBUTING
+      - INTEGRATING
+      - AVAILABLE
+      - CANCELLED
+      - FAILED
+      - DEPRECATED
+      - DELETED
+      type: string
+    ImageInfoSummary:
+      example:
+        imageId: imageId
+        imageBuildStatus: null
+        cloudformationStackStatus: null
+        cloudformationStackArn: cloudformationStackArn
+        region: region
+        version: version
+      properties:
+        imageId:
+          description: Name of the image
+          maxLength: 60
+          minLength: 5
+          pattern: "^[a-zA-Z][a-zA-Z0-9-]+$"
+          type: string
+        imageBuildStatus:
+          $ref: '#/components/schemas/ImageBuildStatus'
+        cloudformationStackStatus:
+          $ref: '#/components/schemas/CloudFormationStatus'
+        cloudformationStackArn:
+          description: ARN of the main CloudFormation stack
+          type: string
+        region:
+          description: AWS region where the image is built
+          type: string
+        version:
+          description: ParallelCluster version used to build the image
+          pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+          type: string
+      required:
+      - cloudformationStackArn
+      - cloudformationStackStatus
+      - imageBuildStatus
+      - imageId
+      - region
+      - version
+      type: object
+    InstanceState:
+      enum:
+      - pending
+      - running
+      - shutting-down
+      - terminated
+      - stopping
+      - stopped
+      type: string
+    InternalServiceExceptionResponseContent:
+      description: This exception is thrown on an unhandled service error
+      properties:
+        message:
+          type: string
+      type: object
+    LimitExceededExceptionResponseContent:
+      description: The client is sending more than the allowed number of requests
+        per unit of time.
+      properties:
+        message:
+          type: string
+      type: object
+    ListClusterConfigurationsResponseContent:
+      example:
+        nextToken: nextToken
+        items:
+        - creationTime: creationTime
+          version: version
+        - creationTime: creationTime
+          version: version
+      properties:
+        nextToken:
+          type: string
+        items:
+          items:
+            $ref: '#/components/schemas/ClusterConfigurationSummary'
+          type: array
+      required:
+      - items
+      type: object
+    ListClustersResponseContent:
+      example:
+        nextToken: nextToken
+        items:
+        - cloudformationStackStatus: null
+          cloudformationStackArn: cloudformationStackArn
+          clusterId: clusterId
+          region: region
+          version: version
+          clusterStatus: null
+        - cloudformationStackStatus: null
+          cloudformationStackArn: cloudformationStackArn
+          clusterId: clusterId
+          region: region
+          version: version
+          clusterStatus: null
+      properties:
+        nextToken:
+          type: string
+        items:
+          items:
+            $ref: '#/components/schemas/ClusterInfoSummary'
+          type: array
+      required:
+      - items
+      type: object
+    ListImagesResponseContent:
+      example:
+        nextToken: nextToken
+        items:
+        - imageId: imageId
+          imageBuildStatus: null
+          cloudformationStackStatus: null
+          cloudformationStackArn: cloudformationStackArn
+          region: region
+          version: version
+        - imageId: imageId
+          imageBuildStatus: null
+          cloudformationStackStatus: null
+          cloudformationStackArn: cloudformationStackArn
+          region: region
+          version: version
+      properties:
+        nextToken:
+          type: string
+        items:
+          items:
+            $ref: '#/components/schemas/ImageInfoSummary'
+          type: array
+      required:
+      - items
+      type: object
+    ListOfficialImagesResponseContent:
+      example:
+        nextToken: nextToken
+        items:
+        - amiId: amiId
+          os: os
+          name: name
+          architecture: architecture
+        - amiId: amiId
+          os: os
+          name: name
+          architecture: architecture
+      properties:
+        nextToken:
+          type: string
+        items:
+          items:
+            $ref: '#/components/schemas/AmiInfo'
+          type: array
+      required:
+      - items
+      type: object
+    NotFoundExceptionResponseContent:
+      description: This exception is thrown when the requested entity is not found
+      properties:
+        message:
+          type: string
+      type: object
+    Tag:
+      example:
+        value: value
+        key: key
+      properties:
+        value:
+          description: Tag value
+          type: string
+        key:
+          description: Tag name
+          type: string
+      type: object
+    UnauthorizedClientErrorResponseContent:
+      description: This exception is thrown when the client is not authorized to perform
+        an action
+      properties:
+        message:
+          type: string
+      type: object
+    UpdateClusterBadRequestExceptionResponseContent:
+      description: This exception is thrown when a client calls the UpdateCluster
+        API with an invalid request. This includes an error due to invalid cluster
+        configuration and unsupported update.
+      properties:
+        configurationValidationErrors:
+          items:
+            $ref: '#/components/schemas/ConfigValidationMessage'
+          type: array
+        message:
+          type: string
+        updateValidationErrors:
+          items:
+            $ref: '#/components/schemas/UpdateError'
+          type: array
+      type: object
+    UpdateClusterRequestContent:
+      example:
+        clusterConfiguration: clusterConfiguration
+      properties:
+        clusterConfiguration:
+          description: Cluster configuration as a YAML document
+          format: byte
+          type: string
+      required:
+      - clusterConfiguration
+      type: object
+    UpdateClusterResponseContent:
+      example:
+        cluster:
+          cloudformationStackStatus: null
+          cloudformationStackArn: cloudformationStackArn
+          clusterId: clusterId
+          region: region
+          version: version
+          clusterStatus: null
+      properties:
+        cluster:
+          $ref: '#/components/schemas/ClusterInfoSummary'
+      required:
+      - cluster
+      type: object
+    UpdateComputeFleetStatusRequestContent:
+      example:
+        status: null
+      properties:
+        status:
+          $ref: '#/components/schemas/ComputeFleetStatusInput'
+      required:
+      - status
+      type: object
+    UpdateComputeFleetStatusResponseContent:
+      example:
+        status: null
+      properties:
+        status:
+          $ref: '#/components/schemas/ComputeFleetStatus'
+      required:
+      - status
+      type: object
+    UpdateError:
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
+      type: object
+    ValidationLevel:
+      enum:
+      - INFO
+      - WARNING
+      - ERROR
+      - CRITICAL
+      type: string
+  securitySchemes:
+    aws.auth.sigv4:
+      description: AWS Signature Version 4 authentication
+      in: header
+      name: Authorization
+      type: apiKey
+      x-amazon-apigateway-authtype: awsSigv4
+      x-apikeyInfoFunc: openapi_server.controllers.security_controller_.info_from_aws.auth.sigv4
