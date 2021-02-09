@@ -33,7 +33,7 @@ structure ClusterInfo {
     computeFleetStatus: ComputeFleetStatus,
     headnode: EC2Instance,
     @required
-    @documentation("Tags of the Image")
+    @documentation("Tags associated with the cluster")
     tags: Tags
 }
 

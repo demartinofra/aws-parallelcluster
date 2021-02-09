@@ -34,16 +34,6 @@
                         "schema": {
                             "$ref": "#/components/schemas/ClusterStatusFilteringOptions"
                         }
-                    },
-                    {
-                        "name": "x-parallelcluster-version",
-                        "in": "header",
-                        "description": "Forces a specific ParallelCluster version to be used when handling this request.",
-                        "schema": {
-                            "type": "string",
-                            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
-                            "description": "Forces a specific ParallelCluster version to be used when handling this request."
-                        }
                     }
                 ],
                 "responses": {
@@ -294,16 +284,6 @@
                             "description": "Retain cluster logs on delete. Defaults to True.",
                             "nullable": true
                         }
-                    },
-                    {
-                        "name": "x-parallelcluster-version",
-                        "in": "header",
-                        "description": "Forces a specific ParallelCluster version to be used when handling this request.",
-                        "schema": {
-                            "type": "string",
-                            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
-                            "description": "Forces a specific ParallelCluster version to be used when handling this request."
-                        }
                     }
                 ],
                 "responses": {
@@ -407,16 +387,6 @@
                         "schema": {
                             "type": "string",
                             "description": "AWS Region. Defaults to the region the API is deployed to."
-                        }
-                    },
-                    {
-                        "name": "x-parallelcluster-version",
-                        "in": "header",
-                        "description": "Forces a specific ParallelCluster version to be used when handling this request.",
-                        "schema": {
-                            "type": "string",
-                            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
-                            "description": "Forces a specific ParallelCluster version to be used when handling this request."
                         }
                     }
                 ],
@@ -541,16 +511,6 @@
                             "description": "Only perform request validation without creating any resource. It can be used to validate the cluster configuration and update requirements. Response code: 200",
                             "nullable": true
                         }
-                    },
-                    {
-                        "name": "x-parallelcluster-version",
-                        "in": "header",
-                        "description": "Forces a specific ParallelCluster version to be used when handling this request.",
-                        "schema": {
-                            "type": "string",
-                            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
-                            "description": "Forces a specific ParallelCluster version to be used when handling this request."
-                        }
                     }
                 ],
                 "responses": {
@@ -667,16 +627,6 @@
                             "type": "string",
                             "description": "AWS Region. Defaults to the region the API is deployed to."
                         }
-                    },
-                    {
-                        "name": "x-parallelcluster-version",
-                        "in": "header",
-                        "description": "Forces a specific ParallelCluster version to be used when handling this request.",
-                        "schema": {
-                            "type": "string",
-                            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
-                            "description": "Forces a specific ParallelCluster version to be used when handling this request."
-                        }
                     }
                 ],
                 "responses": {
@@ -791,16 +741,6 @@
                             "type": "string",
                             "description": "AWS Region. Defaults to the region the API is deployed to."
                         }
-                    },
-                    {
-                        "name": "x-parallelcluster-version",
-                        "in": "header",
-                        "description": "Forces a specific ParallelCluster version to be used when handling this request.",
-                        "schema": {
-                            "type": "string",
-                            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
-                            "description": "Forces a specific ParallelCluster version to be used when handling this request."
-                        }
                     }
                 ],
                 "responses": {
@@ -913,16 +853,6 @@
                         "in": "query",
                         "schema": {
                             "type": "string"
-                        }
-                    },
-                    {
-                        "name": "x-parallelcluster-version",
-                        "in": "header",
-                        "description": "Forces a specific ParallelCluster version to be used when handling this request.",
-                        "schema": {
-                            "type": "string",
-                            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
-                            "description": "Forces a specific ParallelCluster version to be used when handling this request."
                         }
                     }
                 ],
@@ -1040,16 +970,6 @@
                             "type": "string",
                             "description": "AWS Region. Defaults to the region the API is deployed to."
                         }
-                    },
-                    {
-                        "name": "x-parallelcluster-version",
-                        "in": "header",
-                        "description": "Forces a specific ParallelCluster version to be used when handling this request.",
-                        "schema": {
-                            "type": "string",
-                            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
-                            "description": "Forces a specific ParallelCluster version to be used when handling this request."
-                        }
                     }
                 ],
                 "responses": {
@@ -1155,16 +1075,6 @@
                         "schema": {
                             "type": "string",
                             "description": "AWS Region. Defaults to the region the API is deployed to."
-                        }
-                    },
-                    {
-                        "name": "x-parallelcluster-version",
-                        "in": "header",
-                        "description": "Forces a specific ParallelCluster version to be used when handling this request.",
-                        "schema": {
-                            "type": "string",
-                            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
-                            "description": "Forces a specific ParallelCluster version to be used when handling this request."
                         }
                     }
                 ],
@@ -1281,16 +1191,6 @@
                             "type": "boolean",
                             "description": "Force the deletion also when the cluster id is not found.",
                             "nullable": true
-                        }
-                    },
-                    {
-                        "name": "x-parallelcluster-version",
-                        "in": "header",
-                        "description": "Forces a specific ParallelCluster version to be used when handling this request.",
-                        "schema": {
-                            "type": "string",
-                            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
-                            "description": "Forces a specific ParallelCluster version to be used when handling this request."
                         }
                     }
                 ],
@@ -1410,16 +1310,6 @@
                         "schema": {
                             "type": "string"
                         }
-                    },
-                    {
-                        "name": "x-parallelcluster-version",
-                        "in": "header",
-                        "description": "Forces a specific ParallelCluster version to be used when handling this request.",
-                        "schema": {
-                            "type": "string",
-                            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
-                            "description": "Forces a specific ParallelCluster version to be used when handling this request."
-                        }
                     }
                 ],
                 "responses": {
@@ -1527,16 +1417,6 @@
                         "description": "Filter by image status. Initially only used to show deleted images.",
                         "schema": {
                             "$ref": "#/components/schemas/ImageStatusFilteringOptions"
-                        }
-                    },
-                    {
-                        "name": "x-parallelcluster-version",
-                        "in": "header",
-                        "description": "Forces a specific ParallelCluster version to be used when handling this request.",
-                        "schema": {
-                            "type": "string",
-                            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
-                            "description": "Forces a specific ParallelCluster version to be used when handling this request."
                         }
                     }
                 ],
@@ -1778,16 +1658,6 @@
                             "type": "string",
                             "description": "AWS Region. Defaults to the region the API is deployed to."
                         }
-                    },
-                    {
-                        "name": "x-parallelcluster-version",
-                        "in": "header",
-                        "description": "Forces a specific ParallelCluster version to be used when handling this request.",
-                        "schema": {
-                            "type": "string",
-                            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
-                            "description": "Forces a specific ParallelCluster version to be used when handling this request."
-                        }
                     }
                 ],
                 "responses": {
@@ -1891,16 +1761,6 @@
                         "schema": {
                             "type": "string",
                             "description": "AWS Region. Defaults to the region the API is deployed to."
-                        }
-                    },
-                    {
-                        "name": "x-parallelcluster-version",
-                        "in": "header",
-                        "description": "Forces a specific ParallelCluster version to be used when handling this request.",
-                        "schema": {
-                            "type": "string",
-                            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
-                            "description": "Forces a specific ParallelCluster version to be used when handling this request."
                         }
                     }
                 ],
@@ -2029,16 +1889,6 @@
                         "in": "query",
                         "schema": {
                             "type": "string"
-                        }
-                    },
-                    {
-                        "name": "x-parallelcluster-version",
-                        "in": "header",
-                        "description": "Forces a specific ParallelCluster version to be used when handling this request.",
-                        "schema": {
-                            "type": "string",
-                            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
-                            "description": "Forces a specific ParallelCluster version to be used when handling this request."
                         }
                     }
                 ],
@@ -2591,7 +2441,7 @@
                         "items": {
                             "$ref": "#/components/schemas/Tag"
                         },
-                        "description": "Tags of the Image"
+                        "description": "Tags associated with the cluster"
                     }
                 },
                 "required": [
