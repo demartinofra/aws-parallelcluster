@@ -25,9 +25,9 @@ structure ListImagesInput {
     @httpQuery("filterByStatus")
     @documentation("Filter by image status. Initially only used to show deleted images.")
     filterByStatus: ImageStatusFilteringOptions,
-    @httpHeader("x-parallelcluster-version")
-    @documentation("Forces a specific ParallelCluster version to be used when handling this request.")
-    forceVersion: Version,
+//     @httpHeader("x-parallelcluster-version")
+//     @documentation("Forces a specific ParallelCluster version to be used when handling this request.")
+//     forceVersion: Version,
 }
 
 structure ListImagesOutput {

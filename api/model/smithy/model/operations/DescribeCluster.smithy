@@ -22,7 +22,7 @@ structure DescribeClusterInput {
     clusterId: ClusterId,
     @httpQuery("region")
     region: Region,
-    @httpHeader("x-parallelcluster-version")
-    @documentation("Forces a specific ParallelCluster version to be used when handling this request.")
-    forceVersion: Version,
+//     @httpHeader("x-parallelcluster-version")
+//     @documentation("Forces a specific ParallelCluster version to be used when handling this request.")
+//     forceVersion: Version,
 }

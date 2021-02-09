@@ -25,9 +25,9 @@ structure DeleteClusterInstancesInput {
     @httpQuery("force")
     @documentation("Force the deletion also when the cluster id is not found.")
     force: Boolean,
-    @httpHeader("x-parallelcluster-version")
-    @documentation("Forces a specific ParallelCluster version to be used when handling this request.")
-    forceVersion: Version,
+//     @httpHeader("x-parallelcluster-version")
+//     @documentation("Forces a specific ParallelCluster version to be used when handling this request.")
+//     forceVersion: Version,
 }
 
 structure DeleteClusterInstancesOutput {

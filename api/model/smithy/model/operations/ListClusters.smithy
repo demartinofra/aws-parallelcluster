@@ -25,9 +25,9 @@ structure ListClustersInput {
     @httpQuery("filterByStatus")
     @documentation("Filter by cluster status. Initially only used to show deleted clusters.")
     filterByStatus: ClusterStatusFilteringOptions,
-    @httpHeader("x-parallelcluster-version")
-    @documentation("Forces a specific ParallelCluster version to be used when handling this request.")
-    forceVersion: Version,
+//     @httpHeader("x-parallelcluster-version")
+//     @documentation("Forces a specific ParallelCluster version to be used when handling this request.")
+//     forceVersion: Version,
 }
 
 structure ListClustersOutput {
