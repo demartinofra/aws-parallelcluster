@@ -22,7 +22,6 @@ structure DescribeClusterInstancesInput {
     @required
     clusterId: ClusterId,
     @httpQuery("region")
-    @required
     region: Region,
     @httpQuery("nextToken")
     nextToken: String,

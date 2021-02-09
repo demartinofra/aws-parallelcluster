@@ -21,7 +21,6 @@ structure ListOfficialImagesInput {
     @documentation("ParallelCluster version to retrieve AMIs for.")
     version: Version,
     @httpQuery("region")
-    @required
     region: Region,
     @httpQuery("os")
     @documentation("Filter by OS distribution")

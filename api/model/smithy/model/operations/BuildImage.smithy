@@ -34,7 +34,6 @@ structure BuildImageInput {
 
     @required
     name: ImageId,
-    @required
     region: Region,
     @required
     imageConfiguration: ImageConfigurationData,

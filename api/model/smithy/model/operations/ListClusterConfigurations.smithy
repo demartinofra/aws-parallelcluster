@@ -22,8 +22,6 @@ structure ListClusterConfigurationsInput {
     @required
     clusterId: ClusterId,
     @httpQuery("region")
-    @documentation("List clusters deployed to a given AWS Region")
-    @required
     region: Region,
     @httpQuery("nextToken")
     nextToken: String,

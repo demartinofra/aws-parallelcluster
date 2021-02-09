@@ -34,7 +34,6 @@ structure CreateClusterInput {
 
     @required
     name: ClusterId,
-    @required
     region: Region,
     @required
     clusterConfiguration: ClusterConfigurationData,

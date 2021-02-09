@@ -14,12 +14,11 @@
                     {
                         "name": "region",
                         "in": "query",
-                        "description": "List clusters deployed to a given AWS Region",
+                        "description": "List clusters deployed to a given AWS Region. Defaults to the AWS region the API is deployed to.",
                         "schema": {
                             "type": "string",
-                            "description": "List clusters deployed to a given AWS Region"
-                        },
-                        "required": true
+                            "description": "List clusters deployed to a given AWS Region. Defaults to the AWS region the API is deployed to."
+                        }
                     },
                     {
                         "name": "nextToken",
@@ -29,13 +28,11 @@
                         }
                     },
                     {
-                        "name": "showDeleted",
+                        "name": "filterByStatus",
                         "in": "query",
-                        "description": "List deleted clusters.",
+                        "description": "Filter by cluster status. Initially only used to show deleted clusters.",
                         "schema": {
-                            "type": "boolean",
-                            "description": "List deleted clusters.",
-                            "nullable": true
+                            "$ref": "#/components/schemas/ClusterStatusFilteringOptions"
                         }
                     },
                     {
@@ -282,12 +279,11 @@
                     {
                         "name": "region",
                         "in": "query",
-                        "description": "AWS Region",
+                        "description": "AWS Region. Defaults to the region the API is deployed to.",
                         "schema": {
                             "type": "string",
-                            "description": "AWS Region"
-                        },
-                        "required": true
+                            "description": "AWS Region. Defaults to the region the API is deployed to."
+                        }
                     },
                     {
                         "name": "retainLogs",
@@ -407,12 +403,11 @@
                     {
                         "name": "region",
                         "in": "query",
-                        "description": "AWS Region",
+                        "description": "AWS Region. Defaults to the region the API is deployed to.",
                         "schema": {
                             "type": "string",
-                            "description": "AWS Region"
-                        },
-                        "required": true
+                            "description": "AWS Region. Defaults to the region the API is deployed to."
+                        }
                     },
                     {
                         "name": "x-parallelcluster-version",
@@ -531,12 +526,11 @@
                     {
                         "name": "region",
                         "in": "query",
-                        "description": "AWS Region",
+                        "description": "AWS Region. Defaults to the region the API is deployed to.",
                         "schema": {
                             "type": "string",
-                            "description": "AWS Region"
-                        },
-                        "required": true
+                            "description": "AWS Region. Defaults to the region the API is deployed to."
+                        }
                     },
                     {
                         "name": "dryrun",
@@ -668,12 +662,11 @@
                     {
                         "name": "region",
                         "in": "query",
-                        "description": "AWS Region",
+                        "description": "AWS Region. Defaults to the region the API is deployed to.",
                         "schema": {
                             "type": "string",
-                            "description": "AWS Region"
-                        },
-                        "required": true
+                            "description": "AWS Region. Defaults to the region the API is deployed to."
+                        }
                     },
                     {
                         "name": "x-parallelcluster-version",
@@ -793,12 +786,11 @@
                     {
                         "name": "region",
                         "in": "query",
-                        "description": "AWS Region",
+                        "description": "AWS Region. Defaults to the region the API is deployed to.",
                         "schema": {
                             "type": "string",
-                            "description": "AWS Region"
-                        },
-                        "required": true
+                            "description": "AWS Region. Defaults to the region the API is deployed to."
+                        }
                     },
                     {
                         "name": "x-parallelcluster-version",
@@ -910,12 +902,11 @@
                     {
                         "name": "region",
                         "in": "query",
-                        "description": "List clusters deployed to a given AWS Region",
+                        "description": "AWS Region. Defaults to the region the API is deployed to.",
                         "schema": {
                             "type": "string",
-                            "description": "List clusters deployed to a given AWS Region"
-                        },
-                        "required": true
+                            "description": "AWS Region. Defaults to the region the API is deployed to."
+                        }
                     },
                     {
                         "name": "nextToken",
@@ -1044,12 +1035,11 @@
                     {
                         "name": "region",
                         "in": "query",
-                        "description": "AWS Region",
+                        "description": "AWS Region. Defaults to the region the API is deployed to.",
                         "schema": {
                             "type": "string",
-                            "description": "AWS Region"
-                        },
-                        "required": true
+                            "description": "AWS Region. Defaults to the region the API is deployed to."
+                        }
                     },
                     {
                         "name": "x-parallelcluster-version",
@@ -1161,12 +1151,11 @@
                     {
                         "name": "region",
                         "in": "query",
-                        "description": "AWS Region",
+                        "description": "AWS Region. Defaults to the region the API is deployed to.",
                         "schema": {
                             "type": "string",
-                            "description": "AWS Region"
-                        },
-                        "required": true
+                            "description": "AWS Region. Defaults to the region the API is deployed to."
+                        }
                     },
                     {
                         "name": "x-parallelcluster-version",
@@ -1278,12 +1267,11 @@
                     {
                         "name": "region",
                         "in": "query",
-                        "description": "AWS Region",
+                        "description": "AWS Region. Defaults to the region the API is deployed to.",
                         "schema": {
                             "type": "string",
-                            "description": "AWS Region"
-                        },
-                        "required": true
+                            "description": "AWS Region. Defaults to the region the API is deployed to."
+                        }
                     },
                     {
                         "name": "force",
@@ -1396,12 +1384,11 @@
                     {
                         "name": "region",
                         "in": "query",
-                        "description": "AWS Region",
+                        "description": "AWS Region. Defaults to the region the API is deployed to.",
                         "schema": {
                             "type": "string",
-                            "description": "AWS Region"
-                        },
-                        "required": true
+                            "description": "AWS Region. Defaults to the region the API is deployed to."
+                        }
                     },
                     {
                         "name": "nextToken",
@@ -1521,12 +1508,11 @@
                     {
                         "name": "region",
                         "in": "query",
-                        "description": "List Images built into a given AWS Region",
+                        "description": "List Images built into a given AWS Region. Defaults to the AWS region the API is deployed to.",
                         "schema": {
                             "type": "string",
-                            "description": "List Images built into a given AWS Region"
-                        },
-                        "required": true
+                            "description": "List Images built into a given AWS Region. Defaults to the AWS region the API is deployed to."
+                        }
                     },
                     {
                         "name": "nextToken",
@@ -1536,13 +1522,11 @@
                         }
                     },
                     {
-                        "name": "showDeleted",
+                        "name": "filterByStatus",
                         "in": "query",
-                        "description": "List deleted images.",
+                        "description": "Filter by image status. Initially only used to show deleted images.",
                         "schema": {
-                            "type": "boolean",
-                            "description": "List deleted images.",
-                            "nullable": true
+                            "$ref": "#/components/schemas/ImageStatusFilteringOptions"
                         }
                     },
                     {
@@ -1789,12 +1773,11 @@
                     {
                         "name": "region",
                         "in": "query",
-                        "description": "AWS Region",
+                        "description": "AWS Region. Defaults to the region the API is deployed to.",
                         "schema": {
                             "type": "string",
-                            "description": "AWS Region"
-                        },
-                        "required": true
+                            "description": "AWS Region. Defaults to the region the API is deployed to."
+                        }
                     },
                     {
                         "name": "x-parallelcluster-version",
@@ -1904,12 +1887,11 @@
                     {
                         "name": "region",
                         "in": "query",
-                        "description": "AWS Region",
+                        "description": "AWS Region. Defaults to the region the API is deployed to.",
                         "schema": {
                             "type": "string",
-                            "description": "AWS Region"
-                        },
-                        "required": true
+                            "description": "AWS Region. Defaults to the region the API is deployed to."
+                        }
                     },
                     {
                         "name": "x-parallelcluster-version",
@@ -2018,12 +2000,11 @@
                     {
                         "name": "region",
                         "in": "query",
-                        "description": "AWS Region",
+                        "description": "AWS Region. Defaults to the region the API is deployed to.",
                         "schema": {
                             "type": "string",
-                            "description": "AWS Region"
-                        },
-                        "required": true
+                            "description": "AWS Region. Defaults to the region the API is deployed to."
+                        }
                     },
                     {
                         "name": "os",
@@ -2268,13 +2249,12 @@
                     },
                     "region": {
                         "type": "string",
-                        "description": "AWS Region"
+                        "description": "AWS Region. Defaults to the region the API is deployed to."
                     }
                 },
                 "required": [
                     "imageConfiguration",
-                    "name",
-                    "region"
+                    "name"
                 ]
             },
             "BuildImageResponseContent": {
@@ -2397,6 +2377,12 @@
                     "DELETE_COMPLETE"
                 ]
             },
+            "ClusterStatusFilteringOptions": {
+                "type": "string",
+                "enum": [
+                    "DELETE_COMPLETE"
+                ]
+            },
             "ComputeFleetStatus": {
                 "type": "string",
                 "enum": [
@@ -2475,7 +2461,7 @@
                     },
                     "region": {
                         "type": "string",
-                        "description": "AWS Region"
+                        "description": "AWS Region. Defaults to the region the API is deployed to."
                     },
                     "clusterConfiguration": {
                         "type": "string",
@@ -2485,8 +2471,7 @@
                 },
                 "required": [
                     "clusterConfiguration",
-                    "name",
-                    "region"
+                    "name"
                 ]
             },
             "CreateClusterResponseContent": {
@@ -2860,6 +2845,12 @@
                     "imageId",
                     "region",
                     "version"
+                ]
+            },
+            "ImageStatusFilteringOptions": {
+                "type": "string",
+                "enum": [
+                    "DELETE_COMPLETE"
                 ]
             },
             "InstanceState": {

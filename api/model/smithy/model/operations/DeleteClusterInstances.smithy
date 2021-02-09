@@ -21,7 +21,6 @@ structure DeleteClusterInstancesInput {
     @required
     clusterId: ClusterId,
     @httpQuery("region")
-    @required
     region: Region,
     @httpQuery("force")
     @documentation("Force the deletion also when the cluster id is not found.")

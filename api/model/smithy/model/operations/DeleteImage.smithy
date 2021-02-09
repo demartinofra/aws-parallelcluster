@@ -22,7 +22,6 @@ structure DeleteImageInput {
     imageId: ImageId,
 
     @httpQuery("region")
-    @required
     region: Region,
 
     @httpHeader("x-parallelcluster-version")

@@ -21,7 +21,6 @@ structure UpdateClusterInput {
     clusterId: ClusterId,
 
     @httpQuery("region")
-    @required
     region: Region,
     @httpQuery("dryrun")
     @documentation("Only perform request validation without creating any resource. It can be used to validate the cluster configuration and update requirements. Response code: 200")

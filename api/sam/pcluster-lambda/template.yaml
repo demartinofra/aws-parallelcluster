@@ -8,34 +8,38 @@ Description: >
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
-    Timeout: 3
+    Timeout: 30
+    MemorySize: 256
 
 Resources:
-  HelloWorldFunction:
+  ParallelClusterFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      PackageType: Image
+      #PackageType: Image
+      CodeUri: src/
+      Handler: entrypoint.lambda_handler
+      Runtime: python3.8
       Events:
-        HelloWorld:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-          Properties:
-            Path: /hello
-            Method: get
-    Metadata:
-      Dockerfile: Dockerfile
-      DockerContext: ./src
-      DockerTag: python3.8-v1
+        ApiEvent:
+          Type: HttpApi
+    #Metadata:
+    #  Dockerfile: Dockerfile
+    #  DockerContext: ./src
+    #  DockerTag: python3.8-v1
+  ParallelClusterFunctionSSMParam:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /parallelcluster/api/apiname/versions/3.0.0/lambda
+      Value: !GetAtt ParallelClusterFunction.Arn
+      Type: String
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  HelloWorldApi:
-    Description: "API Gateway endpoint URL for Prod stage for Hello World function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
-  HelloWorldFunction:
-    Description: "Hello World Lambda Function ARN"
-    Value: !GetAtt HelloWorldFunction.Arn
-  HelloWorldFunctionIamRole:
-    Description: "Implicit IAM Role created for Hello World function"
-    Value: !GetAtt HelloWorldFunctionRole.Arn
+  ParallelClusterFunction:
+    Description: "ParallelCluster Lambda Function ARN"
+    Value: !GetAtt ParallelClusterFunction.Arn
+  ParallelClusterFunctionIamRole:
+    Description: "Implicit IAM Role created for ParallelCluster function"
+    Value: !GetAtt ParallelClusterFunctionRole.Arn

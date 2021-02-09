@@ -25,7 +25,6 @@ structure DescribeClusterConfigurationInput {
     @documentation("This can be either the version of the config to retrieve or the 'latest' keyword to fetch the latest configuration version.")
     configVersion: String,
     @httpQuery("region")
-    @required
     region: Region,
     @httpHeader("x-parallelcluster-version")
     @documentation("Forces a specific ParallelCluster version to be used when handling this request.")

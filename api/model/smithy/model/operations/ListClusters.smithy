@@ -18,14 +18,13 @@ operation ListClusters {
 
 structure ListClustersInput {
     @httpQuery("region")
-    @documentation("List clusters deployed to a given AWS Region")
-    @required
+    @documentation("List clusters deployed to a given AWS Region. Defaults to the AWS region the API is deployed to.")
     region: Region,
     @httpQuery("nextToken")
     nextToken: String,
-    @httpQuery("showDeleted")
-    @documentation("List deleted clusters.")
-    showDeleted: Boolean,
+    @httpQuery("filterByStatus")
+    @documentation("Filter by cluster status. Initially only used to show deleted clusters.")
+    filterByStatus: ClusterStatusFilteringOptions,
     @httpHeader("x-parallelcluster-version")
     @documentation("Forces a specific ParallelCluster version to be used when handling this request.")
     forceVersion: Version,
@@ -41,3 +40,8 @@ structure ListClustersOutput {
 list ClusterSummaries {
     member: ClusterInfoSummary
 }
+
+@enum([
+    {name: "DELETE_COMPLETE", value: "DELETE_COMPLETE"},
+])
+string ClusterStatusFilteringOptions

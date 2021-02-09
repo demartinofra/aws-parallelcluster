@@ -1,6 +1,6 @@
 namespace parallelcluster
 
-@documentation("AWS Region")
+@documentation("AWS Region. Defaults to the region the API is deployed to.")
 string Region
 
 @pattern("^[0-9]+\\.[0-9]+\\.[0-9]+$")

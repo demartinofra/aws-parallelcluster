@@ -21,7 +21,6 @@ structure DescribeImageInput {
     @required
     imageId: ImageId,
     @httpQuery("region")
-    @required
     region: Region,
     @httpHeader("x-parallelcluster-version")
     @documentation("Forces a specific ParallelCluster version to be used when handling this request.")

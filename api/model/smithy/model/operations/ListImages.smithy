@@ -18,14 +18,13 @@ operation ListImages {
 
 structure ListImagesInput {
     @httpQuery("region")
-    @documentation("List Images built into a given AWS Region")
-    @required
+    @documentation("List Images built into a given AWS Region. Defaults to the AWS region the API is deployed to.")
     region: Region,
     @httpQuery("nextToken")
     nextToken: String,
-    @httpQuery("showDeleted")
-    @documentation("List deleted images.")
-    showDeleted: Boolean,
+    @httpQuery("filterByStatus")
+    @documentation("Filter by image status. Initially only used to show deleted images.")
+    filterByStatus: ImageStatusFilteringOptions,
     @httpHeader("x-parallelcluster-version")
     @documentation("Forces a specific ParallelCluster version to be used when handling this request.")
     forceVersion: Version,
@@ -41,3 +40,8 @@ structure ListImagesOutput {
 list ImageInfoSummaries {
     member: ImageInfoSummary
 }
+
+@enum([
+    {name: "DELETE_COMPLETE", value: "DELETE_COMPLETE"},
+])
+string ImageStatusFilteringOptions

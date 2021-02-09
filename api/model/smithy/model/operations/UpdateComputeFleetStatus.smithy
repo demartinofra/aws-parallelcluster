@@ -21,7 +21,6 @@ structure UpdateComputeFleetStatusInput {
     clusterId: ClusterId,
 
     @httpQuery("region")
-    @required
     region: Region,
 
     @required

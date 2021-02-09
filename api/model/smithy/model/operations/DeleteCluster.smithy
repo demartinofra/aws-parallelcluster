@@ -22,7 +22,6 @@ structure DeleteClusterInput {
     clusterId: ClusterId,
 
     @httpQuery("region")
-    @required
     region: Region,
 
     @httpQuery("retainLogs")
