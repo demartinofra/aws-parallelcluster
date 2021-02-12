@@ -15,17 +15,17 @@ Resources:
   ParallelClusterFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      #PackageType: Image
-      CodeUri: src/
-      Handler: entrypoint.lambda_handler
-      Runtime: python3.8
+      PackageType: Image
+      #CodeUri: src/
+      #Handler: entrypoint.lambda_handler
+      #Runtime: python3.8
       Events:
         ApiEvent:
           Type: HttpApi
-    #Metadata:
-    #  Dockerfile: Dockerfile
-    #  DockerContext: ./src
-    #  DockerTag: python3.8-v1
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./src
+      DockerTag: pcluster-api
   ParallelClusterFunctionSSMParam:
     Type: AWS::SSM::Parameter
     Properties:

@@ -11,10 +11,3 @@ resource CustomImage {
     read: DescribeImage,
     delete: DeleteImage,
 }
-
-// resource ImageConfiguration {
-//     identifiers: {
-//         imageId: ImageId,
-//     },
-//     read: DescribeImageConfiguration,
-// }

@@ -12,36 +12,32 @@ from openapi_server.models.update_compute_fleet_status_response_content import U
 from openapi_server import util
 
 
-def describe_compute_fleet_status(cluster_id, region, x_parallelcluster_version=None):  # noqa: E501
+def describe_compute_fleet_status(cluster_id, region=None):  # noqa: E501
     """describe_compute_fleet_status
 
     Describe the status of the compute fleet # noqa: E501
 
     :param cluster_id: Name of the cluster
     :type cluster_id: str
-    :param region: AWS Region
+    :param region: AWS Region. Defaults to the region the API is deployed to.
     :type region: str
-    :param x_parallelcluster_version: Forces a specific ParallelCluster version to be used when handling this request.
-    :type x_parallelcluster_version: str
 
     :rtype: DescribeComputeFleetStatusResponseContent
     """
     return 'do some magic!'
 
 
-def update_compute_fleet_status(cluster_id, region, update_compute_fleet_status_request_content, x_parallelcluster_version=None):  # noqa: E501
+def update_compute_fleet_status(cluster_id, update_compute_fleet_status_request_content, region=None):  # noqa: E501
     """update_compute_fleet_status
 
     Update the status of the cluster compute fleet. # noqa: E501
 
     :param cluster_id: Name of the cluster
     :type cluster_id: str
-    :param region: AWS Region
-    :type region: str
     :param update_compute_fleet_status_request_content: 
     :type update_compute_fleet_status_request_content: dict | bytes
-    :param x_parallelcluster_version: Forces a specific ParallelCluster version to be used when handling this request.
-    :type x_parallelcluster_version: str
+    :param region: AWS Region. Defaults to the region the API is deployed to.
+    :type region: str
 
     :rtype: UpdateComputeFleetStatusResponseContent
     """

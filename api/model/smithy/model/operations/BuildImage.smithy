@@ -1,7 +1,7 @@
 namespace parallelcluster
 
 @http(method: "POST", uri: "/images/custom", code: 202)
-@tags(["Image CRUD"])
+@tags(["Image Operations"])
 @documentation("Create a custom ParallelCluster image in a given region.")
 operation BuildImage {
     input: BuildImageInput,

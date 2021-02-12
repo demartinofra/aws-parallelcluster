@@ -19,6 +19,9 @@ structure ClusterInfo {
     @documentation("Status of the cluster. This corresponds to the CloudFormation stack status.")
     CloudFormationStatus: CloudFormationStatus,
     @required
+    @documentation("Status of the cluster infrastructure")
+    clusterStatus: ClusterStatus,
+    @required
     @documentation("ARN of the main CloudFormation stack")
     cloudformationStackArn: String,
     @required

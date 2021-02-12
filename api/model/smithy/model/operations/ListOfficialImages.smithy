@@ -2,7 +2,7 @@ namespace parallelcluster
 
 @readonly
 @http(method: "GET", uri: "/images/official", code: 200)
-@tags(["Images operations"])
+@tags(["Image Operations"])
 @documentation("Describe ParallelCluster AMIs.")
 @paginated
 operation ListOfficialImages {

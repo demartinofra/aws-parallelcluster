@@ -13,13 +13,15 @@ paths:
       description: Retrieve the list of existing clusters managed by the API.
       operationId: list_clusters
       parameters:
-      - description: List clusters deployed to a given AWS Region
+      - description: List clusters deployed to a given AWS Region. Defaults to the
+          AWS region the API is deployed to.
         explode: true
         in: query
         name: region
-        required: true
+        required: false
         schema:
-          description: List clusters deployed to a given AWS Region
+          description: List clusters deployed to a given AWS Region. Defaults to the
+            AWS region the API is deployed to.
           type: string
         style: form
       - explode: true
@@ -29,28 +31,15 @@ paths:
         schema:
           type: string
         style: form
-      - description: List deleted clusters.
+      - description: Filter by cluster status. Initially only used to show deleted
+          clusters.
         explode: true
         in: query
-        name: showDeleted
+        name: filterByStatus
         required: false
         schema:
-          description: List deleted clusters.
-          nullable: true
-          type: boolean
+          $ref: '#/components/schemas/ClusterStatusFilteringOptions'
         style: form
-      - description: Forces a specific ParallelCluster version to be used when handling
-          this request.
-        explode: false
-        in: header
-        name: x-parallelcluster-version
-        required: false
-        schema:
-          description: Forces a specific ParallelCluster version to be used when handling
-            this request.
-          pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
-          type: string
-        style: simple
       responses:
         "200":
           content:
@@ -229,13 +218,13 @@ paths:
           pattern: "^[a-zA-Z][a-zA-Z0-9-]+$"
           type: string
         style: simple
-      - description: AWS Region
+      - description: AWS Region. Defaults to the region the API is deployed to.
         explode: true
         in: query
         name: region
-        required: true
+        required: false
         schema:
-          description: AWS Region
+          description: AWS Region. Defaults to the region the API is deployed to.
           type: string
         style: form
       - description: Retain cluster logs on delete. Defaults to True.
@@ -248,18 +237,6 @@ paths:
           nullable: true
           type: boolean
         style: form
-      - description: Forces a specific ParallelCluster version to be used when handling
-          this request.
-        explode: false
-        in: header
-        name: x-parallelcluster-version
-        required: false
-        schema:
-          description: Forces a specific ParallelCluster version to be used when handling
-            this request.
-          pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
-          type: string
-        style: simple
       responses:
         "202":
           content:
@@ -324,27 +301,15 @@ paths:
           pattern: "^[a-zA-Z][a-zA-Z0-9-]+$"
           type: string
         style: simple
-      - description: AWS Region
+      - description: AWS Region. Defaults to the region the API is deployed to.
         explode: true
         in: query
         name: region
-        required: true
-        schema:
-          description: AWS Region
-          type: string
-        style: form
-      - description: Forces a specific ParallelCluster version to be used when handling
-          this request.
-        explode: false
-        in: header
-        name: x-parallelcluster-version
         required: false
         schema:
-          description: Forces a specific ParallelCluster version to be used when handling
-            this request.
-          pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+          description: AWS Region. Defaults to the region the API is deployed to.
           type: string
-        style: simple
+        style: form
       responses:
         "200":
           content:
@@ -408,13 +373,13 @@ paths:
           pattern: "^[a-zA-Z][a-zA-Z0-9-]+$"
           type: string
         style: simple
-      - description: AWS Region
+      - description: AWS Region. Defaults to the region the API is deployed to.
         explode: true
         in: query
         name: region
-        required: true
+        required: false
         schema:
-          description: AWS Region
+          description: AWS Region. Defaults to the region the API is deployed to.
           type: string
         style: form
       - description: "Only perform request validation without creating any resource.\
@@ -431,18 +396,6 @@ paths:
           nullable: true
           type: boolean
         style: form
-      - description: Forces a specific ParallelCluster version to be used when handling
-          this request.
-        explode: false
-        in: header
-        name: x-parallelcluster-version
-        required: false
-        schema:
-          description: Forces a specific ParallelCluster version to be used when handling
-            this request.
-          pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
-          type: string
-        style: simple
       requestBody:
         content:
           application/json:
@@ -520,27 +473,15 @@ paths:
           pattern: "^[a-zA-Z][a-zA-Z0-9-]+$"
           type: string
         style: simple
-      - description: AWS Region
+      - description: AWS Region. Defaults to the region the API is deployed to.
         explode: true
         in: query
         name: region
-        required: true
-        schema:
-          description: AWS Region
-          type: string
-        style: form
-      - description: Forces a specific ParallelCluster version to be used when handling
-          this request.
-        explode: false
-        in: header
-        name: x-parallelcluster-version
         required: false
         schema:
-          description: Forces a specific ParallelCluster version to be used when handling
-            this request.
-          pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+          description: AWS Region. Defaults to the region the API is deployed to.
           type: string
-        style: simple
+        style: form
       responses:
         "200":
           content:
@@ -605,27 +546,15 @@ paths:
           pattern: "^[a-zA-Z][a-zA-Z0-9-]+$"
           type: string
         style: simple
-      - description: AWS Region
+      - description: AWS Region. Defaults to the region the API is deployed to.
         explode: true
         in: query
         name: region
-        required: true
-        schema:
-          description: AWS Region
-          type: string
-        style: form
-      - description: Forces a specific ParallelCluster version to be used when handling
-          this request.
-        explode: false
-        in: header
-        name: x-parallelcluster-version
         required: false
         schema:
-          description: Forces a specific ParallelCluster version to be used when handling
-            this request.
-          pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+          description: AWS Region. Defaults to the region the API is deployed to.
           type: string
-        style: simple
+        style: form
       requestBody:
         content:
           application/json:
@@ -697,13 +626,13 @@ paths:
           pattern: "^[a-zA-Z][a-zA-Z0-9-]+$"
           type: string
         style: simple
-      - description: List clusters deployed to a given AWS Region
+      - description: AWS Region. Defaults to the region the API is deployed to.
         explode: true
         in: query
         name: region
-        required: true
+        required: false
         schema:
-          description: List clusters deployed to a given AWS Region
+          description: AWS Region. Defaults to the region the API is deployed to.
           type: string
         style: form
       - explode: true
@@ -713,18 +642,6 @@ paths:
         schema:
           type: string
         style: form
-      - description: Forces a specific ParallelCluster version to be used when handling
-          this request.
-        explode: false
-        in: header
-        name: x-parallelcluster-version
-        required: false
-        schema:
-          description: Forces a specific ParallelCluster version to be used when handling
-            this request.
-          pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
-          type: string
-        style: simple
       responses:
         "200":
           content:
@@ -801,27 +718,15 @@ paths:
             the 'latest' keyword to fetch the latest configuration version.
           type: string
         style: simple
-      - description: AWS Region
+      - description: AWS Region. Defaults to the region the API is deployed to.
         explode: true
         in: query
         name: region
-        required: true
-        schema:
-          description: AWS Region
-          type: string
-        style: form
-      - description: Forces a specific ParallelCluster version to be used when handling
-          this request.
-        explode: false
-        in: header
-        name: x-parallelcluster-version
         required: false
         schema:
-          description: Forces a specific ParallelCluster version to be used when handling
-            this request.
-          pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+          description: AWS Region. Defaults to the region the API is deployed to.
           type: string
-        style: simple
+        style: form
       responses:
         "200":
           content:
@@ -888,27 +793,15 @@ paths:
           pattern: "^[a-zA-Z][a-zA-Z0-9-]+$"
           type: string
         style: simple
-      - description: AWS Region
+      - description: AWS Region. Defaults to the region the API is deployed to.
         explode: true
         in: query
         name: region
-        required: true
-        schema:
-          description: AWS Region
-          type: string
-        style: form
-      - description: Forces a specific ParallelCluster version to be used when handling
-          this request.
-        explode: false
-        in: header
-        name: x-parallelcluster-version
         required: false
         schema:
-          description: Forces a specific ParallelCluster version to be used when handling
-            this request.
-          pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+          description: AWS Region. Defaults to the region the API is deployed to.
           type: string
-        style: simple
+        style: form
       responses:
         "200":
           content:
@@ -975,13 +868,13 @@ paths:
           pattern: "^[a-zA-Z][a-zA-Z0-9-]+$"
           type: string
         style: simple
-      - description: AWS Region
+      - description: AWS Region. Defaults to the region the API is deployed to.
         explode: true
         in: query
         name: region
-        required: true
+        required: false
         schema:
-          description: AWS Region
+          description: AWS Region. Defaults to the region the API is deployed to.
           type: string
         style: form
       - description: Force the deletion also when the cluster id is not found.
@@ -994,18 +887,6 @@ paths:
           nullable: true
           type: boolean
         style: form
-      - description: Forces a specific ParallelCluster version to be used when handling
-          this request.
-        explode: false
-        in: header
-        name: x-parallelcluster-version
-        required: false
-        schema:
-          description: Forces a specific ParallelCluster version to be used when handling
-            this request.
-          pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
-          type: string
-        style: simple
       responses:
         "202":
           description: DeleteClusterInstances 202 response
@@ -1066,13 +947,13 @@ paths:
           pattern: "^[a-zA-Z][a-zA-Z0-9-]+$"
           type: string
         style: simple
-      - description: AWS Region
+      - description: AWS Region. Defaults to the region the API is deployed to.
         explode: true
         in: query
         name: region
-        required: true
+        required: false
         schema:
-          description: AWS Region
+          description: AWS Region. Defaults to the region the API is deployed to.
           type: string
         style: form
       - explode: true
@@ -1096,18 +977,6 @@ paths:
         schema:
           type: string
         style: form
-      - description: Forces a specific ParallelCluster version to be used when handling
-          this request.
-        explode: false
-        in: header
-        name: x-parallelcluster-version
-        required: false
-        schema:
-          description: Forces a specific ParallelCluster version to be used when handling
-            this request.
-          pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
-          type: string
-        style: simple
       responses:
         "200":
           content:
@@ -1161,13 +1030,15 @@ paths:
       description: Retrieve the list of existing custom images managed by the API.
       operationId: list_images
       parameters:
-      - description: List Images built into a given AWS Region
+      - description: List Images built into a given AWS Region. Defaults to the AWS
+          region the API is deployed to.
         explode: true
         in: query
         name: region
-        required: true
+        required: false
         schema:
-          description: List Images built into a given AWS Region
+          description: List Images built into a given AWS Region. Defaults to the
+            AWS region the API is deployed to.
           type: string
         style: form
       - explode: true
@@ -1177,28 +1048,14 @@ paths:
         schema:
           type: string
         style: form
-      - description: List deleted images.
+      - description: Filter by image status. Initially only used to show deleted images.
         explode: true
         in: query
-        name: showDeleted
+        name: filterByStatus
         required: false
         schema:
-          description: List deleted images.
-          nullable: true
-          type: boolean
+          $ref: '#/components/schemas/ImageStatusFilteringOptions'
         style: form
-      - description: Forces a specific ParallelCluster version to be used when handling
-          this request.
-        explode: false
-        in: header
-        name: x-parallelcluster-version
-        required: false
-        schema:
-          description: Forces a specific ParallelCluster version to be used when handling
-            this request.
-          pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
-          type: string
-        style: simple
       responses:
         "200":
           content:
@@ -1376,27 +1233,15 @@ paths:
           pattern: "^[a-zA-Z][a-zA-Z0-9-]+$"
           type: string
         style: simple
-      - description: AWS Region
+      - description: AWS Region. Defaults to the region the API is deployed to.
         explode: true
         in: query
         name: region
-        required: true
-        schema:
-          description: AWS Region
-          type: string
-        style: form
-      - description: Forces a specific ParallelCluster version to be used when handling
-          this request.
-        explode: false
-        in: header
-        name: x-parallelcluster-version
         required: false
         schema:
-          description: Forces a specific ParallelCluster version to be used when handling
-            this request.
-          pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+          description: AWS Region. Defaults to the region the API is deployed to.
           type: string
-        style: simple
+        style: form
       responses:
         "202":
           content:
@@ -1461,27 +1306,15 @@ paths:
           pattern: "^[a-zA-Z][a-zA-Z0-9-]+$"
           type: string
         style: simple
-      - description: AWS Region
+      - description: AWS Region. Defaults to the region the API is deployed to.
         explode: true
         in: query
         name: region
-        required: true
-        schema:
-          description: AWS Region
-          type: string
-        style: form
-      - description: Forces a specific ParallelCluster version to be used when handling
-          this request.
-        explode: false
-        in: header
-        name: x-parallelcluster-version
         required: false
         schema:
-          description: Forces a specific ParallelCluster version to be used when handling
-            this request.
-          pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+          description: AWS Region. Defaults to the region the API is deployed to.
           type: string
-        style: simple
+        style: form
       responses:
         "200":
           content:
@@ -1545,13 +1378,13 @@ paths:
           pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
           type: string
         style: form
-      - description: AWS Region
+      - description: AWS Region. Defaults to the region the API is deployed to.
         explode: true
         in: query
         name: region
-        required: true
+        required: false
         schema:
-          description: AWS Region
+          description: AWS Region. Defaults to the region the API is deployed to.
           type: string
         style: form
       - description: Filter by OS distribution
@@ -1579,18 +1412,6 @@ paths:
         schema:
           type: string
         style: form
-      - description: Forces a specific ParallelCluster version to be used when handling
-          this request.
-        explode: false
-        in: header
-        name: x-parallelcluster-version
-        required: false
-        schema:
-          description: Forces a specific ParallelCluster version to be used when handling
-            this request.
-          pattern: "^[0-9]+\\.[0-9]+\\.[0-9]+$"
-          type: string
-        style: simple
       responses:
         "200":
           content:
@@ -1737,12 +1558,11 @@ components:
           pattern: "^[a-zA-Z][a-zA-Z0-9-]+$"
           type: string
         region:
-          description: AWS Region
+          description: AWS Region. Defaults to the region the API is deployed to.
           type: string
       required:
       - imageConfiguration
       - name
-      - region
       type: object
     BuildImageResponseContent:
       example:
@@ -1868,6 +1688,10 @@ components:
       - DELETE_FAILED
       - DELETE_COMPLETE
       type: string
+    ClusterStatusFilteringOptions:
+      enum:
+      - DELETE_COMPLETE
+      type: string
     ComputeFleetStatus:
       enum:
       - START_REQUESTED
@@ -1937,7 +1761,7 @@ components:
           pattern: "^[a-zA-Z][a-zA-Z0-9-]+$"
           type: string
         region:
-          description: AWS Region
+          description: AWS Region. Defaults to the region the API is deployed to.
           type: string
         clusterConfiguration:
           description: Cluster configuration as a YAML document
@@ -1946,7 +1770,6 @@ components:
       required:
       - clusterConfiguration
       - name
-      - region
       type: object
     CreateClusterResponseContent:
       example:
@@ -2105,7 +1928,7 @@ components:
         clusterConfiguration:
           $ref: '#/components/schemas/ClusterConfigurationStructure'
         tags:
-          description: Tags of the Image
+          description: Tags associated with the cluster
           items:
             $ref: '#/components/schemas/Tag'
           type: array
@@ -2358,6 +2181,10 @@ components:
       - region
       - version
       type: object
+    ImageStatusFilteringOptions:
+      enum:
+      - DELETE_COMPLETE
+      type: string
     InstanceState:
       enum:
       - pending

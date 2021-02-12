@@ -3,8 +3,8 @@ namespace parallelcluster
 @paginated
 @readonly
 @http(method: "GET", uri: "/clusters", code: 200)
-@tags(["Cluster CRUD"])
-@documentation("Retrieve the list of existing clusters managed by the API.")
+@tags(["Cluster Operations"])
+@documentation("Retrieve the list of existing clusters managed by the API. Deleted clusters are not listed by default.")
 operation ListClusters {
     input: ListClustersInput,
     output: ListClustersOutput,
@@ -22,9 +22,9 @@ structure ListClustersInput {
     region: Region,
     @httpQuery("nextToken")
     nextToken: String,
-    @httpQuery("filterByStatus")
-    @documentation("Filter by cluster status. Initially only used to show deleted clusters.")
-    filterByStatus: ClusterStatusFilteringOptions,
+    @httpQuery("clusterStatusFilter")
+    @documentation("Filter by cluster status.")
+    clusterStatusFilter: ClusterStatusFilteringOptions,
 //     @httpHeader("x-parallelcluster-version")
 //     @documentation("Forces a specific ParallelCluster version to be used when handling this request.")
 //     forceVersion: Version,
@@ -41,7 +41,6 @@ list ClusterSummaries {
     member: ClusterInfoSummary
 }
 
-@enum([
-    {name: "DELETE_COMPLETE", value: "DELETE_COMPLETE"},
-])
-string ClusterStatusFilteringOptions
+set ClusterStatusFilteringOptions {
+    member: ClusterStatus
+}

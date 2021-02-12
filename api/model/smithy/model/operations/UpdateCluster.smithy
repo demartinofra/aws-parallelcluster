@@ -1,7 +1,7 @@
 namespace parallelcluster
 
 @http(method: "PATCH", uri: "/clusters/{clusterId}", code: 202)
-@tags(["Cluster CRUD"])
+@tags(["Cluster Operations"])
 operation UpdateCluster {
     input: UpdateClusterInput,
     output: UpdateClusterOutput,

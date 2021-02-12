@@ -10,17 +10,15 @@ from openapi_server.models.unauthorized_client_error_response_content import Una
 from openapi_server import util
 
 
-def describe_dcv_session_manager_endpoint(cluster_id, region, x_parallelcluster_version=None):  # noqa: E501
+def describe_dcv_session_manager_endpoint(cluster_id, region=None):  # noqa: E501
     """describe_dcv_session_manager_endpoint
 
     Provides details on how to connect to the DCV session manager endpoint configured for the cluster. # noqa: E501
 
     :param cluster_id: Name of the cluster
     :type cluster_id: str
-    :param region: AWS Region
+    :param region: AWS Region. Defaults to the region the API is deployed to.
     :type region: str
-    :param x_parallelcluster_version: Forces a specific ParallelCluster version to be used when handling this request.
-    :type x_parallelcluster_version: str
 
     :rtype: DescribeDcvSessionManagerEndpointResponseContent
     """

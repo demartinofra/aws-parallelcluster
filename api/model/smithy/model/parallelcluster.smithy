@@ -24,6 +24,6 @@ use aws.api#service
 @documentation("ParallelCluster API")
 service ParallelCluster {
     version: "3.0.0",
-    resources: [Cluster, ClusterInstances, ClusterComputeFleetStatus, ClusterConfiguration, CustomImage, OfficialImage],
+    resources: [Cluster, ClusterInstances, ClusterComputeFleetStatus, CustomImage, OfficialImage],
     operations: [DescribeParallelClusterVersions]
 }

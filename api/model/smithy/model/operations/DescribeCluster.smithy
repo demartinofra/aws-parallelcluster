@@ -2,7 +2,7 @@ namespace parallelcluster
 
 @readonly
 @http(method: "GET", uri: "/clusters/{clusterId}", code: 200)
-@tags(["Cluster CRUD"])
+@tags(["Cluster Operations"])
 @documentation("Get detailed information about an existing cluster.")
 operation DescribeCluster {
     input: DescribeClusterInput,

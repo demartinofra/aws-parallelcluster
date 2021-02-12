@@ -3,8 +3,8 @@ namespace parallelcluster
 @paginated
 @readonly
 @http(method: "GET", uri: "/images/custom", code: 200)
-@tags(["Image CRUD"])
-@documentation("Retrieve the list of existing custom images managed by the API.")
+@tags(["Image Operations"])
+@documentation("Retrieve the list of existing custom images managed by the API. Deleted images are not showed by default")
 operation ListImages {
     input: ListImagesInput,
     output: ListImagesOutput,
@@ -22,9 +22,9 @@ structure ListImagesInput {
     region: Region,
     @httpQuery("nextToken")
     nextToken: String,
-    @httpQuery("filterByStatus")
-    @documentation("Filter by image status. Initially only used to show deleted images.")
-    filterByStatus: ImageStatusFilteringOptions,
+    @httpQuery("imageStatusFilter")
+    @documentation("Filter by image status.")
+    imageStatusFilter: ImageStatusFilteringOptions,
 //     @httpHeader("x-parallelcluster-version")
 //     @documentation("Forces a specific ParallelCluster version to be used when handling this request.")
 //     forceVersion: Version,
@@ -41,7 +41,6 @@ list ImageInfoSummaries {
     member: ImageInfoSummary
 }
 
-@enum([
-    {name: "DELETE_COMPLETE", value: "DELETE_COMPLETE"},
-])
-string ImageStatusFilteringOptions
+set ImageStatusFilteringOptions {
+    member: ImageBuildStatus
+}

@@ -2,7 +2,7 @@ namespace parallelcluster
 
 @readonly
 @http(method: "GET", uri: "/images/custom/{imageId}", code: 200)
-@tags(["Image CRUD"])
+@tags(["Image Operations"])
 @documentation("Get detailed information about an existing image.")
 operation DescribeImage {
     input: DescribeImageInput,

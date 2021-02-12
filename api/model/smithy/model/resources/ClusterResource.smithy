@@ -8,17 +8,8 @@ resource Cluster {
     delete: DeleteCluster,
     update: UpdateCluster,
     operations: [
-        DescribeDcvSessionManagerEndpoint
+        DescribeDcvSessionManagerEndpoint,
     ],
-}
-
-resource ClusterConfiguration {
-    identifiers: {
-        clusterId: ClusterId,
-        configVersion: String,
-    },
-    list: ListClusterConfigurations,
-    read: DescribeClusterConfiguration,
 }
 
 resource ClusterInstances {

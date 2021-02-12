@@ -8,6 +8,7 @@ from openapi_server.models.build_image_response_content import BuildImageRespons
 from openapi_server.models.conflict_exception_response_content import ConflictExceptionResponseContent  # noqa: E501
 from openapi_server.models.delete_image_response_content import DeleteImageResponseContent  # noqa: E501
 from openapi_server.models.describe_image_response_content import DescribeImageResponseContent  # noqa: E501
+from openapi_server.models.image_status_filtering_options import ImageStatusFilteringOptions  # noqa: E501
 from openapi_server.models.internal_service_exception_response_content import InternalServiceExceptionResponseContent  # noqa: E501
 from openapi_server.models.limit_exceeded_exception_response_content import LimitExceededExceptionResponseContent  # noqa: E501
 from openapi_server.models.list_images_response_content import ListImagesResponseContent  # noqa: E501
@@ -44,54 +45,50 @@ def build_image(build_image_request_content, version=None, suppress_validators=N
     return 'do some magic!'
 
 
-def delete_image(image_id, region, x_parallelcluster_version=None):  # noqa: E501
+def delete_image(image_id, region=None):  # noqa: E501
     """delete_image
 
     Initiate the deletion of an image. # noqa: E501
 
     :param image_id: Name of the image
     :type image_id: str
-    :param region: AWS Region
+    :param region: AWS Region. Defaults to the region the API is deployed to.
     :type region: str
-    :param x_parallelcluster_version: Forces a specific ParallelCluster version to be used when handling this request.
-    :type x_parallelcluster_version: str
 
     :rtype: DeleteImageResponseContent
     """
     return 'do some magic!'
 
 
-def describe_image(image_id, region, x_parallelcluster_version=None):  # noqa: E501
+def describe_image(image_id, region=None):  # noqa: E501
     """describe_image
 
     Get detailed information about an existing image. # noqa: E501
 
     :param image_id: Name of the image
     :type image_id: str
-    :param region: AWS Region
+    :param region: AWS Region. Defaults to the region the API is deployed to.
     :type region: str
-    :param x_parallelcluster_version: Forces a specific ParallelCluster version to be used when handling this request.
-    :type x_parallelcluster_version: str
 
     :rtype: DescribeImageResponseContent
     """
     return 'do some magic!'
 
 
-def list_images(region, next_token=None, show_deleted=None, x_parallelcluster_version=None):  # noqa: E501
+def list_images(region=None, next_token=None, filter_by_status=None):  # noqa: E501
     """list_images
 
     Retrieve the list of existing custom images managed by the API. # noqa: E501
 
-    :param region: List Images built into a given AWS Region
+    :param region: List Images built into a given AWS Region. Defaults to the AWS region the API is deployed to.
     :type region: str
     :param next_token: 
     :type next_token: str
-    :param show_deleted: List deleted images.
-    :type show_deleted: bool
-    :param x_parallelcluster_version: Forces a specific ParallelCluster version to be used when handling this request.
-    :type x_parallelcluster_version: str
+    :param filter_by_status: Filter by image status. Initially only used to show deleted images.
+    :type filter_by_status: dict | bytes
 
     :rtype: ListImagesResponseContent
     """
+    if connexion.request.is_json:
+        filter_by_status =  ImageStatusFilteringOptions.from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'

@@ -11,7 +11,7 @@ from openapi_server.models.unauthorized_client_error_response_content import Una
 from openapi_server import util
 
 
-def describe_cluster_configuration(cluster_id, config_version, region, x_parallelcluster_version=None):  # noqa: E501
+def describe_cluster_configuration(cluster_id, config_version, region=None):  # noqa: E501
     """describe_cluster_configuration
 
     Retrieve a specific cluster configuration version. # noqa: E501
@@ -20,29 +20,25 @@ def describe_cluster_configuration(cluster_id, config_version, region, x_paralle
     :type cluster_id: str
     :param config_version: This can be either the version of the config to retrieve or the &#39;latest&#39; keyword to fetch the latest configuration version.
     :type config_version: str
-    :param region: AWS Region
+    :param region: AWS Region. Defaults to the region the API is deployed to.
     :type region: str
-    :param x_parallelcluster_version: Forces a specific ParallelCluster version to be used when handling this request.
-    :type x_parallelcluster_version: str
 
     :rtype: DescribeClusterConfigurationResponseContent
     """
     return 'do some magic!'
 
 
-def list_cluster_configurations(cluster_id, region, next_token=None, x_parallelcluster_version=None):  # noqa: E501
+def list_cluster_configurations(cluster_id, region=None, next_token=None):  # noqa: E501
     """list_cluster_configurations
 
     Retrieve the history of cluster configurations for a given cluster # noqa: E501
 
     :param cluster_id: Name of the cluster
     :type cluster_id: str
-    :param region: List clusters deployed to a given AWS Region
+    :param region: AWS Region. Defaults to the region the API is deployed to.
     :type region: str
     :param next_token: 
     :type next_token: str
-    :param x_parallelcluster_version: Forces a specific ParallelCluster version to be used when handling this request.
-    :type x_parallelcluster_version: str
 
     :rtype: ListClusterConfigurationsResponseContent
     """

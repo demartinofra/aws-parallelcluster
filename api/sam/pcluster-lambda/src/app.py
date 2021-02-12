@@ -14,11 +14,9 @@ class ParallelClusterApi:
         self.app = app
 
     def start_server(self, port=8080):
-        self.app.run(port=port)
+        self.app.run(port=port, debug=True)
 
 
-if __name__ == '__main__':
-    ParallelClusterApi().start_server()
 # HTTP_METHODS = ['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'CONNECT', 'OPTIONS', 'TRACE', 'PATCH']
 # @app.app.route('/', defaults={'path': ''}, methods=HTTP_METHODS)
 # @app.app.route('/<path:path>', methods=HTTP_METHODS)
@@ -28,3 +26,7 @@ if __name__ == '__main__':
 #         "path": path,
 #     }
 #     return response
+
+
+if __name__ == '__main__':
+    ParallelClusterApi().start_server()

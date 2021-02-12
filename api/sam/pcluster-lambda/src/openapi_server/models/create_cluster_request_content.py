@@ -89,7 +89,7 @@ class CreateClusterRequestContent(Model):
     def region(self):
         """Gets the region of this CreateClusterRequestContent.
 
-        AWS Region  # noqa: E501
+        AWS Region. Defaults to the region the API is deployed to.  # noqa: E501
 
         :return: The region of this CreateClusterRequestContent.
         :rtype: str
@@ -100,13 +100,11 @@ class CreateClusterRequestContent(Model):
     def region(self, region):
         """Sets the region of this CreateClusterRequestContent.
 
-        AWS Region  # noqa: E501
+        AWS Region. Defaults to the region the API is deployed to.  # noqa: E501
 
         :param region: The region of this CreateClusterRequestContent.
         :type region: str
         """
-        if region is None:
-            raise ValueError("Invalid value for `region`, must not be `None`")  # noqa: E501
 
         self._region = region
 

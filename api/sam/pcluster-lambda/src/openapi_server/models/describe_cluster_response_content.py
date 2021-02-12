@@ -356,7 +356,7 @@ class DescribeClusterResponseContent(Model):
     def tags(self):
         """Gets the tags of this DescribeClusterResponseContent.
 
-        Tags of the Image  # noqa: E501
+        Tags associated with the cluster  # noqa: E501
 
         :return: The tags of this DescribeClusterResponseContent.
         :rtype: List[Tag]
@@ -367,7 +367,7 @@ class DescribeClusterResponseContent(Model):
     def tags(self, tags):
         """Sets the tags of this DescribeClusterResponseContent.
 
-        Tags of the Image  # noqa: E501
+        Tags associated with the cluster  # noqa: E501
 
         :param tags: The tags of this DescribeClusterResponseContent.
         :type tags: List[Tag]

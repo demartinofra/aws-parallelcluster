@@ -8,7 +8,7 @@
     "paths": {
         "/clusters": {
             "get": {
-                "description": "Retrieve the list of existing clusters managed by the API.",
+                "description": "Retrieve the list of existing clusters managed by the API. Deleted clusters are not listed by default.",
                 "operationId": "ListClusters",
                 "parameters": [
                     {
@@ -28,12 +28,19 @@
                         }
                     },
                     {
-                        "name": "filterByStatus",
+                        "name": "clusterStatusFilter",
                         "in": "query",
-                        "description": "Filter by cluster status. Initially only used to show deleted clusters.",
+                        "description": "Filter by cluster status.",
+                        "style": "form",
                         "schema": {
-                            "$ref": "#/components/schemas/ClusterStatusFilteringOptions"
-                        }
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/components/schemas/ClusterStatus"
+                            },
+                            "uniqueItems": true,
+                            "description": "Filter by cluster status."
+                        },
+                        "explode": true
                     }
                 ],
                 "responses": {
@@ -89,7 +96,7 @@
                     }
                 },
                 "tags": [
-                    "Cluster CRUD"
+                    "Cluster Operations"
                 ],
                 "x-amazon-apigateway-integration": {
                     "credentials": {
@@ -233,7 +240,7 @@
                     }
                 },
                 "tags": [
-                    "Cluster CRUD"
+                    "Cluster Operations"
                 ],
                 "x-amazon-apigateway-integration": {
                     "credentials": {
@@ -349,7 +356,7 @@
                     }
                 },
                 "tags": [
-                    "Cluster CRUD"
+                    "Cluster Operations"
                 ],
                 "x-amazon-apigateway-integration": {
                     "credentials": {
@@ -453,7 +460,7 @@
                     }
                 },
                 "tags": [
-                    "Cluster CRUD"
+                    "Cluster Operations"
                 ],
                 "x-amazon-apigateway-integration": {
                     "credentials": {
@@ -586,7 +593,7 @@
                     }
                 },
                 "tags": [
-                    "Cluster CRUD"
+                    "Cluster Operations"
                 ],
                 "x-amazon-apigateway-integration": {
                     "credentials": {
@@ -807,235 +814,6 @@
                 },
                 "tags": [
                     "Cluster ComputeFleet"
-                ],
-                "x-amazon-apigateway-integration": {
-                    "credentials": {
-                        "Fn::Sub": "${APIGatewayExecutionRole.Arn}"
-                    },
-                    "httpMethod": "POST",
-                    "payloadFormatVersion": "2.0",
-                    "type": "aws_proxy",
-                    "uri": {
-                        "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
-                    }
-                }
-            }
-        },
-        "/clusters/{clusterId}/configurations": {
-            "get": {
-                "description": "Retrieve the history of cluster configurations for a given cluster",
-                "operationId": "ListClusterConfigurations",
-                "parameters": [
-                    {
-                        "name": "clusterId",
-                        "in": "path",
-                        "description": "Name of the cluster",
-                        "schema": {
-                            "type": "string",
-                            "maxLength": 60,
-                            "minLength": 5,
-                            "pattern": "^[a-zA-Z][a-zA-Z0-9-]+$",
-                            "description": "Name of the cluster"
-                        },
-                        "required": true
-                    },
-                    {
-                        "name": "region",
-                        "in": "query",
-                        "description": "AWS Region. Defaults to the region the API is deployed to.",
-                        "schema": {
-                            "type": "string",
-                            "description": "AWS Region. Defaults to the region the API is deployed to."
-                        }
-                    },
-                    {
-                        "name": "nextToken",
-                        "in": "query",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "ListClusterConfigurations 200 response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ListClusterConfigurationsResponseContent"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "BadRequestException 400 response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/BadRequestExceptionResponseContent"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "UnauthorizedClientError 401 response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/UnauthorizedClientErrorResponseContent"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "NotFoundException 404 response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/NotFoundExceptionResponseContent"
-                                }
-                            }
-                        }
-                    },
-                    "429": {
-                        "description": "LimitExceededException 429 response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/LimitExceededExceptionResponseContent"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "InternalServiceException 500 response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/InternalServiceExceptionResponseContent"
-                                }
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "Cluster Configuration"
-                ],
-                "x-amazon-apigateway-integration": {
-                    "credentials": {
-                        "Fn::Sub": "${APIGatewayExecutionRole.Arn}"
-                    },
-                    "httpMethod": "POST",
-                    "payloadFormatVersion": "2.0",
-                    "type": "aws_proxy",
-                    "uri": {
-                        "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
-                    }
-                }
-            }
-        },
-        "/clusters/{clusterId}/configurations/{configVersion}": {
-            "get": {
-                "description": "Retrieve a specific cluster configuration version.",
-                "operationId": "DescribeClusterConfiguration",
-                "parameters": [
-                    {
-                        "name": "clusterId",
-                        "in": "path",
-                        "description": "Name of the cluster",
-                        "schema": {
-                            "type": "string",
-                            "maxLength": 60,
-                            "minLength": 5,
-                            "pattern": "^[a-zA-Z][a-zA-Z0-9-]+$",
-                            "description": "Name of the cluster"
-                        },
-                        "required": true
-                    },
-                    {
-                        "name": "configVersion",
-                        "in": "path",
-                        "description": "This can be either the version of the config to retrieve or the 'latest' keyword to fetch the latest configuration version.",
-                        "schema": {
-                            "type": "string",
-                            "description": "This can be either the version of the config to retrieve or the 'latest' keyword to fetch the latest configuration version."
-                        },
-                        "required": true
-                    },
-                    {
-                        "name": "region",
-                        "in": "query",
-                        "description": "AWS Region. Defaults to the region the API is deployed to.",
-                        "schema": {
-                            "type": "string",
-                            "description": "AWS Region. Defaults to the region the API is deployed to."
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "DescribeClusterConfiguration 200 response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/DescribeClusterConfigurationResponseContent"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "BadRequestException 400 response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/BadRequestExceptionResponseContent"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "UnauthorizedClientError 401 response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/UnauthorizedClientErrorResponseContent"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "NotFoundException 404 response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/NotFoundExceptionResponseContent"
-                                }
-                            }
-                        }
-                    },
-                    "429": {
-                        "description": "LimitExceededException 429 response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/LimitExceededExceptionResponseContent"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "InternalServiceException 500 response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/InternalServiceExceptionResponseContent"
-                                }
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "Cluster Configuration"
                 ],
                 "x-amazon-apigateway-integration": {
                     "credentials": {
@@ -1392,7 +1170,7 @@
         },
         "/images/custom": {
             "get": {
-                "description": "Retrieve the list of existing custom images managed by the API.",
+                "description": "Retrieve the list of existing custom images managed by the API. Deleted images are not showed by default",
                 "operationId": "ListImages",
                 "parameters": [
                     {
@@ -1412,12 +1190,19 @@
                         }
                     },
                     {
-                        "name": "filterByStatus",
+                        "name": "imageStatusFilter",
                         "in": "query",
-                        "description": "Filter by image status. Initially only used to show deleted images.",
+                        "description": "Filter by image status.",
+                        "style": "form",
                         "schema": {
-                            "$ref": "#/components/schemas/ImageStatusFilteringOptions"
-                        }
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/components/schemas/ImageBuildStatus"
+                            },
+                            "uniqueItems": true,
+                            "description": "Filter by image status."
+                        },
+                        "explode": true
                     }
                 ],
                 "responses": {
@@ -1473,7 +1258,7 @@
                     }
                 },
                 "tags": [
-                    "Image CRUD"
+                    "Image Operations"
                 ],
                 "x-amazon-apigateway-integration": {
                     "credentials": {
@@ -1617,7 +1402,7 @@
                     }
                 },
                 "tags": [
-                    "Image CRUD"
+                    "Image Operations"
                 ],
                 "x-amazon-apigateway-integration": {
                     "credentials": {
@@ -1723,7 +1508,7 @@
                     }
                 },
                 "tags": [
-                    "Image CRUD"
+                    "Image Operations"
                 ],
                 "x-amazon-apigateway-integration": {
                     "credentials": {
@@ -1827,7 +1612,7 @@
                     }
                 },
                 "tags": [
-                    "Image CRUD"
+                    "Image Operations"
                 ],
                 "x-amazon-apigateway-integration": {
                     "credentials": {
@@ -1945,7 +1730,7 @@
                     }
                 },
                 "tags": [
-                    "Images operations"
+                    "Image Operations"
                 ],
                 "x-amazon-apigateway-integration": {
                     "credentials": {
@@ -2163,17 +1948,6 @@
                     }
                 }
             },
-            "ClusterConfigurationSummary": {
-                "type": "object",
-                "properties": {
-                    "creationTime": {
-                        "type": "string"
-                    },
-                    "version": {
-                        "type": "string"
-                    }
-                }
-            },
             "ClusterInfoSummary": {
                 "type": "object",
                 "properties": {
@@ -2224,12 +1998,6 @@
                     "UPDATE_COMPLETE",
                     "DELETE_IN_PROGRESS",
                     "DELETE_FAILED",
-                    "DELETE_COMPLETE"
-                ]
-            },
-            "ClusterStatusFilteringOptions": {
-                "type": "string",
-                "enum": [
                     "DELETE_COMPLETE"
                 ]
             },
@@ -2365,17 +2133,6 @@
                     "image"
                 ]
             },
-            "DescribeClusterConfigurationResponseContent": {
-                "type": "object",
-                "properties": {
-                    "clusterConfiguration": {
-                        "$ref": "#/components/schemas/ClusterConfigurationStructure"
-                    }
-                },
-                "required": [
-                    "clusterConfiguration"
-                ]
-            },
             "DescribeClusterInstancesResponseContent": {
                 "type": "object",
                 "properties": {
@@ -2433,6 +2190,9 @@
                     "CloudFormationStatus": {
                         "$ref": "#/components/schemas/CloudFormationStatus"
                     },
+                    "clusterStatus": {
+                        "$ref": "#/components/schemas/ClusterStatus"
+                    },
                     "clusterConfiguration": {
                         "$ref": "#/components/schemas/ClusterConfigurationStructure"
                     },
@@ -2449,6 +2209,7 @@
                     "cloudformationStackArn",
                     "clusterConfiguration",
                     "clusterId",
+                    "clusterStatus",
                     "computeFleetStatus",
                     "creationTime",
                     "lastUpdatedTime",
@@ -2697,12 +2458,6 @@
                     "version"
                 ]
             },
-            "ImageStatusFilteringOptions": {
-                "type": "string",
-                "enum": [
-                    "DELETE_COMPLETE"
-                ]
-            },
             "InstanceState": {
                 "type": "string",
                 "enum": [
@@ -2731,23 +2486,6 @@
                         "type": "string"
                     }
                 }
-            },
-            "ListClusterConfigurationsResponseContent": {
-                "type": "object",
-                "properties": {
-                    "nextToken": {
-                        "type": "string"
-                    },
-                    "items": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/ClusterConfigurationSummary"
-                        }
-                    }
-                },
-                "required": [
-                    "items"
-                ]
             },
             "ListClustersResponseContent": {
                 "type": "object",
