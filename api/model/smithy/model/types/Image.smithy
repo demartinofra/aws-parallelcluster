@@ -53,6 +53,9 @@ structure Ec2AmiInfo {
     @required
     @documentation("EC2 AMI architecture")
     architecture: String,
+    @required
+    @documentation("EC2 AMI state")
+    state: Ec2AmiState
 }
 
 structure ImageInfoSummary {
@@ -109,3 +112,14 @@ string ImageBuildStatus
     {value: "DELETED"},
 ])
 string ImageBuilderImageStatus
+
+@enum([
+    {value: "pending"},
+    {value: "available"},
+    {value: "invalid"},
+    {value: "deregistered"},
+    {value: "transient"},
+    {value: "failed"},
+    {value: "error"},
+])
+string Ec2AmiState
