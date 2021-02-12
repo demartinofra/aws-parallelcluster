@@ -9,6 +9,7 @@ from six import BytesIO
 from openapi_server.models.bad_request_exception_response_content import BadRequestExceptionResponseContent  # noqa: E501
 from openapi_server.models.describe_compute_fleet_status_response_content import DescribeComputeFleetStatusResponseContent  # noqa: E501
 from openapi_server.models.internal_service_exception_response_content import InternalServiceExceptionResponseContent  # noqa: E501
+from openapi_server.models.limit_exceeded_exception_response_content import LimitExceededExceptionResponseContent  # noqa: E501
 from openapi_server.models.not_found_exception_response_content import NotFoundExceptionResponseContent  # noqa: E501
 from openapi_server.models.unauthorized_client_error_response_content import UnauthorizedClientErrorResponseContent  # noqa: E501
 from openapi_server.models.update_compute_fleet_status_request_content import UpdateComputeFleetStatusRequestContent  # noqa: E501
@@ -30,7 +31,7 @@ class TestClusterComputeFleetController(BaseTestCase):
             'aws.auth.sigv4': 'special-key',
         }
         response = self.client.open(
-            '/clusters/{cluster_id}/computefleet/status'.format(cluster_id='cluster_id_example'),
+            '/v3/clusters/{cluster_id}/computefleet/status'.format(cluster_id='cluster_id_example'),
             method='GET',
             headers=headers,
             query_string=query_string)
@@ -50,7 +51,7 @@ class TestClusterComputeFleetController(BaseTestCase):
             'aws.auth.sigv4': 'special-key',
         }
         response = self.client.open(
-            '/clusters/{cluster_id}/computefleet/status'.format(cluster_id='cluster_id_example'),
+            '/v3/clusters/{cluster_id}/computefleet/status'.format(cluster_id='cluster_id_example'),
             method='PATCH',
             headers=headers,
             data=json.dumps(update_compute_fleet_status_request_content),

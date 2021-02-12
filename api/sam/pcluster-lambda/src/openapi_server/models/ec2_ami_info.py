@@ -6,9 +6,11 @@ from datetime import date, datetime  # noqa: F401
 from typing import List, Dict  # noqa: F401
 
 from openapi_server.models.base_model_ import Model
+from openapi_server.models.ec2_ami_state import Ec2AmiState
 from openapi_server.models.tag import Tag
 from openapi_server import util
 
+from openapi_server.models.ec2_ami_state import Ec2AmiState  # noqa: E501
 from openapi_server.models.tag import Tag  # noqa: E501
 
 class Ec2AmiInfo(Model):
@@ -17,13 +19,15 @@ class Ec2AmiInfo(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, ami_name=None, ami_id=None, tags=None, architecture=None):  # noqa: E501
+    def __init__(self, ami_name=None, ami_id=None, state=None, tags=None, architecture=None):  # noqa: E501
         """Ec2AmiInfo - a model defined in OpenAPI
 
         :param ami_name: The ami_name of this Ec2AmiInfo.  # noqa: E501
         :type ami_name: str
         :param ami_id: The ami_id of this Ec2AmiInfo.  # noqa: E501
         :type ami_id: str
+        :param state: The state of this Ec2AmiInfo.  # noqa: E501
+        :type state: Ec2AmiState
         :param tags: The tags of this Ec2AmiInfo.  # noqa: E501
         :type tags: List[Tag]
         :param architecture: The architecture of this Ec2AmiInfo.  # noqa: E501
@@ -32,6 +36,7 @@ class Ec2AmiInfo(Model):
         self.openapi_types = {
             'ami_name': str,
             'ami_id': str,
+            'state': Ec2AmiState,
             'tags': List[Tag],
             'architecture': str
         }
@@ -39,12 +44,14 @@ class Ec2AmiInfo(Model):
         self.attribute_map = {
             'ami_name': 'amiName',
             'ami_id': 'amiId',
+            'state': 'state',
             'tags': 'tags',
             'architecture': 'architecture'
         }
 
         self._ami_name = ami_name
         self._ami_id = ami_id
+        self._state = state
         self._tags = tags
         self._architecture = architecture
 
@@ -108,6 +115,29 @@ class Ec2AmiInfo(Model):
             raise ValueError("Invalid value for `ami_id`, must not be `None`")  # noqa: E501
 
         self._ami_id = ami_id
+
+    @property
+    def state(self):
+        """Gets the state of this Ec2AmiInfo.
+
+
+        :return: The state of this Ec2AmiInfo.
+        :rtype: Ec2AmiState
+        """
+        return self._state
+
+    @state.setter
+    def state(self, state):
+        """Sets the state of this Ec2AmiInfo.
+
+
+        :param state: The state of this Ec2AmiInfo.
+        :type state: Ec2AmiState
+        """
+        if state is None:
+            raise ValueError("Invalid value for `state`, must not be `None`")  # noqa: E501
+
+        self._state = state
 
     @property
     def tags(self):

@@ -8,6 +8,7 @@ from typing import List, Dict  # noqa: F401
 from openapi_server.models.base_model_ import Model
 from openapi_server.models.cloud_formation_status import CloudFormationStatus
 from openapi_server.models.cluster_configuration_structure import ClusterConfigurationStructure
+from openapi_server.models.cluster_status import ClusterStatus
 from openapi_server.models.compute_fleet_status import ComputeFleetStatus
 from openapi_server.models.ec2_instance import EC2Instance
 from openapi_server.models.tag import Tag
@@ -16,6 +17,7 @@ from openapi_server import util
 
 from openapi_server.models.cloud_formation_status import CloudFormationStatus  # noqa: E501
 from openapi_server.models.cluster_configuration_structure import ClusterConfigurationStructure  # noqa: E501
+from openapi_server.models.cluster_status import ClusterStatus  # noqa: E501
 from openapi_server.models.compute_fleet_status import ComputeFleetStatus  # noqa: E501
 from openapi_server.models.ec2_instance import EC2Instance  # noqa: E501
 from openapi_server.models.tag import Tag  # noqa: E501
@@ -27,7 +29,7 @@ class DescribeClusterResponseContent(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, creation_time=None, compute_fleet_status=None, headnode=None, cloudformation_stack_arn=None, last_updated_time=None, cluster_id=None, region=None, version=None, cloud_formation_status=None, cluster_configuration=None, tags=None):  # noqa: E501
+    def __init__(self, creation_time=None, compute_fleet_status=None, headnode=None, cloudformation_stack_arn=None, last_updated_time=None, cluster_id=None, region=None, version=None, cloud_formation_status=None, cluster_status=None, cluster_configuration=None, tags=None):  # noqa: E501
         """DescribeClusterResponseContent - a model defined in OpenAPI
 
         :param creation_time: The creation_time of this DescribeClusterResponseContent.  # noqa: E501
@@ -48,6 +50,8 @@ class DescribeClusterResponseContent(Model):
         :type version: str
         :param cloud_formation_status: The cloud_formation_status of this DescribeClusterResponseContent.  # noqa: E501
         :type cloud_formation_status: CloudFormationStatus
+        :param cluster_status: The cluster_status of this DescribeClusterResponseContent.  # noqa: E501
+        :type cluster_status: ClusterStatus
         :param cluster_configuration: The cluster_configuration of this DescribeClusterResponseContent.  # noqa: E501
         :type cluster_configuration: ClusterConfigurationStructure
         :param tags: The tags of this DescribeClusterResponseContent.  # noqa: E501
@@ -63,6 +67,7 @@ class DescribeClusterResponseContent(Model):
             'region': str,
             'version': str,
             'cloud_formation_status': CloudFormationStatus,
+            'cluster_status': ClusterStatus,
             'cluster_configuration': ClusterConfigurationStructure,
             'tags': List[Tag]
         }
@@ -77,6 +82,7 @@ class DescribeClusterResponseContent(Model):
             'region': 'region',
             'version': 'version',
             'cloud_formation_status': 'CloudFormationStatus',
+            'cluster_status': 'clusterStatus',
             'cluster_configuration': 'clusterConfiguration',
             'tags': 'tags'
         }
@@ -90,6 +96,7 @@ class DescribeClusterResponseContent(Model):
         self._region = region
         self._version = version
         self._cloud_formation_status = cloud_formation_status
+        self._cluster_status = cluster_status
         self._cluster_configuration = cluster_configuration
         self._tags = tags
 
@@ -328,6 +335,29 @@ class DescribeClusterResponseContent(Model):
             raise ValueError("Invalid value for `cloud_formation_status`, must not be `None`")  # noqa: E501
 
         self._cloud_formation_status = cloud_formation_status
+
+    @property
+    def cluster_status(self):
+        """Gets the cluster_status of this DescribeClusterResponseContent.
+
+
+        :return: The cluster_status of this DescribeClusterResponseContent.
+        :rtype: ClusterStatus
+        """
+        return self._cluster_status
+
+    @cluster_status.setter
+    def cluster_status(self, cluster_status):
+        """Sets the cluster_status of this DescribeClusterResponseContent.
+
+
+        :param cluster_status: The cluster_status of this DescribeClusterResponseContent.
+        :type cluster_status: ClusterStatus
+        """
+        if cluster_status is None:
+            raise ValueError("Invalid value for `cluster_status`, must not be `None`")  # noqa: E501
+
+        self._cluster_status = cluster_status
 
     @property
     def cluster_configuration(self):

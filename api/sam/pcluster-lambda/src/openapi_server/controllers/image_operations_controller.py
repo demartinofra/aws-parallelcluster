@@ -8,17 +8,18 @@ from openapi_server.models.build_image_response_content import BuildImageRespons
 from openapi_server.models.conflict_exception_response_content import ConflictExceptionResponseContent  # noqa: E501
 from openapi_server.models.delete_image_response_content import DeleteImageResponseContent  # noqa: E501
 from openapi_server.models.describe_image_response_content import DescribeImageResponseContent  # noqa: E501
-from openapi_server.models.image_status_filtering_options import ImageStatusFilteringOptions  # noqa: E501
+from openapi_server.models.image_build_status import ImageBuildStatus  # noqa: E501
 from openapi_server.models.internal_service_exception_response_content import InternalServiceExceptionResponseContent  # noqa: E501
 from openapi_server.models.limit_exceeded_exception_response_content import LimitExceededExceptionResponseContent  # noqa: E501
 from openapi_server.models.list_images_response_content import ListImagesResponseContent  # noqa: E501
+from openapi_server.models.list_official_images_response_content import ListOfficialImagesResponseContent  # noqa: E501
 from openapi_server.models.not_found_exception_response_content import NotFoundExceptionResponseContent  # noqa: E501
 from openapi_server.models.unauthorized_client_error_response_content import UnauthorizedClientErrorResponseContent  # noqa: E501
 from openapi_server.models.validation_level import ValidationLevel  # noqa: E501
 from openapi_server import util
 
 
-def build_image(build_image_request_content, version=None, suppress_validators=None, validation_failure_level=None, dryrun=None, rollback_on_failure=None):  # noqa: E501
+def build_image(version=None, suppress_validators=None, validation_failure_level=None, dryrun=None, rollback_on_failure=None):  # noqa: E501
     """build_image
 
     Create a custom ParallelCluster image in a given region. # noqa: E501
@@ -75,20 +76,41 @@ def describe_image(image_id, region=None):  # noqa: E501
     return 'do some magic!'
 
 
-def list_images(region=None, next_token=None, filter_by_status=None):  # noqa: E501
+def list_images(region=None, next_token=None, image_status_filter=None):  # noqa: E501
     """list_images
 
-    Retrieve the list of existing custom images managed by the API. # noqa: E501
+    Retrieve the list of existing custom images managed by the API. Deleted images are not showed by default # noqa: E501
 
     :param region: List Images built into a given AWS Region. Defaults to the AWS region the API is deployed to.
     :type region: str
     :param next_token: 
     :type next_token: str
-    :param filter_by_status: Filter by image status. Initially only used to show deleted images.
-    :type filter_by_status: dict | bytes
+    :param image_status_filter: Filter by image status.
+    :type image_status_filter: list | bytes
 
     :rtype: ListImagesResponseContent
     """
     if connexion.request.is_json:
-        filter_by_status =  ImageStatusFilteringOptions.from_dict(connexion.request.get_json())  # noqa: E501
+        image_status_filter = [ImageBuildStatus.from_dict(d) for d in connexion.request.get_json()]  # noqa: E501
+    return 'do some magic!'
+
+
+def list_official_images(version=None, region=None, os=None, architecture=None, next_token=None):  # noqa: E501
+    """list_official_images
+
+    Describe ParallelCluster AMIs. # noqa: E501
+
+    :param version: ParallelCluster version to retrieve AMIs for.
+    :type version: str
+    :param region: AWS Region. Defaults to the region the API is deployed to.
+    :type region: str
+    :param os: Filter by OS distribution
+    :type os: str
+    :param architecture: Filter by architecture
+    :type architecture: str
+    :param next_token: 
+    :type next_token: str
+
+    :rtype: ListOfficialImagesResponseContent
+    """
     return 'do some magic!'

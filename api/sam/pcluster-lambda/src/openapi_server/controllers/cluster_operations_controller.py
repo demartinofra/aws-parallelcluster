@@ -2,7 +2,7 @@ import connexion
 import six
 
 from openapi_server.models.bad_request_exception_response_content import BadRequestExceptionResponseContent  # noqa: E501
-from openapi_server.models.cluster_status_filtering_options import ClusterStatusFilteringOptions  # noqa: E501
+from openapi_server.models.cluster_status import ClusterStatus  # noqa: E501
 from openapi_server.models.conflict_exception_response_content import ConflictExceptionResponseContent  # noqa: E501
 from openapi_server.models.create_cluster_bad_request_exception_response_content import CreateClusterBadRequestExceptionResponseContent  # noqa: E501
 from openapi_server.models.create_cluster_request_content import CreateClusterRequestContent  # noqa: E501
@@ -45,7 +45,7 @@ def create_cluster(version=None, suppress_validators=None, validation_failure_le
         create_cluster_request_content = CreateClusterRequestContent.from_dict(connexion.request.get_json())  # noqa: E501
     if connexion.request.is_json:
         validation_failure_level =  ValidationLevel.from_dict(connexion.request.get_json())  # noqa: E501
-    return create_cluster_request_content
+    return 'do some magic!'
 
 
 def delete_cluster(cluster_id, region=None, retain_logs=None):  # noqa: E501
@@ -80,26 +80,26 @@ def describe_cluster(cluster_id, region=None):  # noqa: E501
     return 'do some magic!'
 
 
-def list_clusters(region=None, next_token=None, filter_by_status=None):  # noqa: E501
+def list_clusters(region=None, next_token=None, cluster_status_filter=None):  # noqa: E501
     """list_clusters
 
-    Retrieve the list of existing clusters managed by the API. # noqa: E501
+    Retrieve the list of existing clusters managed by the API. Deleted clusters are not listed by default. # noqa: E501
 
     :param region: List clusters deployed to a given AWS Region. Defaults to the AWS region the API is deployed to.
     :type region: str
     :param next_token: 
     :type next_token: str
-    :param filter_by_status: Filter by cluster status. Initially only used to show deleted clusters.
-    :type filter_by_status: dict | bytes
+    :param cluster_status_filter: Filter by cluster status.
+    :type cluster_status_filter: list | bytes
 
     :rtype: ListClustersResponseContent
     """
     if connexion.request.is_json:
-        filter_by_status =  ClusterStatusFilteringOptions.from_dict(connexion.request.get_json())  # noqa: E501
+        cluster_status_filter = [ClusterStatus.from_dict(d) for d in connexion.request.get_json()]  # noqa: E501
     return 'do some magic!'
 
 
-def update_cluster(cluster_id, update_cluster_request_content, region=None, dryrun=None):  # noqa: E501
+def update_cluster(cluster_id, region=None, dryrun=None):  # noqa: E501
     """update_cluster
 
      # noqa: E501

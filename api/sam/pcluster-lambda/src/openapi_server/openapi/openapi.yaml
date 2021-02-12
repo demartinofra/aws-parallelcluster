@@ -4,13 +4,14 @@ info:
   title: ParallelCluster
   version: 3.0.0
 servers:
-- url: /v3
+- url: /
 {#security:#}
 {#- aws.auth.sigv4: []#}
 paths:
-  /clusters:
+  /v3/clusters:
     get:
-      description: Retrieve the list of existing clusters managed by the API.
+      description: Retrieve the list of existing clusters managed by the API. Deleted
+        clusters are not listed by default.
       operationId: list_clusters
       parameters:
       - description: List clusters deployed to a given AWS Region. Defaults to the
@@ -31,14 +32,17 @@ paths:
         schema:
           type: string
         style: form
-      - description: Filter by cluster status. Initially only used to show deleted
-          clusters.
+      - description: Filter by cluster status.
         explode: true
         in: query
-        name: filterByStatus
+        name: clusterStatusFilter
         required: false
         schema:
-          $ref: '#/components/schemas/ClusterStatusFilteringOptions'
+          description: Filter by cluster status.
+          items:
+            $ref: '#/components/schemas/ClusterStatus'
+          type: array
+          uniqueItems: true
         style: form
       responses:
         "200":
@@ -72,7 +76,7 @@ paths:
                 $ref: '#/components/schemas/InternalServiceExceptionResponseContent'
           description: InternalServiceException 500 response
       tags:
-      - Cluster CRUD
+      - Cluster Operations
       x-amazon-apigateway-integration:
         credentials:
           Fn::Sub: "${APIGatewayExecutionRole.Arn}"
@@ -80,8 +84,8 @@ paths:
         payloadFormatVersion: "2.0"
         type: aws_proxy
         uri:
-          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
-      x-openapi-router-controller: openapi_server.controllers.cluster_crud_controller
+          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ParallelClusterFunction.Arn}/invocations"
+      x-openapi-router-controller: openapi_server.controllers.cluster_operations_controller
     post:
       description: Create a ParallelCluster managed cluster in a given region.
       operationId: create_cluster
@@ -191,7 +195,7 @@ paths:
                 $ref: '#/components/schemas/InternalServiceExceptionResponseContent'
           description: InternalServiceException 500 response
       tags:
-      - Cluster CRUD
+      - Cluster Operations
       x-amazon-apigateway-integration:
         credentials:
           Fn::Sub: "${APIGatewayExecutionRole.Arn}"
@@ -199,9 +203,9 @@ paths:
         payloadFormatVersion: "2.0"
         type: aws_proxy
         uri:
-          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
-      x-openapi-router-controller: openapi_server.controllers.cluster_crud_controller
-  /clusters/{clusterId}:
+          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ParallelClusterFunction.Arn}/invocations"
+      x-openapi-router-controller: openapi_server.controllers.cluster_operations_controller
+  /v3/clusters/{clusterId}:
     delete:
       description: Initiate the deletion of a cluster.
       operationId: delete_cluster
@@ -275,7 +279,7 @@ paths:
                 $ref: '#/components/schemas/InternalServiceExceptionResponseContent'
           description: InternalServiceException 500 response
       tags:
-      - Cluster CRUD
+      - Cluster Operations
       x-amazon-apigateway-integration:
         credentials:
           Fn::Sub: "${APIGatewayExecutionRole.Arn}"
@@ -283,8 +287,8 @@ paths:
         payloadFormatVersion: "2.0"
         type: aws_proxy
         uri:
-          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
-      x-openapi-router-controller: openapi_server.controllers.cluster_crud_controller
+          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ParallelClusterFunction.Arn}/invocations"
+      x-openapi-router-controller: openapi_server.controllers.cluster_operations_controller
     get:
       description: Get detailed information about an existing cluster.
       operationId: describe_cluster
@@ -348,7 +352,7 @@ paths:
                 $ref: '#/components/schemas/InternalServiceExceptionResponseContent'
           description: InternalServiceException 500 response
       tags:
-      - Cluster CRUD
+      - Cluster Operations
       x-amazon-apigateway-integration:
         credentials:
           Fn::Sub: "${APIGatewayExecutionRole.Arn}"
@@ -356,8 +360,8 @@ paths:
         payloadFormatVersion: "2.0"
         type: aws_proxy
         uri:
-          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
-      x-openapi-router-controller: openapi_server.controllers.cluster_crud_controller
+          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ParallelClusterFunction.Arn}/invocations"
+      x-openapi-router-controller: openapi_server.controllers.cluster_operations_controller
     patch:
       operationId: update_cluster
       parameters:
@@ -446,7 +450,7 @@ paths:
                 $ref: '#/components/schemas/InternalServiceExceptionResponseContent'
           description: InternalServiceException 500 response
       tags:
-      - Cluster CRUD
+      - Cluster Operations
       x-amazon-apigateway-integration:
         credentials:
           Fn::Sub: "${APIGatewayExecutionRole.Arn}"
@@ -454,9 +458,9 @@ paths:
         payloadFormatVersion: "2.0"
         type: aws_proxy
         uri:
-          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
-      x-openapi-router-controller: openapi_server.controllers.cluster_crud_controller
-  /clusters/{clusterId}/computefleet/status:
+          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ParallelClusterFunction.Arn}/invocations"
+      x-openapi-router-controller: openapi_server.controllers.cluster_operations_controller
+  /v3/clusters/{clusterId}/computefleet/status:
     get:
       description: Describe the status of the compute fleet
       operationId: describe_compute_fleet_status
@@ -528,7 +532,7 @@ paths:
         payloadFormatVersion: "2.0"
         type: aws_proxy
         uri:
-          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
+          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ParallelClusterFunction.Arn}/invocations"
       x-openapi-router-controller: openapi_server.controllers.cluster_compute_fleet_controller
     patch:
       description: Update the status of the cluster compute fleet.
@@ -607,175 +611,9 @@ paths:
         payloadFormatVersion: "2.0"
         type: aws_proxy
         uri:
-          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
+          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ParallelClusterFunction.Arn}/invocations"
       x-openapi-router-controller: openapi_server.controllers.cluster_compute_fleet_controller
-  /clusters/{clusterId}/configurations:
-    get:
-      description: Retrieve the history of cluster configurations for a given cluster
-      operationId: list_cluster_configurations
-      parameters:
-      - description: Name of the cluster
-        explode: false
-        in: path
-        name: clusterId
-        required: true
-        schema:
-          description: Name of the cluster
-          maxLength: 60
-          minLength: 5
-          pattern: "^[a-zA-Z][a-zA-Z0-9-]+$"
-          type: string
-        style: simple
-      - description: AWS Region. Defaults to the region the API is deployed to.
-        explode: true
-        in: query
-        name: region
-        required: false
-        schema:
-          description: AWS Region. Defaults to the region the API is deployed to.
-          type: string
-        style: form
-      - explode: true
-        in: query
-        name: nextToken
-        required: false
-        schema:
-          type: string
-        style: form
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ListClusterConfigurationsResponseContent'
-          description: ListClusterConfigurations 200 response
-        "400":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BadRequestExceptionResponseContent'
-          description: BadRequestException 400 response
-        "401":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UnauthorizedClientErrorResponseContent'
-          description: UnauthorizedClientError 401 response
-        "404":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/NotFoundExceptionResponseContent'
-          description: NotFoundException 404 response
-        "429":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/LimitExceededExceptionResponseContent'
-          description: LimitExceededException 429 response
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/InternalServiceExceptionResponseContent'
-          description: InternalServiceException 500 response
-      tags:
-      - Cluster Configuration
-      x-amazon-apigateway-integration:
-        credentials:
-          Fn::Sub: "${APIGatewayExecutionRole.Arn}"
-        httpMethod: POST
-        payloadFormatVersion: "2.0"
-        type: aws_proxy
-        uri:
-          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
-      x-openapi-router-controller: openapi_server.controllers.cluster_configuration_controller
-  /clusters/{clusterId}/configurations/{configVersion}:
-    get:
-      description: Retrieve a specific cluster configuration version.
-      operationId: describe_cluster_configuration
-      parameters:
-      - description: Name of the cluster
-        explode: false
-        in: path
-        name: clusterId
-        required: true
-        schema:
-          description: Name of the cluster
-          maxLength: 60
-          minLength: 5
-          pattern: "^[a-zA-Z][a-zA-Z0-9-]+$"
-          type: string
-        style: simple
-      - description: This can be either the version of the config to retrieve or the
-          'latest' keyword to fetch the latest configuration version.
-        explode: false
-        in: path
-        name: configVersion
-        required: true
-        schema:
-          description: This can be either the version of the config to retrieve or
-            the 'latest' keyword to fetch the latest configuration version.
-          type: string
-        style: simple
-      - description: AWS Region. Defaults to the region the API is deployed to.
-        explode: true
-        in: query
-        name: region
-        required: false
-        schema:
-          description: AWS Region. Defaults to the region the API is deployed to.
-          type: string
-        style: form
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DescribeClusterConfigurationResponseContent'
-          description: DescribeClusterConfiguration 200 response
-        "400":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BadRequestExceptionResponseContent'
-          description: BadRequestException 400 response
-        "401":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UnauthorizedClientErrorResponseContent'
-          description: UnauthorizedClientError 401 response
-        "404":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/NotFoundExceptionResponseContent'
-          description: NotFoundException 404 response
-        "429":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/LimitExceededExceptionResponseContent'
-          description: LimitExceededException 429 response
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/InternalServiceExceptionResponseContent'
-          description: InternalServiceException 500 response
-      tags:
-      - Cluster Configuration
-      x-amazon-apigateway-integration:
-        credentials:
-          Fn::Sub: "${APIGatewayExecutionRole.Arn}"
-        httpMethod: POST
-        payloadFormatVersion: "2.0"
-        type: aws_proxy
-        uri:
-          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
-      x-openapi-router-controller: openapi_server.controllers.cluster_configuration_controller
-  /clusters/{clusterId}/dcv:
+  /v3/clusters/{clusterId}/dcv:
     get:
       description: Provides details on how to connect to the DCV session manager endpoint
         configured for the cluster.
@@ -848,9 +686,9 @@ paths:
         payloadFormatVersion: "2.0"
         type: aws_proxy
         uri:
-          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
+          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ParallelClusterFunction.Arn}/invocations"
       x-openapi-router-controller: openapi_server.controllers.dcv_controller
-  /clusters/{clusterId}/instances:
+  /v3/clusters/{clusterId}/instances:
     delete:
       description: Initiate the forced termination of all cluster compute nodes. Does
         not work with AWS Batch clusters
@@ -929,7 +767,7 @@ paths:
         payloadFormatVersion: "2.0"
         type: aws_proxy
         uri:
-          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
+          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ParallelClusterFunction.Arn}/invocations"
       x-openapi-router-controller: openapi_server.controllers.cluster_instances_controller
     get:
       description: Describe the instances belonging to a given cluster.
@@ -1023,11 +861,12 @@ paths:
         payloadFormatVersion: "2.0"
         type: aws_proxy
         uri:
-          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
+          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ParallelClusterFunction.Arn}/invocations"
       x-openapi-router-controller: openapi_server.controllers.cluster_instances_controller
-  /images/custom:
+  /v3/images/custom:
     get:
       description: Retrieve the list of existing custom images managed by the API.
+        Deleted images are not showed by default
       operationId: list_images
       parameters:
       - description: List Images built into a given AWS Region. Defaults to the AWS
@@ -1048,13 +887,17 @@ paths:
         schema:
           type: string
         style: form
-      - description: Filter by image status. Initially only used to show deleted images.
+      - description: Filter by image status.
         explode: true
         in: query
-        name: filterByStatus
+        name: imageStatusFilter
         required: false
         schema:
-          $ref: '#/components/schemas/ImageStatusFilteringOptions'
+          description: Filter by image status.
+          items:
+            $ref: '#/components/schemas/ImageBuildStatus'
+          type: array
+          uniqueItems: true
         style: form
       responses:
         "200":
@@ -1088,7 +931,7 @@ paths:
                 $ref: '#/components/schemas/InternalServiceExceptionResponseContent'
           description: InternalServiceException 500 response
       tags:
-      - Image CRUD
+      - Image Operations
       x-amazon-apigateway-integration:
         credentials:
           Fn::Sub: "${APIGatewayExecutionRole.Arn}"
@@ -1096,8 +939,8 @@ paths:
         payloadFormatVersion: "2.0"
         type: aws_proxy
         uri:
-          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
-      x-openapi-router-controller: openapi_server.controllers.image_crud_controller
+          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ParallelClusterFunction.Arn}/invocations"
+      x-openapi-router-controller: openapi_server.controllers.image_operations_controller
     post:
       description: Create a custom ParallelCluster image in a given region.
       operationId: build_image
@@ -1206,7 +1049,7 @@ paths:
                 $ref: '#/components/schemas/InternalServiceExceptionResponseContent'
           description: InternalServiceException 500 response
       tags:
-      - Image CRUD
+      - Image Operations
       x-amazon-apigateway-integration:
         credentials:
           Fn::Sub: "${APIGatewayExecutionRole.Arn}"
@@ -1214,9 +1057,9 @@ paths:
         payloadFormatVersion: "2.0"
         type: aws_proxy
         uri:
-          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
-      x-openapi-router-controller: openapi_server.controllers.image_crud_controller
-  /images/custom/{imageId}:
+          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ParallelClusterFunction.Arn}/invocations"
+      x-openapi-router-controller: openapi_server.controllers.image_operations_controller
+  /v3/images/custom/{imageId}:
     delete:
       description: Initiate the deletion of an image.
       operationId: delete_image
@@ -1280,7 +1123,7 @@ paths:
                 $ref: '#/components/schemas/InternalServiceExceptionResponseContent'
           description: InternalServiceException 500 response
       tags:
-      - Image CRUD
+      - Image Operations
       x-amazon-apigateway-integration:
         credentials:
           Fn::Sub: "${APIGatewayExecutionRole.Arn}"
@@ -1288,8 +1131,8 @@ paths:
         payloadFormatVersion: "2.0"
         type: aws_proxy
         uri:
-          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
-      x-openapi-router-controller: openapi_server.controllers.image_crud_controller
+          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ParallelClusterFunction.Arn}/invocations"
+      x-openapi-router-controller: openapi_server.controllers.image_operations_controller
     get:
       description: Get detailed information about an existing image.
       operationId: describe_image
@@ -1353,7 +1196,7 @@ paths:
                 $ref: '#/components/schemas/InternalServiceExceptionResponseContent'
           description: InternalServiceException 500 response
       tags:
-      - Image CRUD
+      - Image Operations
       x-amazon-apigateway-integration:
         credentials:
           Fn::Sub: "${APIGatewayExecutionRole.Arn}"
@@ -1361,9 +1204,9 @@ paths:
         payloadFormatVersion: "2.0"
         type: aws_proxy
         uri:
-          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
-      x-openapi-router-controller: openapi_server.controllers.image_crud_controller
-  /images/official:
+          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ParallelClusterFunction.Arn}/invocations"
+      x-openapi-router-controller: openapi_server.controllers.image_operations_controller
+  /v3/images/official:
     get:
       description: Describe ParallelCluster AMIs.
       operationId: list_official_images
@@ -1444,7 +1287,7 @@ paths:
                 $ref: '#/components/schemas/InternalServiceExceptionResponseContent'
           description: InternalServiceException 500 response
       tags:
-      - Images operations
+      - Image Operations
       x-amazon-apigateway-integration:
         credentials:
           Fn::Sub: "${APIGatewayExecutionRole.Arn}"
@@ -1452,9 +1295,9 @@ paths:
         payloadFormatVersion: "2.0"
         type: aws_proxy
         uri:
-          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
-      x-openapi-router-controller: openapi_server.controllers.images_operations_controller
-  /versions:
+          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ParallelClusterFunction.Arn}/invocations"
+      x-openapi-router-controller: openapi_server.controllers.image_operations_controller
+  /v3/versions:
     get:
       description: Describe the supported ParallelCluster versions.
       operationId: describe_parallel_cluster_versions
@@ -1498,7 +1341,7 @@ paths:
         payloadFormatVersion: "2.0"
         type: aws_proxy
         uri:
-          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
+          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ParallelClusterFunction.Arn}/invocations"
       x-openapi-router-controller: openapi_server.controllers.parallel_cluster_versions_controller
 components:
   schemas:
@@ -1629,16 +1472,6 @@ components:
         version:
           type: string
       type: object
-    ClusterConfigurationSummary:
-      example:
-        creationTime: creationTime
-        version: version
-      properties:
-        creationTime:
-          type: string
-        version:
-          type: string
-      type: object
     ClusterInfoSummary:
       example:
         cloudformationStackStatus: null
@@ -1686,10 +1519,6 @@ components:
       - UPDATE_COMPLETE
       - DELETE_IN_PROGRESS
       - DELETE_FAILED
-      - DELETE_COMPLETE
-      type: string
-    ClusterStatusFilteringOptions:
-      enum:
       - DELETE_COMPLETE
       type: string
     ComputeFleetStatus:
@@ -1832,18 +1661,6 @@ components:
       required:
       - image
       type: object
-    DescribeClusterConfigurationResponseContent:
-      example:
-        clusterConfiguration:
-          data: data
-          creationTime: creationTime
-          version: version
-      properties:
-        clusterConfiguration:
-          $ref: '#/components/schemas/ClusterConfigurationStructure'
-      required:
-      - clusterConfiguration
-      type: object
     DescribeClusterInstancesResponseContent:
       example:
         instances:
@@ -1887,6 +1704,7 @@ components:
         region: region
         version: version
         CloudFormationStatus: null
+        clusterStatus: null
         clusterConfiguration:
           data: data
           creationTime: creationTime
@@ -1925,6 +1743,8 @@ components:
           type: string
         CloudFormationStatus:
           $ref: '#/components/schemas/CloudFormationStatus'
+        clusterStatus:
+          $ref: '#/components/schemas/ClusterStatus'
         clusterConfiguration:
           $ref: '#/components/schemas/ClusterConfigurationStructure'
         tags:
@@ -1937,6 +1757,7 @@ components:
       - cloudformationStackArn
       - clusterConfiguration
       - clusterId
+      - clusterStatus
       - computeFleetStatus
       - creationTime
       - lastUpdatedTime
@@ -1984,6 +1805,7 @@ components:
         ec2AmiInfo:
           amiName: amiName
           amiId: amiId
+          state: null
           tags:
           - value: value
             key: key
@@ -2094,6 +1916,7 @@ components:
       example:
         amiName: amiName
         amiId: amiId
+        state: null
         tags:
         - value: value
           key: key
@@ -2107,6 +1930,8 @@ components:
         amiId:
           description: EC2 AMI id
           type: string
+        state:
+          $ref: '#/components/schemas/Ec2AmiState'
         tags:
           description: EC2 AMI Tags
           items:
@@ -2119,8 +1944,19 @@ components:
       - amiId
       - amiName
       - architecture
+      - state
       - tags
       type: object
+    Ec2AmiState:
+      enum:
+      - pending
+      - available
+      - invalid
+      - deregistered
+      - transient
+      - failed
+      - error
+      type: string
     ImageBuildStatus:
       enum:
       - BUILD_IN_PROGRESS
@@ -2181,10 +2017,6 @@ components:
       - region
       - version
       type: object
-    ImageStatusFilteringOptions:
-      enum:
-      - DELETE_COMPLETE
-      type: string
     InstanceState:
       enum:
       - pending
@@ -2206,24 +2038,6 @@ components:
       properties:
         message:
           type: string
-      type: object
-    ListClusterConfigurationsResponseContent:
-      example:
-        nextToken: nextToken
-        items:
-        - creationTime: creationTime
-          version: version
-        - creationTime: creationTime
-          version: version
-      properties:
-        nextToken:
-          type: string
-        items:
-          items:
-            $ref: '#/components/schemas/ClusterConfigurationSummary'
-          type: array
-      required:
-      - items
       type: object
     ListClustersResponseContent:
       example:

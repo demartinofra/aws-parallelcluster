@@ -9,6 +9,7 @@ from six import BytesIO
 from openapi_server.models.bad_request_exception_response_content import BadRequestExceptionResponseContent  # noqa: E501
 from openapi_server.models.describe_cluster_instances_response_content import DescribeClusterInstancesResponseContent  # noqa: E501
 from openapi_server.models.internal_service_exception_response_content import InternalServiceExceptionResponseContent  # noqa: E501
+from openapi_server.models.limit_exceeded_exception_response_content import LimitExceededExceptionResponseContent  # noqa: E501
 from openapi_server.models.not_found_exception_response_content import NotFoundExceptionResponseContent  # noqa: E501
 from openapi_server.models.unauthorized_client_error_response_content import UnauthorizedClientErrorResponseContent  # noqa: E501
 from openapi_server.test import BaseTestCase
@@ -22,13 +23,14 @@ class TestClusterInstancesController(BaseTestCase):
 
         
         """
-        query_string = [('region', 'region_example')]
+        query_string = [('region', 'region_example'),
+                        ('force', True)]
         headers = { 
             'Accept': 'application/json',
             'aws.auth.sigv4': 'special-key',
         }
         response = self.client.open(
-            '/clusters/{cluster_id}/instances'.format(cluster_id='cluster_id_example'),
+            '/v3/clusters/{cluster_id}/instances'.format(cluster_id='cluster_id_example'),
             method='DELETE',
             headers=headers,
             query_string=query_string)
@@ -42,7 +44,6 @@ class TestClusterInstancesController(BaseTestCase):
         """
         query_string = [('region', 'region_example'),
                         ('nextToken', 'next_token_example'),
-                        ('pageSize', 3.4),
                         ('nodeType', 'node_type_example'),
                         ('queueName', 'queue_name_example')]
         headers = { 
@@ -50,7 +51,7 @@ class TestClusterInstancesController(BaseTestCase):
             'aws.auth.sigv4': 'special-key',
         }
         response = self.client.open(
-            '/clusters/{cluster_id}/instances'.format(cluster_id='cluster_id_example'),
+            '/v3/clusters/{cluster_id}/instances'.format(cluster_id='cluster_id_example'),
             method='GET',
             headers=headers,
             query_string=query_string)
