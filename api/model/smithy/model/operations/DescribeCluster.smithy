@@ -1,7 +1,7 @@
 namespace parallelcluster
 
 @readonly
-@http(method: "GET", uri: "/clusters/{clusterId}", code: 200)
+@http(method: "GET", uri: "/v3/clusters/{clusterId}", code: 200)
 @tags(["Cluster Operations"])
 @documentation("Get detailed information about an existing cluster.")
 operation DescribeCluster {

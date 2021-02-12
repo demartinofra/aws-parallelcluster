@@ -13,7 +13,7 @@ use aws.api#service
 @integration(
     type: "aws_proxy",
     httpMethod: "POST",
-    uri: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations",
+    uri: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ParallelClusterFunction.Arn}/invocations",
     credentials: "${APIGatewayExecutionRole.Arn}",
     payloadFormatVersion: "2.0"
 )

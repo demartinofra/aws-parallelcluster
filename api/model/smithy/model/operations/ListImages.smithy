@@ -2,7 +2,7 @@ namespace parallelcluster
 
 @paginated
 @readonly
-@http(method: "GET", uri: "/images/custom", code: 200)
+@http(method: "GET", uri: "/v3/images/custom", code: 200)
 @tags(["Image Operations"])
 @documentation("Retrieve the list of existing custom images managed by the API. Deleted images are not showed by default")
 operation ListImages {

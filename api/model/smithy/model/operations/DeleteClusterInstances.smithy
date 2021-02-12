@@ -1,6 +1,6 @@
 namespace parallelcluster
 
-@http(method: "DELETE", uri: "/clusters/{clusterId}/instances", code: 202)
+@http(method: "DELETE", uri: "/v3/clusters/{clusterId}/instances", code: 202)
 @tags(["Cluster Instances"])
 @idempotent
 @documentation("Initiate the forced termination of all cluster compute nodes. Does not work with AWS Batch clusters")

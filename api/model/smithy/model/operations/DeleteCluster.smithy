@@ -1,6 +1,6 @@
 namespace parallelcluster
 
-@http(method: "DELETE", uri: "/clusters/{clusterId}", code: 202)
+@http(method: "DELETE", uri: "/v3/clusters/{clusterId}", code: 202)
 @tags(["Cluster Operations"])
 @idempotent
 @documentation("Initiate the deletion of a cluster.")

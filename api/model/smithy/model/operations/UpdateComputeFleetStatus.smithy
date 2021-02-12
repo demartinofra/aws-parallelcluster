@@ -1,6 +1,6 @@
 namespace parallelcluster
 
-@http(method: "PATCH", uri: "/clusters/{clusterId}/computefleet/status", code: 202)
+@http(method: "PATCH", uri: "/v3/clusters/{clusterId}/computefleet/status", code: 202)
 @tags(["Cluster ComputeFleet"])
 @documentation("Update the status of the cluster compute fleet.")
 operation UpdateComputeFleetStatus {

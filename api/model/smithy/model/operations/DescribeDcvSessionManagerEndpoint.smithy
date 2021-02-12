@@ -1,7 +1,7 @@
 namespace parallelcluster
 
 @readonly
-@http(method: "GET", uri: "/clusters/{clusterId}/dcv", code: 200)
+@http(method: "GET", uri: "/v3/clusters/{clusterId}/dcv", code: 200)
 @tags(["DCV"])
 @documentation("Provides details on how to connect to the DCV session manager endpoint configured for the cluster.")
 operation DescribeDcvSessionManagerEndpoint {

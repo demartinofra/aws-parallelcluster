@@ -6,7 +6,7 @@
         "description": "ParallelCluster API"
     },
     "paths": {
-        "/clusters": {
+        "/v3/clusters": {
             "get": {
                 "description": "Retrieve the list of existing clusters managed by the API. Deleted clusters are not listed by default.",
                 "operationId": "ListClusters",
@@ -106,7 +106,7 @@
                     "payloadFormatVersion": "2.0",
                     "type": "aws_proxy",
                     "uri": {
-                        "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
+                        "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ParallelClusterFunction.Arn}/invocations"
                     }
                 }
             },
@@ -250,12 +250,12 @@
                     "payloadFormatVersion": "2.0",
                     "type": "aws_proxy",
                     "uri": {
-                        "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
+                        "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ParallelClusterFunction.Arn}/invocations"
                     }
                 }
             }
         },
-        "/clusters/{clusterId}": {
+        "/v3/clusters/{clusterId}": {
             "delete": {
                 "description": "Initiate the deletion of a cluster.",
                 "operationId": "DeleteCluster",
@@ -366,7 +366,7 @@
                     "payloadFormatVersion": "2.0",
                     "type": "aws_proxy",
                     "uri": {
-                        "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
+                        "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ParallelClusterFunction.Arn}/invocations"
                     }
                 }
             },
@@ -470,7 +470,7 @@
                     "payloadFormatVersion": "2.0",
                     "type": "aws_proxy",
                     "uri": {
-                        "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
+                        "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ParallelClusterFunction.Arn}/invocations"
                     }
                 }
             },
@@ -603,12 +603,12 @@
                     "payloadFormatVersion": "2.0",
                     "type": "aws_proxy",
                     "uri": {
-                        "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
+                        "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ParallelClusterFunction.Arn}/invocations"
                     }
                 }
             }
         },
-        "/clusters/{clusterId}/computefleet/status": {
+        "/v3/clusters/{clusterId}/computefleet/status": {
             "get": {
                 "description": "Describe the status of the compute fleet",
                 "operationId": "DescribeComputeFleetStatus",
@@ -709,7 +709,7 @@
                     "payloadFormatVersion": "2.0",
                     "type": "aws_proxy",
                     "uri": {
-                        "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
+                        "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ParallelClusterFunction.Arn}/invocations"
                     }
                 }
             },
@@ -823,12 +823,12 @@
                     "payloadFormatVersion": "2.0",
                     "type": "aws_proxy",
                     "uri": {
-                        "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
+                        "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ParallelClusterFunction.Arn}/invocations"
                     }
                 }
             }
         },
-        "/clusters/{clusterId}/dcv": {
+        "/v3/clusters/{clusterId}/dcv": {
             "get": {
                 "description": "Provides details on how to connect to the DCV session manager endpoint configured for the cluster.",
                 "operationId": "DescribeDcvSessionManagerEndpoint",
@@ -929,12 +929,12 @@
                     "payloadFormatVersion": "2.0",
                     "type": "aws_proxy",
                     "uri": {
-                        "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
+                        "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ParallelClusterFunction.Arn}/invocations"
                     }
                 }
             }
         },
-        "/clusters/{clusterId}/instances": {
+        "/v3/clusters/{clusterId}/instances": {
             "delete": {
                 "description": "Initiate the forced termination of all cluster compute nodes. Does not work with AWS Batch clusters",
                 "operationId": "DeleteClusterInstances",
@@ -1038,7 +1038,7 @@
                     "payloadFormatVersion": "2.0",
                     "type": "aws_proxy",
                     "uri": {
-                        "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
+                        "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ParallelClusterFunction.Arn}/invocations"
                     }
                 }
             },
@@ -1163,12 +1163,12 @@
                     "payloadFormatVersion": "2.0",
                     "type": "aws_proxy",
                     "uri": {
-                        "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
+                        "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ParallelClusterFunction.Arn}/invocations"
                     }
                 }
             }
         },
-        "/images/custom": {
+        "/v3/images/custom": {
             "get": {
                 "description": "Retrieve the list of existing custom images managed by the API. Deleted images are not showed by default",
                 "operationId": "ListImages",
@@ -1268,7 +1268,7 @@
                     "payloadFormatVersion": "2.0",
                     "type": "aws_proxy",
                     "uri": {
-                        "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
+                        "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ParallelClusterFunction.Arn}/invocations"
                     }
                 }
             },
@@ -1412,12 +1412,12 @@
                     "payloadFormatVersion": "2.0",
                     "type": "aws_proxy",
                     "uri": {
-                        "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
+                        "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ParallelClusterFunction.Arn}/invocations"
                     }
                 }
             }
         },
-        "/images/custom/{imageId}": {
+        "/v3/images/custom/{imageId}": {
             "delete": {
                 "description": "Initiate the deletion of an image.",
                 "operationId": "DeleteImage",
@@ -1518,7 +1518,7 @@
                     "payloadFormatVersion": "2.0",
                     "type": "aws_proxy",
                     "uri": {
-                        "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
+                        "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ParallelClusterFunction.Arn}/invocations"
                     }
                 }
             },
@@ -1622,12 +1622,12 @@
                     "payloadFormatVersion": "2.0",
                     "type": "aws_proxy",
                     "uri": {
-                        "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
+                        "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ParallelClusterFunction.Arn}/invocations"
                     }
                 }
             }
         },
-        "/images/official": {
+        "/v3/images/official": {
             "get": {
                 "description": "Describe ParallelCluster AMIs.",
                 "operationId": "ListOfficialImages",
@@ -1740,12 +1740,12 @@
                     "payloadFormatVersion": "2.0",
                     "type": "aws_proxy",
                     "uri": {
-                        "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
+                        "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ParallelClusterFunction.Arn}/invocations"
                     }
                 }
             }
         },
-        "/versions": {
+        "/v3/versions": {
             "get": {
                 "description": "Describe the supported ParallelCluster versions.",
                 "operationId": "DescribeParallelClusterVersions",
@@ -1812,7 +1812,7 @@
                     "payloadFormatVersion": "2.0",
                     "type": "aws_proxy",
                     "uri": {
-                        "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ApiGatewayLambdaFunction.Arn}/invocations"
+                        "Fn::Sub": "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ParallelClusterFunction.Arn}/invocations"
                     }
                 }
             }
@@ -2373,6 +2373,9 @@
                         "type": "string",
                         "description": "EC2 AMI id"
                     },
+                    "state": {
+                        "$ref": "#/components/schemas/Ec2AmiState"
+                    },
                     "tags": {
                         "type": "array",
                         "items": {
@@ -2389,7 +2392,20 @@
                     "amiId",
                     "amiName",
                     "architecture",
+                    "state",
                     "tags"
+                ]
+            },
+            "Ec2AmiState": {
+                "type": "string",
+                "enum": [
+                    "pending",
+                    "available",
+                    "invalid",
+                    "deregistered",
+                    "transient",
+                    "failed",
+                    "error"
                 ]
             },
             "ImageBuildStatus": {

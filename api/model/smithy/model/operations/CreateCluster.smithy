@@ -1,6 +1,6 @@
 namespace parallelcluster
 
-@http(method: "POST", uri: "/clusters", code: 202)
+@http(method: "POST", uri: "/v3/clusters", code: 202)
 @tags(["Cluster Operations"])
 @documentation("Create a ParallelCluster managed cluster in a given region.")
 operation CreateCluster {

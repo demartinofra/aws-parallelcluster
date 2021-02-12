@@ -1,6 +1,6 @@
 namespace parallelcluster
 
-@http(method: "GET", uri: "/clusters/{clusterId}/instances", code: 200)
+@http(method: "GET", uri: "/v3/clusters/{clusterId}/instances", code: 200)
 @tags(["Cluster Instances"])
 @paginated
 @readonly

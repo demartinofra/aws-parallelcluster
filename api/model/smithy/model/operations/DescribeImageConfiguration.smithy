@@ -1,7 +1,7 @@
 namespace parallelcluster
 
 @readonly
-@http(method: "GET", uri: "/images/custom/{imageId}/configuration", code: 200)
+@http(method: "GET", uri: "/v3/images/custom/{imageId}/configuration", code: 200)
 @tags(["Image Configuration"])
 @documentation("Retrieve an image configuration .")
 operation DescribeImageConfiguration {

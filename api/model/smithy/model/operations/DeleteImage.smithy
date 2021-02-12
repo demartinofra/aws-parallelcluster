@@ -1,6 +1,6 @@
 namespace parallelcluster
 
-@http(method: "DELETE", uri: "/images/custom/{imageId}", code: 202)
+@http(method: "DELETE", uri: "/v3/images/custom/{imageId}", code: 202)
 @tags(["Image Operations"])
 @idempotent
 @documentation("Initiate the deletion of an image.")

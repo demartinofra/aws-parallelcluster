@@ -1,7 +1,7 @@
 namespace parallelcluster
 
 @readonly
-@http(method: "GET", uri: "/versions", code: 200)
+@http(method: "GET", uri: "/v3/versions", code: 200)
 @tags(["ParallelCluster Versions"])
 @documentation("Describe the supported ParallelCluster versions.")
 operation DescribeParallelClusterVersions {

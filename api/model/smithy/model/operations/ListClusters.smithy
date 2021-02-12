@@ -2,7 +2,7 @@ namespace parallelcluster
 
 @paginated
 @readonly
-@http(method: "GET", uri: "/clusters", code: 200)
+@http(method: "GET", uri: "/v3/clusters", code: 200)
 @tags(["Cluster Operations"])
 @documentation("Retrieve the list of existing clusters managed by the API. Deleted clusters are not listed by default.")
 operation ListClusters {
