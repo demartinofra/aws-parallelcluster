@@ -3,6 +3,7 @@ namespace parallelcluster
 @http(method: "POST", uri: "/v3/clusters", code: 202)
 @tags(["Cluster Operations"])
 @documentation("Create a ParallelCluster managed cluster in a given region.")
+@idempotent
 operation CreateCluster {
     input: CreateClusterInput,
     output: CreateClusterOutput,
@@ -31,6 +32,10 @@ structure CreateClusterInput {
     @httpQuery("rollbackOnFailure")
     @documentation("When set it automatically initiates a cluster stack rollback on failures. Defaults to true.")
     rollbackOnFailure: Boolean,
+    @idempotencyToken
+    @httpQuery("clientToken")
+    @documentation("Idempotency token that can be set by the client so that retries for the same request are idempotent")
+    clientToken: String,
 
     @required
     name: ClusterId,

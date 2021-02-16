@@ -34,10 +34,12 @@ structure ClusterInfo {
     clusterConfiguration: ClusterConfigurationStructure,
     @required
     computeFleetStatus: ComputeFleetStatus,
-    headnode: EC2Instance,
     @required
     @documentation("Tags associated with the cluster")
-    tags: Tags
+    tags: Tags,
+    headnode: EC2Instance,
+    @documentation("Describe the reason of the failure when the stack is in CREATE_FAILED, UPDATE_FAILED or DELETE_FAILED status")
+    failureReason: String
 }
 
 structure ClusterInfoSummary {
@@ -88,17 +90,6 @@ string ComputeFleetStatus
 
 structure ClusterConfigurationStructure {
     data: ClusterConfigurationData,
-    version: String,
-    creationTime: String,
-}
-
-list ClusterConfigurationSummaries {
-    member: ClusterConfigurationSummary
-}
-
-structure ClusterConfigurationSummary {
-    version: String,
-    creationTime: String,
 }
 
 @documentation("Cluster configuration as a YAML document")

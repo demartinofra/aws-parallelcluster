@@ -26,7 +26,7 @@ structure DescribeClusterInstancesInput {
     @httpQuery("nextToken")
     nextToken: String,
     @httpQuery("nodeType")
-    nodeType: String,
+    nodeType: NodeType,
     @httpQuery("queueName")
     queueName: String,
 //     @httpHeader("x-parallelcluster-version")

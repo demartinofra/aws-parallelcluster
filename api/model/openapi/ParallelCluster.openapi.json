@@ -175,6 +175,15 @@
                             "description": "When set it automatically initiates a cluster stack rollback on failures. Defaults to true.",
                             "nullable": true
                         }
+                    },
+                    {
+                        "name": "clientToken",
+                        "in": "query",
+                        "description": "Idempotency token that can be set by the client so that retries for the same request are idempotent",
+                        "schema": {
+                            "type": "string",
+                            "description": "Idempotency token that can be set by the client so that retries for the same request are idempotent"
+                        }
                     }
                 ],
                 "responses": {
@@ -290,6 +299,15 @@
                             "type": "boolean",
                             "description": "Retain cluster logs on delete. Defaults to True.",
                             "nullable": true
+                        }
+                    },
+                    {
+                        "name": "clientToken",
+                        "in": "query",
+                        "description": "Idempotency token that can be set by the client so that retries for the same request are idempotent",
+                        "schema": {
+                            "type": "string",
+                            "description": "Idempotency token that can be set by the client so that retries for the same request are idempotent"
                         }
                     }
                 ],
@@ -474,7 +492,7 @@
                     }
                 }
             },
-            "patch": {
+            "put": {
                 "operationId": "UpdateCluster",
                 "requestBody": {
                     "content": {
@@ -517,6 +535,15 @@
                             "type": "boolean",
                             "description": "Only perform request validation without creating any resource. It can be used to validate the cluster configuration and update requirements. Response code: 200",
                             "nullable": true
+                        }
+                    },
+                    {
+                        "name": "clientToken",
+                        "in": "query",
+                        "description": "Idempotency token that can be set by the client so that retries for the same request are idempotent",
+                        "schema": {
+                            "type": "string",
+                            "description": "Idempotency token that can be set by the client so that retries for the same request are idempotent"
                         }
                     }
                 ],
@@ -1079,7 +1106,7 @@
                         "name": "nodeType",
                         "in": "query",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/components/schemas/NodeType"
                         }
                     },
                     {
@@ -1337,6 +1364,15 @@
                             "description": "When set it automatically initiates an image stack rollback on failures. Defaults to true.",
                             "nullable": true
                         }
+                    },
+                    {
+                        "name": "clientToken",
+                        "in": "query",
+                        "description": "Idempotency token that can be set by the client so that retries for the same request are idempotent",
+                        "schema": {
+                            "type": "string",
+                            "description": "Idempotency token that can be set by the client so that retries for the same request are idempotent"
+                        }
                     }
                 ],
                 "responses": {
@@ -1442,6 +1478,15 @@
                         "schema": {
                             "type": "string",
                             "description": "AWS Region. Defaults to the region the API is deployed to."
+                        }
+                    },
+                    {
+                        "name": "clientToken",
+                        "in": "query",
+                        "description": "Idempotency token that can be set by the client so that retries for the same request are idempotent",
+                        "schema": {
+                            "type": "string",
+                            "description": "Idempotency token that can be set by the client so that retries for the same request are idempotent"
                         }
                     }
                 ],
@@ -1939,12 +1984,6 @@
                         "type": "string",
                         "description": "Cluster configuration as a YAML document",
                         "format": "byte"
-                    },
-                    "creationTime": {
-                        "type": "string"
-                    },
-                    "version": {
-                        "type": "string"
                     }
                 }
             },
@@ -2157,19 +2196,8 @@
                         "type": "string",
                         "description": "Timestamp representing the cluster creation time"
                     },
-                    "computeFleetStatus": {
-                        "$ref": "#/components/schemas/ComputeFleetStatus"
-                    },
                     "headnode": {
                         "$ref": "#/components/schemas/EC2Instance"
-                    },
-                    "cloudformationStackArn": {
-                        "type": "string",
-                        "description": "ARN of the main CloudFormation stack"
-                    },
-                    "lastUpdatedTime": {
-                        "type": "string",
-                        "description": "Timestamp representing the last cluster update time"
                     },
                     "clusterId": {
                         "type": "string",
@@ -2178,10 +2206,6 @@
                         "pattern": "^[a-zA-Z][a-zA-Z0-9-]+$",
                         "description": "Name of the cluster"
                     },
-                    "region": {
-                        "type": "string",
-                        "description": "AWS region where the cluster is created"
-                    },
                     "version": {
                         "type": "string",
                         "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
@@ -2189,9 +2213,6 @@
                     },
                     "CloudFormationStatus": {
                         "$ref": "#/components/schemas/CloudFormationStatus"
-                    },
-                    "clusterStatus": {
-                        "$ref": "#/components/schemas/ClusterStatus"
                     },
                     "clusterConfiguration": {
                         "$ref": "#/components/schemas/ClusterConfigurationStructure"
@@ -2202,6 +2223,28 @@
                             "$ref": "#/components/schemas/Tag"
                         },
                         "description": "Tags associated with the cluster"
+                    },
+                    "computeFleetStatus": {
+                        "$ref": "#/components/schemas/ComputeFleetStatus"
+                    },
+                    "failureReason": {
+                        "type": "string",
+                        "description": "Describe the reason of the failure when the stack is in CREATE_FAILED, UPDATE_FAILED or DELETE_FAILED status"
+                    },
+                    "cloudformationStackArn": {
+                        "type": "string",
+                        "description": "ARN of the main CloudFormation stack"
+                    },
+                    "lastUpdatedTime": {
+                        "type": "string",
+                        "description": "Timestamp representing the last cluster update time"
+                    },
+                    "region": {
+                        "type": "string",
+                        "description": "AWS region where the cluster is created"
+                    },
+                    "clusterStatus": {
+                        "$ref": "#/components/schemas/ClusterStatus"
                     }
                 },
                 "required": [
@@ -2221,11 +2264,16 @@
             "DescribeComputeFleetStatusResponseContent": {
                 "type": "object",
                 "properties": {
+                    "lastUpdatedTime": {
+                        "type": "string",
+                        "description": "Timestamp representing the last status update time"
+                    },
                     "status": {
                         "$ref": "#/components/schemas/ComputeFleetStatus"
                     }
                 },
                 "required": [
+                    "lastUpdatedTime",
                     "status"
                 ]
             },
@@ -2270,6 +2318,10 @@
                     },
                     "imageBuildStatus": {
                         "$ref": "#/components/schemas/ImageBuildStatus"
+                    },
+                    "failureReason": {
+                        "type": "string",
+                        "description": "Describe the reason of the failure when the stack is in CREATE_FAILED, UPDATE_FAILED or DELETE_FAILED status"
                     },
                     "cloudformationStackStatus": {
                         "$ref": "#/components/schemas/CloudFormationStatus"
@@ -2552,6 +2604,13 @@
                 },
                 "required": [
                     "items"
+                ]
+            },
+            "NodeType": {
+                "type": "string",
+                "enum": [
+                    "HEAD",
+                    "COMPUTE"
                 ]
             },
             "NotFoundExceptionResponseContent": {

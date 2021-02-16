@@ -1,7 +1,8 @@
 namespace parallelcluster
 
-@http(method: "PATCH", uri: "/v3/clusters/{clusterId}", code: 202)
+@http(method: "PUT", uri: "/v3/clusters/{clusterId}", code: 202)
 @tags(["Cluster Operations"])
+@idempotent
 operation UpdateCluster {
     input: UpdateClusterInput,
     output: UpdateClusterOutput,
@@ -25,6 +26,10 @@ structure UpdateClusterInput {
     @httpQuery("dryrun")
     @documentation("Only perform request validation without creating any resource. It can be used to validate the cluster configuration and update requirements. Response code: 200")
     dryrun: Boolean,
+    @idempotencyToken
+    @httpQuery("clientToken")
+    @documentation("Idempotency token that can be set by the client so that retries for the same request are idempotent")
+    clientToken: String,
 
     @required
     clusterConfiguration: ClusterConfigurationData,

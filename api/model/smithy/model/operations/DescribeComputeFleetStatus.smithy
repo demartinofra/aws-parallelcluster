@@ -30,4 +30,7 @@ structure DescribeComputeFleetStatusInput {
 structure DescribeComputeFleetStatusOutput {
     @required
     status: ComputeFleetStatus,
+    @required
+    @documentation("Timestamp representing the last status update time")
+    lastUpdatedTime: String,
 }

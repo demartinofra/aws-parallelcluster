@@ -37,7 +37,9 @@ structure ImageInfo {
     imagebuilderImageStatus: ImageBuilderImageStatus,
     // ImageBuilderImageArn or ImageBuilderImageInfo structure
     @documentation("EC2 ami info")
-    ec2AmiInfo: Ec2AmiInfo
+    ec2AmiInfo: Ec2AmiInfo,
+    @documentation("Describe the reason of the failure when the stack is in CREATE_FAILED, UPDATE_FAILED or DELETE_FAILED status")
+    failureReason: String,
 }
 
 structure Ec2AmiInfo {

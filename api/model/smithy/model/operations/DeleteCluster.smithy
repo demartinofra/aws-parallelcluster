@@ -23,10 +23,13 @@ structure DeleteClusterInput {
 
     @httpQuery("region")
     region: Region,
-
     @httpQuery("retainLogs")
     @documentation("Retain cluster logs on delete. Defaults to True.")
     retainLogs: Boolean,
+    @idempotencyToken
+    @httpQuery("clientToken")
+    @documentation("Idempotency token that can be set by the client so that retries for the same request are idempotent")
+    clientToken: String,
 
 //     @httpHeader("x-parallelcluster-version")
 //     @documentation("Forces a specific ParallelCluster version to be used when handling this request.")

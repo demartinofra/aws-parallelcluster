@@ -23,6 +23,10 @@ structure DeleteImageInput {
 
     @httpQuery("region")
     region: Region,
+    @idempotencyToken
+    @httpQuery("clientToken")
+    @documentation("Idempotency token that can be set by the client so that retries for the same request are idempotent")
+    clientToken: String,
 
 //     @httpHeader("x-parallelcluster-version")
 //     @documentation("Forces a specific ParallelCluster version to be used when handling this request.")
