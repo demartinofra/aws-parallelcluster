@@ -3,7 +3,7 @@ namespace parallelcluster
 resource Cluster {
     identifiers: { clusterId: ClusterId },
     create: CreateCluster,
-    list: ListClusters,
+    list: DescribeClusters,
     read: DescribeCluster,
     delete: DeleteCluster,
     update: UpdateCluster,

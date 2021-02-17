@@ -9,7 +9,7 @@
         "/v3/clusters": {
             "get": {
                 "description": "Retrieve the list of existing clusters managed by the API. Deleted clusters are not listed by default.",
-                "operationId": "ListClusters",
+                "operationId": "DescribeClusters",
                 "parameters": [
                     {
                         "name": "region",
@@ -45,11 +45,11 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "ListClusters 200 response",
+                        "description": "DescribeClusters 200 response",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ListClustersResponseContent"
+                                    "$ref": "#/components/schemas/DescribeClustersResponseContent"
                                 }
                             }
                         }
@@ -1198,7 +1198,7 @@
         "/v3/images/custom": {
             "get": {
                 "description": "Retrieve the list of existing custom images managed by the API. Deleted images are not showed by default",
-                "operationId": "ListImages",
+                "operationId": "DescribeImages",
                 "parameters": [
                     {
                         "name": "region",
@@ -1234,11 +1234,11 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "ListImages 200 response",
+                        "description": "DescribeImages 200 response",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ListImagesResponseContent"
+                                    "$ref": "#/components/schemas/DescribeImagesResponseContent"
                                 }
                             }
                         }
@@ -1675,7 +1675,7 @@
         "/v3/images/official": {
             "get": {
                 "description": "Describe ParallelCluster AMIs.",
-                "operationId": "ListOfficialImages",
+                "operationId": "DescribeOfficialImages",
                 "parameters": [
                     {
                         "name": "version",
@@ -1724,11 +1724,11 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "ListOfficialImages 200 response",
+                        "description": "DescribeOfficialImages 200 response",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ListOfficialImagesResponseContent"
+                                    "$ref": "#/components/schemas/DescribeOfficialImagesResponseContent"
                                 }
                             }
                         }
@@ -2261,6 +2261,23 @@
                     "version"
                 ]
             },
+            "DescribeClustersResponseContent": {
+                "type": "object",
+                "properties": {
+                    "nextToken": {
+                        "type": "string"
+                    },
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ClusterInfoSummary"
+                        }
+                    }
+                },
+                "required": [
+                    "items"
+                ]
+            },
             "DescribeComputeFleetStatusResponseContent": {
                 "type": "object",
                 "properties": {
@@ -2360,6 +2377,40 @@
                     "region",
                     "tags",
                     "version"
+                ]
+            },
+            "DescribeImagesResponseContent": {
+                "type": "object",
+                "properties": {
+                    "nextToken": {
+                        "type": "string"
+                    },
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ImageInfoSummary"
+                        }
+                    }
+                },
+                "required": [
+                    "items"
+                ]
+            },
+            "DescribeOfficialImagesResponseContent": {
+                "type": "object",
+                "properties": {
+                    "nextToken": {
+                        "type": "string"
+                    },
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AmiInfo"
+                        }
+                    }
+                },
+                "required": [
+                    "items"
                 ]
             },
             "DescribeParallelClusterVersionsResponseContent": {
@@ -2554,57 +2605,6 @@
                         "type": "string"
                     }
                 }
-            },
-            "ListClustersResponseContent": {
-                "type": "object",
-                "properties": {
-                    "nextToken": {
-                        "type": "string"
-                    },
-                    "items": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/ClusterInfoSummary"
-                        }
-                    }
-                },
-                "required": [
-                    "items"
-                ]
-            },
-            "ListImagesResponseContent": {
-                "type": "object",
-                "properties": {
-                    "nextToken": {
-                        "type": "string"
-                    },
-                    "items": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/ImageInfoSummary"
-                        }
-                    }
-                },
-                "required": [
-                    "items"
-                ]
-            },
-            "ListOfficialImagesResponseContent": {
-                "type": "object",
-                "properties": {
-                    "nextToken": {
-                        "type": "string"
-                    },
-                    "items": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/AmiInfo"
-                        }
-                    }
-                },
-                "required": [
-                    "items"
-                ]
             },
             "NodeType": {
                 "type": "string",

@@ -5,9 +5,9 @@ namespace parallelcluster
 @http(method: "GET", uri: "/v3/images/custom", code: 200)
 @tags(["Image Operations"])
 @documentation("Retrieve the list of existing custom images managed by the API. Deleted images are not showed by default")
-operation ListImages {
-    input: ListImagesInput,
-    output: ListImagesOutput,
+operation DescribeImages {
+    input: DescribeImagesInput,
+    output: DescribeImagesOutput,
     errors: [
         InternalServiceException,
         BadRequestException,
@@ -16,7 +16,7 @@ operation ListImages {
     ]
 }
 
-structure ListImagesInput {
+structure DescribeImagesInput {
     @httpQuery("region")
     @documentation("List Images built into a given AWS Region. Defaults to the AWS region the API is deployed to.")
     region: Region,
@@ -30,7 +30,7 @@ structure ListImagesInput {
 //     forceVersion: Version,
 }
 
-structure ListImagesOutput {
+structure DescribeImagesOutput {
     nextToken: String,
 
     @required

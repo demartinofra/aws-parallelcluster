@@ -1,13 +1,13 @@
 namespace parallelcluster
 
 resource OfficialImage {
-    operations: [ListOfficialImages]
+    operations: [DescribeOfficialImages]
 }
 
 resource CustomImage {
     identifiers: { imageId: ImageId },
     create: BuildImage,
-    list: ListImages,
+    list: DescribeImages,
     read: DescribeImage,
     delete: DeleteImage,
 }

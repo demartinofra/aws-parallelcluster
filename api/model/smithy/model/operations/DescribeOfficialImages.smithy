@@ -5,9 +5,9 @@ namespace parallelcluster
 @tags(["Image Operations"])
 @documentation("Describe ParallelCluster AMIs.")
 @paginated
-operation ListOfficialImages {
-    input: ListOfficialImagesInput,
-    output: ListOfficialImagesOutput,
+operation DescribeOfficialImages {
+    input: DescribeOfficialImagesInput,
+    output: DescribeOfficialImagesOutput,
     errors: [
         InternalServiceException,
         BadRequestException,
@@ -16,7 +16,7 @@ operation ListOfficialImages {
     ]
 }
 
-structure ListOfficialImagesInput {
+structure DescribeOfficialImagesInput {
     @httpQuery("version")
     @documentation("ParallelCluster version to retrieve AMIs for.")
     version: Version,
@@ -35,7 +35,7 @@ structure ListOfficialImagesInput {
 //     forceVersion: Version,
 }
 
-structure ListOfficialImagesOutput {
+structure DescribeOfficialImagesOutput {
     nextToken: String,
 
     @required
