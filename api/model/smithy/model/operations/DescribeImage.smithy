@@ -1,12 +1,12 @@
 namespace parallelcluster
 
 @readonly
-@http(method: "GET", uri: "/v3/images/custom/{imageId}", code: 200)
+@http(method: "GET", uri: "/v3/images/custom/{imageName}", code: 200)
 @tags(["Image Operations"])
 @documentation("Get detailed information about an existing image.")
 operation DescribeImage {
     input: DescribeImageInput,
-    output: ImageInfo,
+    output: BuildImageInfo,
     errors: [
         InternalServiceException,
         BadRequestException,
@@ -19,7 +19,7 @@ operation DescribeImage {
 structure DescribeImageInput {
     @httpLabel
     @required
-    imageId: ImageId,
+    imageName: ImageName,
     @httpQuery("region")
     region: Region,
 //     @httpHeader("x-parallelcluster-version")

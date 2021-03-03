@@ -38,15 +38,15 @@ structure BuildImageInput {
     clientToken: String,
 
     @required
-    name: ImageId,
+    name: ImageName,
     region: Region,
     @required
-    imageConfiguration: ImageConfigurationData,
+    configuration: BuildImageConfigurationData,
 }
 
 structure BuildImageOutput {
     @required
-    image: ImageInfoSummary,
+    image: BuildImageInfoSummary,
     @required
     @documentation("List of messages collected during image config validation whose level is lower than the validationFailureLevel set by the user")
     validationMessages: ValidationMessages

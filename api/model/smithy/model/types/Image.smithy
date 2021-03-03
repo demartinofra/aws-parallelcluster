@@ -3,12 +3,12 @@ namespace parallelcluster
 @pattern("^[a-zA-Z][a-zA-Z0-9-]+$")
 @length(min: 5, max: 60)
 @documentation("Name of the image")
-string ImageId
+string ImageName
 
-structure ImageInfo {
+structure BuildImageInfo {
     @required
     @documentation("Name of the Image")
-    imageId: String,
+    imageName: String,
     @required
     @documentation("AWS region where the image is created")
     region: Region,
@@ -17,7 +17,7 @@ structure ImageInfo {
     version: Version,
     @required
     @documentation("Status of the image build.")
-    imageBuildStatus: ImageBuildStatus,
+    buildImageStatus: BuildImageStatus,
     @required
     @documentation("Status of the CloudFormation stack for the image build process.")
     cloudformationStackStatus: CloudFormationStatus,
@@ -29,20 +29,22 @@ structure ImageInfo {
     creationTime: String,
     @required
     @documentation("Configuration for the image build process")
-    imageConfiguration: ImageConfigurationData,
+    buildImageConfiguration: BuildImageConfigurationData,
     @required
     @documentation("Tags of the infrastructure to build the Image")
     tags: Tags,
-    @documentation("Status of the ImageBuilder Image resource for the image build process.")
-    imagebuilderImageStatus: ImageBuilderImageStatus,
-    // ImageBuilderImageArn or ImageBuilderImageInfo structure
+    @documentation("Status of the EC2ImageBuilder Image resource for the image build process.")
+    ec2ImagebuilderImageStatus: EC2ImageBuilderImageStatus,
+    @documentation("CloudWatch LogGroup containing the log stream of the EC2ImageBuilder Image resource for the image build process.")
+    ec2ImagebuilderImageCWLogGroup: String,
+    // EC2ImageBuilderImageArn or EC2ImageBuilderImageInfo structure
     @documentation("EC2 ami info")
-    ec2AmiInfo: Ec2AmiInfo,
-    @documentation("Describe the reason of the failure when the stack is in CREATE_FAILED, UPDATE_FAILED or DELETE_FAILED status")
-    failureReason: String,
+    ec2AmiInfo: EC2AmiInfo,
+    @documentation("The reason of the failure of the EC2ImageBuilder Image resource for the image build process.")
+    ec2ImagebuilderImageFailureReason: String,
 }
 
-structure Ec2AmiInfo {
+structure EC2AmiInfo {
     @required
     @documentation("EC2 AMI id")
     amiId: String,
@@ -51,19 +53,22 @@ structure Ec2AmiInfo {
     tags: Tags,
     @required
     @documentation("EC2 AMI name")
-    amiName: String,
+    name: String,
     @required
     @documentation("EC2 AMI architecture")
     architecture: String,
     @required
     @documentation("EC2 AMI state")
-    state: Ec2AmiState
+    state: EC2AmiState,
+    @required
+    @documentation("EC2 AMI description")
+    description: String
 }
 
-structure ImageInfoSummary {
+structure BuildImageInfoSummary {
     @required
     @documentation("Name of the image")
-    imageId: ImageId,
+    imageName: ImageName,
     @required
     @documentation("AWS region where the image is built")
     region: Region,
@@ -75,7 +80,7 @@ structure ImageInfoSummary {
     cloudformationStackArn: String,
     @required
     @documentation("Status of the image build.")
-    imageBuildStatus: ImageBuildStatus,
+    buildImageStatus: BuildImageStatus,
     @required
     @documentation("Status of the CloudFormation stack for the image build process.")
     cloudformationStackStatus: CloudFormationStatus,
@@ -88,7 +93,7 @@ structure ImageInfoSummary {
 // }
 
 @documentation("Image configuration as a YAML document")
-blob ImageConfigurationData
+blob BuildImageConfigurationData
 
 @enum([
     {value: "BUILD_IN_PROGRESS"},
@@ -98,7 +103,7 @@ blob ImageConfigurationData
     {value: "DELETE_FAILED"},
     {value: "DELETE_COMPLETE"},
 ])
-string ImageBuildStatus
+string BuildImageStatus
 
 @enum([
     {value: "PENDING"},
@@ -113,7 +118,7 @@ string ImageBuildStatus
     {value: "DEPRECATED"},
     {value: "DELETED"},
 ])
-string ImageBuilderImageStatus
+string EC2ImageBuilderImageStatus
 
 @enum([
     {value: "pending"},
@@ -124,4 +129,4 @@ string ImageBuilderImageStatus
     {value: "failed"},
     {value: "error"},
 ])
-string Ec2AmiState
+string EC2AmiState
