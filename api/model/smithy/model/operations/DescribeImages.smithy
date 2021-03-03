@@ -34,13 +34,13 @@ structure DescribeImagesOutput {
     nextToken: String,
 
     @required
-    items: ImageInfoSummaries,
+    items: BuildImageInfoSummaries,
 }
 
-list ImageInfoSummaries {
-    member: ImageInfoSummary
+list BuildImageInfoSummaries {
+    member: BuildImageInfoSummary
 }
 
 set ImageStatusFilteringOptions {
-    member: ImageBuildStatus
+    member: BuildImageStatus
 }

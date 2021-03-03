@@ -5,7 +5,7 @@ resource OfficialImage {
 }
 
 resource CustomImage {
-    identifiers: { imageId: ImageId },
+    identifiers: { imageName: ImageName },
     create: BuildImage,
     list: DescribeImages,
     read: DescribeImage,

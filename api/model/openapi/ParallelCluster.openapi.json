@@ -1224,7 +1224,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/components/schemas/ImageBuildStatus"
+                                "$ref": "#/components/schemas/BuildImageStatus"
                             },
                             "uniqueItems": true,
                             "description": "Filter by image status."
@@ -1453,13 +1453,13 @@
                 }
             }
         },
-        "/v3/images/custom/{imageId}": {
+        "/v3/images/custom/{imageName}": {
             "delete": {
                 "description": "Initiate the deletion of an image.",
                 "operationId": "DeleteImage",
                 "parameters": [
                     {
-                        "name": "imageId",
+                        "name": "imageName",
                         "in": "path",
                         "description": "Name of the image",
                         "schema": {
@@ -1572,7 +1572,7 @@
                 "operationId": "DescribeImage",
                 "parameters": [
                     {
-                        "name": "imageId",
+                        "name": "imageName",
                         "in": "path",
                         "description": "Name of the image",
                         "schema": {
@@ -1912,10 +1912,49 @@
                     }
                 }
             },
+            "BuildImageInfoSummary": {
+                "type": "object",
+                "properties": {
+                    "imageName": {
+                        "type": "string",
+                        "maxLength": 60,
+                        "minLength": 5,
+                        "pattern": "^[a-zA-Z][a-zA-Z0-9-]+$",
+                        "description": "Name of the image"
+                    },
+                    "buildImageStatus": {
+                        "$ref": "#/components/schemas/BuildImageStatus"
+                    },
+                    "cloudformationStackStatus": {
+                        "$ref": "#/components/schemas/CloudFormationStatus"
+                    },
+                    "cloudformationStackArn": {
+                        "type": "string",
+                        "description": "ARN of the main CloudFormation stack"
+                    },
+                    "region": {
+                        "type": "string",
+                        "description": "AWS region where the image is built"
+                    },
+                    "version": {
+                        "type": "string",
+                        "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+                        "description": "ParallelCluster version used to build the image"
+                    }
+                },
+                "required": [
+                    "buildImageStatus",
+                    "cloudformationStackArn",
+                    "cloudformationStackStatus",
+                    "imageName",
+                    "region",
+                    "version"
+                ]
+            },
             "BuildImageRequestContent": {
                 "type": "object",
                 "properties": {
-                    "imageConfiguration": {
+                    "configuration": {
                         "type": "string",
                         "description": "Image configuration as a YAML document",
                         "format": "byte"
@@ -1933,7 +1972,7 @@
                     }
                 },
                 "required": [
-                    "imageConfiguration",
+                    "configuration",
                     "name"
                 ]
             },
@@ -1941,7 +1980,7 @@
                 "type": "object",
                 "properties": {
                     "image": {
-                        "$ref": "#/components/schemas/ImageInfoSummary"
+                        "$ref": "#/components/schemas/BuildImageInfoSummary"
                     },
                     "validationMessages": {
                         "type": "array",
@@ -1954,6 +1993,17 @@
                 "required": [
                     "image",
                     "validationMessages"
+                ]
+            },
+            "BuildImageStatus": {
+                "type": "string",
+                "enum": [
+                    "BUILD_IN_PROGRESS",
+                    "BUILD_FAILED",
+                    "BUILD_COMPLETE",
+                    "DELETE_IN_PROGRESS",
+                    "DELETE_FAILED",
+                    "DELETE_COMPLETE"
                 ]
             },
             "CloudFormationStatus": {
@@ -2165,7 +2215,7 @@
                 "type": "object",
                 "properties": {
                     "image": {
-                        "$ref": "#/components/schemas/ImageInfoSummary"
+                        "$ref": "#/components/schemas/BuildImageInfoSummary"
                     }
                 },
                 "required": [
@@ -2317,28 +2367,44 @@
             "DescribeImageResponseContent": {
                 "type": "object",
                 "properties": {
-                    "imageConfiguration": {
-                        "type": "string",
-                        "description": "Configuration for the image build process",
-                        "format": "byte"
-                    },
-                    "imageId": {
+                    "imageName": {
                         "type": "string",
                         "description": "Name of the Image"
-                    },
-                    "imagebuilderImageStatus": {
-                        "$ref": "#/components/schemas/ImageBuilderImageStatus"
                     },
                     "creationTime": {
                         "type": "string",
                         "description": "Timestamp representing the image creation time"
                     },
-                    "imageBuildStatus": {
-                        "$ref": "#/components/schemas/ImageBuildStatus"
-                    },
-                    "failureReason": {
+                    "ec2ImagebuilderImageCWLogGroup": {
                         "type": "string",
-                        "description": "Describe the reason of the failure when the stack is in CREATE_FAILED, UPDATE_FAILED or DELETE_FAILED status"
+                        "description": "CloudWatch LogGroup containing the log stream of the EC2ImageBuilder Image resource for the image build process."
+                    },
+                    "version": {
+                        "type": "string",
+                        "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+                        "description": "ParallelCluster version used to build the image"
+                    },
+                    "ec2ImagebuilderImageStatus": {
+                        "$ref": "#/components/schemas/EC2ImageBuilderImageStatus"
+                    },
+                    "tags": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Tag"
+                        },
+                        "description": "Tags of the infrastructure to build the Image"
+                    },
+                    "buildImageConfiguration": {
+                        "type": "string",
+                        "description": "Configuration for the image build process",
+                        "format": "byte"
+                    },
+                    "buildImageStatus": {
+                        "$ref": "#/components/schemas/BuildImageStatus"
+                    },
+                    "ec2ImagebuilderImageFailureReason": {
+                        "type": "string",
+                        "description": "The reason of the failure of the EC2ImageBuilder Image resource for the image build process."
                     },
                     "cloudformationStackStatus": {
                         "$ref": "#/components/schemas/CloudFormationStatus"
@@ -2352,28 +2418,16 @@
                         "description": "AWS region where the image is created"
                     },
                     "ec2AmiInfo": {
-                        "$ref": "#/components/schemas/Ec2AmiInfo"
-                    },
-                    "version": {
-                        "type": "string",
-                        "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
-                        "description": "ParallelCluster version used to build the image"
-                    },
-                    "tags": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/Tag"
-                        },
-                        "description": "Tags of the infrastructure to build the Image"
+                        "$ref": "#/components/schemas/EC2AmiInfo"
                     }
                 },
                 "required": [
+                    "buildImageConfiguration",
+                    "buildImageStatus",
                     "cloudformationStackArn",
                     "cloudformationStackStatus",
                     "creationTime",
-                    "imageBuildStatus",
-                    "imageConfiguration",
-                    "imageId",
+                    "imageName",
                     "region",
                     "tags",
                     "version"
@@ -2388,7 +2442,7 @@
                     "items": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/ImageInfoSummary"
+                            "$ref": "#/components/schemas/BuildImageInfoSummary"
                         }
                     }
                 },
@@ -2435,6 +2489,73 @@
                     "enabledParallelClusterVersions"
                 ]
             },
+            "EC2AmiInfo": {
+                "type": "object",
+                "properties": {
+                    "amiId": {
+                        "type": "string",
+                        "description": "EC2 AMI id"
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "EC2 AMI name"
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "EC2 AMI description"
+                    },
+                    "state": {
+                        "$ref": "#/components/schemas/EC2AmiState"
+                    },
+                    "tags": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Tag"
+                        },
+                        "description": "EC2 AMI Tags"
+                    },
+                    "architecture": {
+                        "type": "string",
+                        "description": "EC2 AMI architecture"
+                    }
+                },
+                "required": [
+                    "amiId",
+                    "architecture",
+                    "description",
+                    "name",
+                    "state",
+                    "tags"
+                ]
+            },
+            "EC2AmiState": {
+                "type": "string",
+                "enum": [
+                    "pending",
+                    "available",
+                    "invalid",
+                    "deregistered",
+                    "transient",
+                    "failed",
+                    "error"
+                ]
+            },
+            "EC2ImageBuilderImageStatus": {
+                "type": "string",
+                "enum": [
+                    "PENDING",
+                    "CREATING",
+                    "BUILDING",
+                    "TESTING",
+                    "DISTRIBUTING",
+                    "INTEGRATING",
+                    "AVAILABLE",
+                    "CANCELLED",
+                    "FAILED",
+                    "DEPRECATED",
+                    "DELETED"
+                ]
+            },
             "EC2Instance": {
                 "type": "object",
                 "properties": {
@@ -2463,118 +2584,6 @@
                     "launchTime",
                     "privateIpAddress",
                     "state"
-                ]
-            },
-            "Ec2AmiInfo": {
-                "type": "object",
-                "properties": {
-                    "amiName": {
-                        "type": "string",
-                        "description": "EC2 AMI name"
-                    },
-                    "amiId": {
-                        "type": "string",
-                        "description": "EC2 AMI id"
-                    },
-                    "state": {
-                        "$ref": "#/components/schemas/Ec2AmiState"
-                    },
-                    "tags": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/Tag"
-                        },
-                        "description": "EC2 AMI Tags"
-                    },
-                    "architecture": {
-                        "type": "string",
-                        "description": "EC2 AMI architecture"
-                    }
-                },
-                "required": [
-                    "amiId",
-                    "amiName",
-                    "architecture",
-                    "state",
-                    "tags"
-                ]
-            },
-            "Ec2AmiState": {
-                "type": "string",
-                "enum": [
-                    "pending",
-                    "available",
-                    "invalid",
-                    "deregistered",
-                    "transient",
-                    "failed",
-                    "error"
-                ]
-            },
-            "ImageBuildStatus": {
-                "type": "string",
-                "enum": [
-                    "BUILD_IN_PROGRESS",
-                    "BUILD_FAILED",
-                    "BUILD_COMPLETE",
-                    "DELETE_IN_PROGRESS",
-                    "DELETE_FAILED",
-                    "DELETE_COMPLETE"
-                ]
-            },
-            "ImageBuilderImageStatus": {
-                "type": "string",
-                "enum": [
-                    "PENDING",
-                    "CREATING",
-                    "BUILDING",
-                    "TESTING",
-                    "DISTRIBUTING",
-                    "INTEGRATING",
-                    "AVAILABLE",
-                    "CANCELLED",
-                    "FAILED",
-                    "DEPRECATED",
-                    "DELETED"
-                ]
-            },
-            "ImageInfoSummary": {
-                "type": "object",
-                "properties": {
-                    "imageId": {
-                        "type": "string",
-                        "maxLength": 60,
-                        "minLength": 5,
-                        "pattern": "^[a-zA-Z][a-zA-Z0-9-]+$",
-                        "description": "Name of the image"
-                    },
-                    "imageBuildStatus": {
-                        "$ref": "#/components/schemas/ImageBuildStatus"
-                    },
-                    "cloudformationStackStatus": {
-                        "$ref": "#/components/schemas/CloudFormationStatus"
-                    },
-                    "cloudformationStackArn": {
-                        "type": "string",
-                        "description": "ARN of the main CloudFormation stack"
-                    },
-                    "region": {
-                        "type": "string",
-                        "description": "AWS region where the image is built"
-                    },
-                    "version": {
-                        "type": "string",
-                        "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
-                        "description": "ParallelCluster version used to build the image"
-                    }
-                },
-                "required": [
-                    "cloudformationStackArn",
-                    "cloudformationStackStatus",
-                    "imageBuildStatus",
-                    "imageId",
-                    "region",
-                    "version"
                 ]
             },
             "InstanceState": {
