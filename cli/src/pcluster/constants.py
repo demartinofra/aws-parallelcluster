@@ -67,6 +67,7 @@ PCLUSTER_S3_IMAGE_DIR_TAG = "parallelcluster:s3_image_dir"
 PCLUSTER_S3_BUCKET_TAG = "parallelcluster:s3_bucket"
 PCLUSTER_IMAGE_BUILD_LOG_TAG = "parallelcluster:build_log"
 PCLUSTER_VERSION_TAG = "parallelcluster:version"
+PCLUSTER_CLUSTER_VERSION_TAG = "Version"  # TODO: migrate to PCLUSTER_VERSION_TAG
 
 PCLUSTER_S3_BUCKET_VERSION = "v1"
 

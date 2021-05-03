@@ -27,7 +27,7 @@ from pcluster.aws.common import AWSClientError, StackNotFoundError
 from pcluster.cli_commands.compute_fleet_status_manager import ComputeFleetStatus, ComputeFleetStatusManager
 from pcluster.config.cluster_config import BaseClusterConfig, SlurmScheduling, Tag
 from pcluster.config.config_patch import ConfigPatch
-from pcluster.constants import PCLUSTER_STACK_PREFIX
+from pcluster.constants import PCLUSTER_CLUSTER_VERSION_TAG, PCLUSTER_STACK_PREFIX
 from pcluster.models.cluster_resources import ClusterInstance, ClusterStack
 from pcluster.models.s3_bucket import S3Bucket, S3BucketFactory, S3FileFormat
 from pcluster.schemas.cluster_schema import ClusterSchema
@@ -650,7 +650,7 @@ class Cluster:
         """Add version tag to the stack."""
         if self.config.tags is None:
             self.config.tags = []
-        self.config.tags.append(Tag(key="Version", value=get_installed_version()))
+        self.config.tags.append(Tag(key=PCLUSTER_CLUSTER_VERSION_TAG, value=get_installed_version()))
 
     def _get_cfn_tags(self):
         """Return tag list in the format expected by CFN."""
