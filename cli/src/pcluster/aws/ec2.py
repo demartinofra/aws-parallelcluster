@@ -11,7 +11,6 @@
 import re
 from typing import List
 
-from pcluster import utils
 from pcluster.aws.aws_resources import ImageInfo, InstanceTypeInfo
 from pcluster.aws.common import AWSClientError, AWSExceptionHandler, Boto3Client, Cache, ImageNotFoundError
 from pcluster.constants import (

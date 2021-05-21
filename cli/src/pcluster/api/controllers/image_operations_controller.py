@@ -148,7 +148,7 @@ def build_image(
 
     try:
         image_id = build_image_request_content.id
-        config = parse_config(build_image_request_content.image_configuration)
+        _, config = parse_config(build_image_request_content.image_configuration)
         imagebuilder = ImageBuilder(image_id=image_id, config=config)
 
         if dryrun:

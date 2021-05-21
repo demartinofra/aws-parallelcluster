@@ -15,7 +15,7 @@ import base64
 import functools
 import logging
 import os
-from typing import Dict
+from typing import Tuple
 
 import yaml
 from flask import request
@@ -66,7 +66,7 @@ def check_cluster_version(cluster):
     ) >= packaging.version.parse("3.0.0")
 
 
-def parse_config(base64_encoded_config: str) -> Dict:
+def parse_config(base64_encoded_config: str) -> Tuple[str, dict]:
     try:
         config = base64.b64decode(base64_encoded_config).decode("UTF-8")
     except Exception as e:
@@ -81,7 +81,7 @@ def parse_config(base64_encoded_config: str) -> Dict:
         config_dict = yaml.safe_load(config)
         if not isinstance(config_dict, dict):
             raise Exception("parsed config is not a dict")
-        return config_dict
+        return config, config_dict
     except Exception as e:
         LOGGER.error("Failed when parsing the configuration due to invalid YAML document: %s", e)
         raise BadRequestException("configuration must be a valid base64-encoded YAML document")
