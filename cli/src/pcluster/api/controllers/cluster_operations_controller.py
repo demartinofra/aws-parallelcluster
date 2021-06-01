@@ -17,6 +17,7 @@ import yaml
 from pcluster.api.controllers.common import (
     check_cluster_version,
     configure_aws_region,
+    http_success_status_code,
     parse_config,
 )
 from pcluster.api.controllers.common import check_cluster_version, configure_aws_region
@@ -61,6 +62,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 @configure_aws_region(is_query_string_arg=False)
+@http_success_status_code(202)
 def create_cluster(
     create_cluster_request_content: Dict,
     suppress_validators: List[str] = None,
@@ -98,7 +100,7 @@ def create_cluster(
     # Check unique cluster name
     cluster = Cluster(create_cluster_request_content.name, cluster_config)
     if AWSApi.instance().cfn.stack_exists(cluster.stack_name):
-        raise ConflictException(f"cluster {cluster.name} already exists")
+        raise ConflictException(f"cluster '{cluster.name}' already exists")
 
     # Create cluster
     try:
@@ -135,7 +137,8 @@ def create_cluster(
 
 
 @configure_aws_region()
-def delete_cluster(cluster_name, region=None, retain_logs=None, client_token=None):
+@http_success_status_code(202)
+def delete_cluster(cluster_name, region=None):
     """
     Initiate the deletion of a cluster.
 
@@ -143,24 +146,39 @@ def delete_cluster(cluster_name, region=None, retain_logs=None, client_token=Non
     :type cluster_name: str
     :param region: AWS Region. Defaults to the region the API is deployed to.
     :type region: str
-    :param retain_logs: Retain cluster logs on delete. Defaults to True.
-    :type retain_logs: bool
-    :param client_token: Idempotency token that can be set by the client so that retries for the same request are
-    idempotent
-    :type client_token: str
 
     :rtype: DeleteClusterResponseContent
     """
-    return DeleteClusterResponseContent(
-        cluster=ClusterInfoSummary(
-            cluster_name="nameeee",
-            cloudformation_stack_status=CloudFormationStatus.CREATE_COMPLETE,
-            cloudformation_stack_arn="arn",
-            region="region",
-            version="3.0.0",
-            cluster_status=ClusterStatus.CREATE_COMPLETE,
+    try:
+        cluster = Cluster(cluster_name)
+
+        if not check_cluster_version(cluster):
+            raise BadRequestException(
+                f"cluster '{cluster_name}' belongs to an incompatible ParallelCluster major version."
+            )
+
+        if not cluster.status == CloudFormationStatus.DELETE_IN_PROGRESS:
+            # TODO: remove keep_logs logic from delete
+            cluster.delete(keep_logs=False)
+
+        return DeleteClusterResponseContent(
+            cluster=ClusterInfoSummary(
+                cluster_name=cluster_name,
+                cloudformation_stack_status=CloudFormationStatus.DELETE_IN_PROGRESS,
+                cloudformation_stack_arn=cluster.stack.id,
+                region=os.environ.get("AWS_DEFAULT_REGION"),
+                version=cluster.stack.version,
+                cluster_status=cloud_formation_status_to_cluster_status(CloudFormationStatus.DELETE_IN_PROGRESS),
+            )
         )
-    )
+    except StackNotFoundError:
+        raise NotFoundException(
+            f"cluster '{cluster_name}' does not exist or belongs to an incompatible ParallelCluster major version. "
+            "In case you have running instances belonging to a deleted cluster please use the DeleteClusterInstances "
+            "API."
+        )
+    except ClusterActionError as e:
+        raise InternalServiceException(f"Failed when deleting cluster due to: {e}.")
 
 
 @configure_aws_region()
@@ -180,11 +198,11 @@ def describe_cluster(cluster_name, region=None):
         cfn_stack = cluster.stack
     except StackNotFoundError:
         raise NotFoundException(
-            f"cluster {cluster_name} does not exist or belongs to an incompatible ParallelCluster major version."
+            f"cluster '{cluster_name}' does not exist or belongs to an incompatible ParallelCluster major version."
         )
 
     if not check_cluster_version(cluster):
-        raise BadRequestException(f"cluster {cluster_name} belongs to an incompatible ParallelCluster major version.")
+        raise BadRequestException(f"cluster '{cluster_name}' belongs to an incompatible ParallelCluster major version.")
 
     fleet_status = cluster.compute_fleet_status
     if fleet_status == ComputeFleetStatus.UNKNOWN:

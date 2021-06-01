@@ -29,7 +29,7 @@ import yaml
 from marshmallow import ValidationError
 
 from pcluster.aws.aws_api import AWSApi
-from pcluster.aws.common import AWSClientError, get_region
+from pcluster.aws.common import AWSClientError, StackNotFoundError, get_region
 from pcluster.cli_commands.compute_fleet_status_manager import ComputeFleetStatus, ComputeFleetStatusManager
 from pcluster.config.cluster_config import BaseClusterConfig, SlurmScheduling, Tag
 from pcluster.config.common import ValidatorSuppressor
@@ -414,10 +414,10 @@ class Cluster:
             if keep_logs:
                 self._persist_cloudwatch_log_groups()
             self.stack.delete()
-            self._terminate_nodes()
             self.__stack = ClusterStack(AWSApi.instance().cfn.describe_stack(self.stack_name))
+        except StackNotFoundError:
+            raise
         except Exception as e:
-            self._terminate_nodes()
             raise ClusterActionError(f"Cluster {self.name} did not delete successfully. {e}")
 
     def _persist_cloudwatch_log_groups(self):
@@ -479,7 +479,8 @@ class Cluster:
         except AWSClientError as e:
             raise ClusterActionError(f"Unable to retrieve template for stack {self.stack_name}. {e}")
 
-    def _terminate_nodes(self):
+    def terminate_nodes(self):
+        """Terminate all compute nodes of a cluster."""
         try:
             LOGGER.info("\nChecking if there are running compute nodes that require termination...")
             filters = self._get_instance_filters(node_type=NodeType.COMPUTE)
