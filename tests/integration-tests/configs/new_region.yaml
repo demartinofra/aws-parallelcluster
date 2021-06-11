@@ -69,11 +69,14 @@ test-suites:
           oss: ["alinux2"]
           schedulers: ["slurm"]
   createami:
-    test_createami.py::test_createami:
+    test_createami.py::test_createami_official:
       dimensions:
         - regions: {{ NEW_REGION }}
           instances: {{ common.INSTANCES_DEFAULT_X86 }}
-          oss: ["alinux2", "ubuntu1804"] # temporary disable FPGA AMI since there is not enough free space on root partition
+          oss: {{ common.OSS_COMMERCIAL_X86 }}
+        - regions: {{ NEW_REGION }}
+          instances: {{ common.INSTANCES_DEFAULT_ARM }}
+          oss: {{ common.OSS_COMMERCIAL_ARM }}
   dashboard:
     test_dashboard.py::test_dashboard:
       dimensions:

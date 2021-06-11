@@ -21,19 +21,21 @@ from utils import get_username_for_os, run_command
 from tests.common.utils import get_installed_parallelcluster_version, retrieve_latest_ami
 
 
-@pytest.mark.dimensions("us-west-1", "c5.xlarge", "alinux2", "*")
-@pytest.mark.dimensions("us-west-2", "c5.xlarge", "centos7", "*")
-@pytest.mark.dimensions("us-west-2", "c5.xlarge", "centos8", "*")
-@pytest.mark.dimensions("us-east-1", "c5.xlarge", "ubuntu1804", "*")
-@pytest.mark.dimensions("us-gov-west-1", "c5.xlarge", "ubuntu1804", "*")
-@pytest.mark.dimensions("cn-northwest-1", "c4.xlarge", "alinux2", "*")
-def test_createami(region, os, instance, request, pcluster_config_reader, vpc_stack, architecture):
+def test_createami_remarkable(region, os, instance, request, pcluster_config_reader, vpc_stack, architecture):
+    _test_createami("remarkable", region, os, instance, request, pcluster_config_reader, vpc_stack, architecture)
+
+
+def test_createami_official(region, os, instance, request, pcluster_config_reader, vpc_stack, architecture):
+    _test_createami("official", region, os, instance, request, pcluster_config_reader, vpc_stack, architecture)
+
+
+def _test_createami(ami_type, region, os, instance, request, pcluster_config_reader, vpc_stack, architecture):
     """Test createami for given region and os"""
     cluster_config = pcluster_config_reader()
 
     # Get base AMI
     # remarkable AMIs are not available for ARM yet
-    base_ami = retrieve_latest_ami(region, os, ami_type="remarkable", architecture=architecture)
+    base_ami = retrieve_latest_ami(region, os, ami_type=ami_type, architecture=architecture)
 
     # Networking
     vpc_id = vpc_stack.cfn_outputs["VpcId"]
