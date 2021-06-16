@@ -625,6 +625,7 @@ class Cluster:
         validator_suppressors: Set[ValidatorSuppressor] = None,
         validation_failure_level: FailureLevel = FailureLevel.ERROR,
         force: bool = False,
+        dryrun: bool = False,
     ):
         """
         Update cluster.
@@ -642,7 +643,7 @@ class Cluster:
                 raise ClusterActionError(f"Cannot execute update while stack is in {self.stack.status} status.")
 
             # validate target config
-            target_config, _ = self._validate_and_parse_config(
+            target_config, ignored_validation_failures = self._validate_and_parse_config(
                 validator_suppressors, validation_failure_level, target_source_config
             )
 
@@ -653,6 +654,9 @@ class Cluster:
             patch_allowed, update_changes = patch.check()
             if not (patch_allowed or force):
                 raise ClusterUpdateError("Update failure", update_changes=update_changes)
+
+            if dryrun:
+                return
 
             self.config = target_config
             self.__source_config_text = target_source_config

@@ -19,10 +19,12 @@ from typing import Tuple
 
 import yaml
 from flask import request
+from pcluster.models.cluster import Cluster
 from pkg_resources import packaging
 
 from pcluster.api.errors import BadRequestException
 from pcluster.constants import SUPPORTED_REGIONS
+from pcluster.utils import get_installed_version
 
 LOGGER = logging.getLogger(__name__)
 
@@ -80,10 +82,18 @@ def http_success_status_code(status_code: int = 200):
     return _decorator_http_success_status_code
 
 
-def check_cluster_version(cluster):
-    return cluster.stack.version and packaging.version.parse("4.0.0") > packaging.version.parse(
-        cluster.stack.version
-    ) >= packaging.version.parse("3.0.0")
+def check_cluster_version(cluster: Cluster, exact_match: bool = False) -> bool:
+    if not cluster.stack.version:
+        return False
+
+    if exact_match:
+        return packaging.version.parse(cluster.stack.version) == get_installed_version()
+    else:
+        return (
+            packaging.version.parse("4.0.0")
+            > packaging.version.parse(cluster.stack.version)
+            >= packaging.version.parse("3.0.0")
+        )
 
 
 def parse_config(base64_encoded_config: str) -> Tuple[str, dict]:

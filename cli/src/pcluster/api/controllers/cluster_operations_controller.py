@@ -281,6 +281,7 @@ def list_clusters(region=None, next_token=None, cluster_status=None):
 
 
 @configure_aws_region()
+@http_success_status_code(202)
 def update_cluster(
     update_cluster_request_content: Dict,
     cluster_name,
@@ -316,17 +317,64 @@ def update_cluster(
 
     :rtype: UpdateClusterResponseContent
     """
+    # Set defaults
+    validation_failure_level = validation_failure_level or ValidationLevel.ERROR
+    dryrun = dryrun or False
+    force_update = force_update or False
     update_cluster_request_content = UpdateClusterRequestContent.from_dict(update_cluster_request_content)
-    return UpdateClusterResponseContent(
-        cluster=ClusterInfoSummary(
-            cluster_name="nameeee",
-            cloudformation_stack_status=CloudFormationStatus.CREATE_COMPLETE,
-            cloudformation_stack_arn="arn",
-            region="region",
-            version="3.0.0",
-            cluster_status=ClusterStatus.CREATE_COMPLETE,
+
+    # Validate inputs
+    if client_token:
+        raise BadRequestException("clientToken is currently not supported for this operation")
+    cluster_config, _ = parse_config(update_cluster_request_content.cluster_configuration)
+
+    # Check unique cluster name
+    try:
+        cluster = Cluster(cluster_name)
+        if not check_cluster_version(cluster, exact_match=True):
+            raise BadRequestException(
+                f"the update can be performed only with the same ParallelCluster version ({cluster.stack.version}) "
+                "used to create the cluster."
+            )
+    except StackNotFoundError:
+        raise NotFoundException(
+            f"cluster '{cluster_name}' does not exist or belongs to an incompatible ParallelCluster major version."
         )
-    )
+
+    # Update cluster
+    try:
+        stack_id, ignored_validation_failures = cluster.update(
+            target_source_config=cluster_config,
+            validator_suppressors=_get_validator_suppressors(suppress_validators),
+            validation_failure_level=FailureLevel[validation_failure_level],
+            dryrun=dryrun,
+            force=force_update,
+        )
+
+        if dryrun:
+            LOGGER.info("Skipping cluster update due to dryrun operation")
+            raise DryrunOperationException()
+
+        return UpdateClusterResponseContent(
+            cluster=ClusterInfoSummary(
+                cluster_name=cluster_name,
+                cloudformation_stack_status=CloudFormationStatus.UPDATE_IN_PROGRESS,
+                cloudformation_stack_arn=cluster.stack.id,
+                region=os.environ.get("AWS_DEFAULT_REGION"),
+                version=cluster.stack.version,
+                cluster_status=cloud_formation_status_to_cluster_status(CloudFormationStatus.UPDATE_IN_PROGRESS),
+            ),
+            validation_messages=_build_validation_messages_list(ignored_validation_failures) or None,
+            change_set=[],
+        )
+    except ConfigValidationError as e:
+        raise _handle_config_validation_error(e)
+    except ClusterActionError as e:
+        # TODO: this currently might include also some failures that are due to a bad client request
+        raise InternalServiceException(
+            f"Failed when updating cluster due to: {e}. "
+            "If you suppressed config validators this might be due to an invalid configuration file"
+        )
 
 
 def _build_validation_messages_list(config_validation_errors: List[ValidationResult]) -> List[ConfigValidationMessage]:
