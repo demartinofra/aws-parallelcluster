@@ -678,12 +678,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UnauthorizedClientErrorResponseContent'
-        "404":
-          description: NotFoundException 404 response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/NotFoundExceptionResponseContent'
         "429":
           description: LimitExceededException 429 response
           content:
