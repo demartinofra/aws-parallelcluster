@@ -119,7 +119,6 @@ from pcluster.api.client.api import cluster_instances_api
 from pcluster.api.client.model.describe_cluster_instances_response_content import DescribeClusterInstancesResponseContent
 from pcluster.api.client.model.bad_request_exception_response_content import BadRequestExceptionResponseContent
 from pcluster.api.client.model.node_type import NodeType
-from pcluster.api.client.model.not_found_exception_response_content import NotFoundExceptionResponseContent
 from pcluster.api.client.model.limit_exceeded_exception_response_content import LimitExceededExceptionResponseContent
 from pcluster.api.client.model.internal_service_exception_response_content import InternalServiceExceptionResponseContent
 from pcluster.api.client.model.unauthorized_client_error_response_content import UnauthorizedClientErrorResponseContent
@@ -198,7 +197,6 @@ Name | Type | Description  | Notes
 **200** | DescribeClusterInstances 200 response |  -  |
 **400** | BadRequestException 400 response |  -  |
 **401** | UnauthorizedClientError 401 response |  -  |
-**404** | NotFoundException 404 response |  -  |
 **429** | LimitExceededException 429 response |  -  |
 **500** | InternalServiceException 500 response |  -  |
 

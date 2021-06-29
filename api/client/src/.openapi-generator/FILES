@@ -129,5 +129,4 @@ setup.cfg
 setup.py
 test-requirements.txt
 test/__init__.py
-test/test_cluster_instance.py
 tox.ini
