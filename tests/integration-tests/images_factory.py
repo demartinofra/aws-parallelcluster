@@ -13,7 +13,8 @@ import json
 import logging
 
 import yaml
-from utils import kebab_case, run_command
+from framework.credential_providers import run_pcluster_command
+from utils import kebab_case
 
 
 class Image:
@@ -44,7 +45,7 @@ class Image:
             "--image-configuration",
             self.config_file,
         ]
-        result = run_command(command, raise_on_error=raise_on_error, log_error=log_error)
+        result = run_pcluster_command(command, raise_on_error=raise_on_error, log_error=log_error)
         response = json.loads(result.stdout)
         try:
             if response["image"]["imageBuildStatus"] == "BUILD_IN_PROGRESS":
@@ -67,7 +68,7 @@ class Image:
         command = ["pcluster", "delete-image", "--image-id", self.image_id, "--region", self.region]
         if force:
             command.extend(["--force", "true"])
-        result = run_command(command).stdout
+        result = run_pcluster_command(command).stdout
         response = json.loads(result.stdout)
         if "message" in response and response["message"].startswith("No image or stack associated"):
             logging.error("Delete on non-existing image: %s", self.image_id)
@@ -79,7 +80,7 @@ class Image:
         """Describe image."""
         logging.info("Describe image %s in region %s.", self.image_id, self.region)
         command = ["pcluster", "describe-image", "--image-id", self.image_id, "--region", self.region]
-        result = run_command(command).stdout
+        result = run_pcluster_command(command).stdout
         response = json.loads(result)
         if "message" in response and response["message"].startswith("No image or stack associated"):
             logging.error("Describe on non-existing image: %s", self.image_id)
@@ -103,7 +104,7 @@ class Image:
         for k, val in args.items():
             if val is not None:
                 command.extend([f"--{kebab_case(k)}", str(val)])
-        result = run_command(command).stdout
+        result = run_pcluster_command(command).stdout
         response = json.loads(result)
         return response
 
@@ -113,7 +114,7 @@ class Image:
         command = ["pcluster", "get-image-stack-events", "--region", self.region, "--image-id", self.image_id]
         for k, val in args.items():
             command.extend([f"--{kebab_case(k)}", str(val)])
-        result = run_command(command).stdout
+        result = run_pcluster_command(command).stdout
         response = json.loads(result)
         return response
 
@@ -121,7 +122,7 @@ class Image:
         """Get image build log streams."""
         logging.info("Get image %s build log streams.", self.image_id)
         command = ["pcluster", "list-image-log-streams", "--region", self.region, "--image-id", self.image_id]
-        result = run_command(command).stdout
+        result = run_pcluster_command(command).stdout
         response = json.loads(result)
         return response
 
