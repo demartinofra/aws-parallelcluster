@@ -130,7 +130,7 @@ class S3Bucket:
         :param region
         :return: 16 chars string e.g. 2238a84ac8a74529
         """
-        return hashlib.sha256((account_id + region).encode()).hexdigest()[0:16]
+        return hashlib.sha256((account_id + region).encode()).hexdigest()[0:17]
 
     def check_bucket_exists(self):
         """Check bucket existence by bucket name."""
