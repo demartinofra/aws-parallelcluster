@@ -1,0 +1,71 @@
+ByosVersion: "1.0"
+# This section can contain any metadata on the plugin
+Metadata:
+  Scheduler:
+    Name: my-scheduler
+    Version: scheduler-version
+  Author: author
+  Documentation: link
+  License: link
+  Version: 1.0.0
+# Define the plugin requirements that are validated by ParallelCluster against a cluster configuration.
+Requirements:
+  # Select the list of distributions supported by the plugin. Defaults to all ParallelCluster supported distros.
+  # SupportedDistros:
+  #   x86_64: ["alinux2", "ubuntu2004", "ubuntu1804", "centos7"]
+  #   arm64: ["alinux2", "ubuntu2004", "ubuntu1804"]
+  # Restrict the AWS regions supported by the plugin. Defaults to all ParallelCluster supported regions.
+  # SupportedRegions: ["us-east-1"]
+  QueueConstraints:
+    MaxCount: 10
+    MaxSubnetsCount: 1
+  ComputeResourceConstraints:
+    MaxCount: 5
+    MaxInstanceTypesCount: 1
+  RequiresSudoPriviledges: true
+  SupportsClusterUpdate: true
+  # This allows to constrain the ParallelCluster version supported by the plugin.
+  # Defaults to all ParallelCluster version compatible with the Byos version declared in ByosVersion
+  # SupportedParallelClusterVersions: ">=3.0.0"
+# Define the additional AWS resources that need to be creted together with a cluster.
+ClusterInfrastructure:
+  CloudFormation:
+    # s3 or https url poiting to a CloudFormation template.
+    # ${AWS::Region} and ${AWS::URLSuffix} can be used to dynamically replace the AWS region and domain suffix based on the AWS partition the cluster is created into.
+    Template: https://<bucket>.s3.${AWS::Region}.${AWS::URLSuffix}/1.0.0/plugin_additional_cluster_infrastructure.cfn.yaml
+PluginResources:
+  ClusterSharedArtifacts:
+    - Source: https://<bucket>.s3.${AWS::Region}.${AWS::URLSuffix}/1.0.0/resources/artifacts.tar.gz
+Events:
+  HeadInit:
+    ExecuteCommand:
+      Command: tar -xf artifacts.tar.gz && artifacts/handlers/head_init_environment.sh
+  HeadConfigure:
+    ExecuteCommand:
+      Command: artifacts/handlers/head_configure.sh
+  HeadFinalize:
+    ExecuteCommand:
+      Command: artifacts/handlers/head_finalize.sh
+  ComputeInit:
+    ExecuteCommand:
+      Command: artifacts/handlers/compute_init_environment.sh
+  ComputeConfigure:
+    ExecuteCommand:
+      Command: artifacts/handlers/compute_configure.sh
+  ComputeFinalize:
+    ExecuteCommand:
+      Command: artifacts/handlers/compute_finalize.sh
+  HeadClusterUpdate:
+    ExecuteCommand:
+      Command: artifacts/handlers/head_cluster_update.sh
+  HeadComputeFleetStart:
+    ExecuteCommand:
+      Command: artifacts/handlers/head_computefleet_start.sh
+  HeadComputeFleetStop:
+    ExecuteCommand:
+      Command: artifacts/handlers/head_computefleet_stop.sh
+Monitoring:
+  Logs:
+    Files:
+      - FilePath: /var/log/my-log-file.log
+        TimestampFormat: "%Y-%m-%dT%H:%M:%S.%f"
