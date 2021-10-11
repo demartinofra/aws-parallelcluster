@@ -1,0 +1,101 @@
+Image:
+  Os: alinux2
+  CustomAmi: ami-0638bbb54ed0d82f4  # https://jenkins-commercial-dev.parallelcluster.ds9.nice.aws.a2z.com/job/2_global_second_stage_build_and_test_branch_develop/203/artifact/amis_commercial.json/*view*/
+HeadNode:
+  InstanceType: c5.2xlarge
+  Ssh:
+    KeyName: fdm-jenkins
+  Networking:
+    SubnetId: subnet-054c929102b5e4c47
+  Iam: &iam
+    S3Access:
+      - BucketName: cfncluster-fdm-build-artifacts-eu-west-1
+Scheduling:
+  Scheduler: byos
+  ByosSettings:
+    SchedulerDefinition:
+      ByosVersion: "1.0"
+      Metadata:
+        Scheduler:
+          Name: Slurm
+          Version: 20.11.8
+        Author: fdm
+        Documentation: link
+        License: link
+        Version: 1.0.0
+      Requirements:
+        RequiresSudoPriviledges: true
+      ClusterInfrastructure:
+        CloudFormation:
+          Template: s3://cfncluster-fdm-build-artifacts-eu-west-1/byos/slurm_plugin_infrastructure.cfn.yaml
+#      PluginResources:
+#        ClusterSharedArtifacts:
+#          - Source: https://<bucket>.s3.${AWS::Region}.${AWS::URLSuffix}/1.0.0/resources/artifacts.tar.gz
+      Events:
+        HeadInitEnvironment:
+          ExecuteCommand:
+            Command: /bin/bash -c 'aws s3 cp s3://cfncluster-fdm-build-artifacts-eu-west-1/byos/artifacts.tar.gz . --region eu-west-1 && tar -xf artifacts.tar.gz && artifacts/handlers/head_init_environment.sh'
+        HeadConfigure:
+          ExecuteCommand:
+            Command: artifacts/handlers/head_configure.sh
+        HeadFinalize:
+          ExecuteCommand:
+            Command: artifacts/handlers/head_finalize.sh
+        ComputeInitEnvironment:
+          ExecuteCommand:
+            Command: artifacts/handlers/compute_init_environment.sh
+        ComputeConfigure:
+          ExecuteCommand:
+            Command: artifacts/handlers/compute_configure.sh
+        ComputeFinalize:
+          ExecuteCommand:
+            Command: artifacts/handlers/compute_finalize.sh
+        HeadClusterUpdate:
+          ExecuteCommand:
+            Command: artifacts/handlers/head_cluster_update.sh
+        HeadComputeFleetStart:
+          ExecuteCommand:
+            Command: artifacts/handlers/head_computefleet_start.sh
+        HeadComputeFleetStop:
+          ExecuteCommand:
+            Command: artifacts/handlers/head_computefleet_stop.sh
+      Monitoring:
+        Logs:
+          Files:
+            - FilePath: /var/log/my-log-file.log
+              TimestampFormat: "%Y-%m-%dT%H:%M:%S.%f"
+  ByosQueues:
+    - Name: queue1
+      Iam: *iam
+      CapacityType: ONDEMAND
+      Networking:
+        SubnetIds:
+          - subnet-0a94506a608268ef3
+      ComputeResources:
+        - Name: computeresource1
+          InstanceType: c5.xlarge
+          MinCount: 1
+    - Name: queue2
+      Iam: *iam
+      CapacityType: SPOT
+      Networking:
+        SubnetIds:
+          - subnet-0a94506a608268ef3
+      ComputeResources:
+        - Name: computeresource1
+          InstanceType: c5.xlarge
+Monitoring:
+  Logs:
+    CloudWatch:
+      DeletionPolicy: Retain
+#      DeletionPolicy: Delete
+SharedStorage:
+  - MountDir: /shared_ebs
+    Name: ebs
+    StorageType: Ebs
+    EbsSettings:
+      Size: 20
+DevSettings:
+  Cookbook:
+    # ChefCookbook: https://github.com/aws/aws-parallelcluster-cookbook/tarball/refs/heads/byos
+    ChefCookbook: https://github.com/demartinofra/aws-parallelcluster-cookbook/tarball/refs/heads/byos

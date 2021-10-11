@@ -1,0 +1,173 @@
+# frozen_string_literal: true
+
+#
+# Cookbook Name:: slurm_plugin_cookbook
+# Recipe:: head_node_config
+#
+# Copyright 2013-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with the
+# License. A copy of the License is located at
+#
+# http://aws.amazon.com/apache2.0/
+#
+# or in the "LICENSE.txt" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
+# OR CONDITIONS OF ANY KIND, express or implied. See the License for the specific language governing permissions and
+# limitations under the License.
+
+include_recipe 'slurm_plugin_cookbook::cluster_daemons_install'
+
+setup_munge_head_node
+
+# Ensure config directory is in place
+directory "#{node['slurm']['install_dir']}/etc" do
+  user 'byos'
+  group 'byos'
+  mode '0755'
+end
+
+# Create directory configured as StateSaveLocation
+directory '/var/spool/slurm.state' do
+  user node['slurm']['user']
+  group node['slurm']['group']
+  mode '0700'
+end
+
+template "#{node['slurm']['install_dir']}/etc/slurm.conf" do
+  source 'slurm/slurm.conf.erb'
+  owner 'byos'
+  group 'byos'
+  mode '0644'
+end
+
+template "#{node['slurm']['install_dir']}/etc/gres.conf" do
+  source 'slurm/gres.conf.erb'
+  owner 'byos'
+  group 'byos'
+  mode '0644'
+end
+
+# Copy pcluster config generator and templates
+remote_directory "#{node['byos']['local_dir']}/scripts/slurm" do
+  source 'head_node_slurm/slurm'
+  mode '0755'
+  action :create
+  recursive true
+end
+
+unless node['byos']['cfn_stack_outputs'].nil?
+  execute 'initialize compute fleet status in DynamoDB' do
+    # Initialize the status of the compute fleet in the DynamoDB table. Set it to RUNNING.
+    command "aws dynamodb put-item --table-name #{node['byos']['cfn_stack_outputs']['ddb_table']}"\
+            " --item '{\"Id\": {\"S\": \"COMPUTE_FLEET\"}, \"Status\": {\"S\": \"RUNNING\"}, \"LastUpdatedTime\": {\"S\": \"#{Time.now.utc}\"}}'"\
+            " --region #{node['byos']['region']}"
+    retries 3
+    retry_delay 5
+  end
+end
+
+# Generate pcluster specific configs
+no_gpu = nvidia_installed? ? "" : "--no-gpu"
+execute "generate_pcluster_slurm_configs" do
+  command "python #{node['byos']['local_dir']}/scripts/slurm/pcluster_slurm_config_generator.py"\
+          " --output-directory #{node['slurm']['install_dir']}/etc/ --template-directory #{node['byos']['local_dir']}/scripts/slurm/templates/"\
+          " --input-file #{node['byos']['cluster_config_path']}  --instance-types-data #{node['byos']['instance_types_data_path']} #{no_gpu}"
+end
+
+template "#{node['slurm']['install_dir']}/etc/cgroup.conf" do
+  source 'slurm/cgroup.conf.erb'
+  owner 'root'
+  group 'root'
+  mode '0644'
+end
+
+cookbook_file "#{node['slurm']['install_dir']}/etc/slurm.sh" do
+  source 'head_node_slurm/slurm.sh'
+  owner 'root'
+  group 'root'
+  mode '0755'
+end
+
+cookbook_file "#{node['slurm']['install_dir']}/etc/slurm.csh" do
+  source 'head_node_slurm/slurm.csh'
+  owner 'root'
+  group 'root'
+  mode '0755'
+end
+
+template "#{node['byos']['local_dir']}/scripts/slurm/slurm_resume" do
+  source 'slurm/resume_program.erb'
+  owner node['slurm']['user']
+  group node['slurm']['group']
+  mode '0744'
+end
+
+file "/var/log/parallelcluster/slurm_resume.log" do
+  owner 'byos'
+  group 'byos'
+  mode '0644'
+end
+
+template "#{node['byos']['local_dir']}/parallelcluster_slurm_resume.conf" do
+  source 'slurm/parallelcluster_slurm_resume.conf.erb'
+  owner 'byos'
+  group 'byos'
+  mode '0644'
+end
+
+template "#{node['byos']['local_dir']}/scripts/slurm/slurm_suspend" do
+  source 'slurm/suspend_program.erb'
+  owner node['slurm']['user']
+  group node['slurm']['group']
+  mode '0744'
+end
+
+file "/var/log/parallelcluster/slurm_suspend.log" do
+  owner 'byos'
+  group 'byos'
+  mode '0644'
+end
+
+template "#{node['byos']['local_dir']}/parallelcluster_slurm_suspend.conf" do
+  source 'slurm/parallelcluster_slurm_suspend.conf.erb'
+  owner 'byos'
+  group 'byos'
+  mode '0644'
+end
+
+template "#{node['byos']['local_dir']}/parallelcluster_clustermgtd.conf" do
+  source 'slurm/parallelcluster_clustermgtd.conf.erb'
+  owner 'root'
+  group 'root'
+  mode '0644'
+end
+
+# Create shared directory used to store clustermgtd heartbeat and computemgtd config
+directory "/opt/slurm/etc/pcluster/.slurm_plugin" do
+  owner 'byos'
+  group 'byos'
+  mode '0755'
+  action :create
+  recursive true
+end
+
+# Put computemgtd config under /opt/slurm/etc/pcluster/.slurm_plugin so all compute nodes share a config
+template "#{node['slurm']['install_dir']}/etc/pcluster/.slurm_plugin/parallelcluster_computemgtd.conf" do
+  source 'slurm/parallelcluster_computemgtd.conf.erb'
+  owner 'root'
+  group 'root'
+  mode '0644'
+end
+
+cookbook_file '/etc/systemd/system/slurmctld.service' do
+  source 'head_node_slurm/slurmctld.service'
+  owner 'root'
+  group 'root'
+  mode '0644'
+  action :create
+end
+
+service "slurmctld" do
+  supports restart: false
+  action %i[enable start]
+end

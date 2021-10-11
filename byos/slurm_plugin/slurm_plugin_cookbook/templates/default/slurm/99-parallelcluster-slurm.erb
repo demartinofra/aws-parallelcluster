@@ -1,0 +1,8 @@
+Cmnd_Alias SLURM_COMMANDS = /opt/slurm/bin/scontrol
+Cmnd_Alias SLURM_HOOKS_COMMANDS = <%= node['python']['virtualenv_path'] %>/bin/slurm_suspend, <%= node['python']['virtualenv_path'] %>/bin/slurm_resume
+Cmnd_Alias SHUTDOWN = /usr/sbin/shutdown
+
+byos ALL = (root) NOPASSWD: SLURM_COMMANDS
+byos ALL = (root) NOPASSWD: SHUTDOWN
+
+slurm ALL = (byos) NOPASSWD: SLURM_HOOKS_COMMANDS

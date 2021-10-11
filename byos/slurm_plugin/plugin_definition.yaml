@@ -1,0 +1,50 @@
+ByosVersion: "1.0"
+Metadata:
+  Scheduler:
+    Name: Slurm
+    Version: 20.11.8
+  Author: fdm
+  Documentation: link
+  License: link
+  Version: 1.0.0
+Requirements:
+  RequiresSudoPriviledges: true
+ClusterInfrastructure:
+  CloudFormation:
+    Template: s3://cfncluster-fdm-build-artifacts-eu-west-1/byos/slurm_plugin.cfn.yaml
+PluginResources:
+  ClusterSharedArtifacts:
+    - Source: https://<bucket>.s3.${AWS::Region}.${AWS::URLSuffix}/1.0.0/resources/artifacts.tar.gz
+Events:
+  HeadInitEnvironment:
+    ExecuteCommand:
+      Command: /bin/bash -c 'tar -xf artifacts.tar.gz && artifacts/handlers/head_init_environment.sh'
+  HeadConfigure:
+    ExecuteCommand:
+      Command: artifacts/handlers/head_configure.sh
+  HeadFinalize:
+    ExecuteCommand:
+      Command: artifacts/handlers/head_finalize.sh
+  ComputeInitEnvironment:
+    ExecuteCommand:
+      Command: artifacts/handlers/compute_init_environment.sh
+  ComputeConfigure:
+    ExecuteCommand:
+      Command: artifacts/handlers/compute_configure.sh
+  ComputeFinalize:
+    ExecuteCommand:
+      Command: artifacts/handlers/compute_finalize.sh
+  HeadClusterUpdate:
+    ExecuteCommand:
+      Command: artifacts/handlers/head_cluster_update.sh
+  HeadComputeFleetStart:
+    ExecuteCommand:
+      Command: artifacts/handlers/head_computefleet_start.sh
+  HeadComputeFleetStop:
+    ExecuteCommand:
+      Command: artifacts/handlers/head_computefleet_stop.sh
+Monitoring:
+  Logs:
+    Files:
+      - FilePath: /var/log/my-log-file.log
+        TimestampFormat: "%Y-%m-%dT%H:%M:%S.%f"
