@@ -25,6 +25,7 @@ from urllib.request import urlopen
 
 import pkg_resources
 import yaml
+from jinja2 import Template
 from marshmallow import ValidationError
 
 from pcluster.aws.aws_api import AWSApi
@@ -523,10 +524,17 @@ class Cluster:
                 f"Error while downloading scheduler plugin artifacts from '{byos_template}': {str(e)}"
             ) from e
 
-        # TODO: apply jinja rendering before upload
+        # jinja rendering
+        try:
+            template = Template(file_content)
+            rendered_template = template.render(cluster_configuration=parse_config(self.source_config_text))
+        except Exception as e:
+            raise BadRequestClusterActionError(
+                f"Error while rendering scheduler plugin template '{byos_template}': {str(e)}"
+            ) from e
 
         self.bucket.upload_cfn_template(
-            file_content, PCLUSTER_S3_ARTIFACTS_DICT["byos_template_name"], S3FileFormat.TEXT
+            rendered_template, PCLUSTER_S3_ARTIFACTS_DICT["byos_template_name"], S3FileFormat.TEXT
         )
 
     def delete(self, keep_logs: bool = True):

@@ -1094,7 +1094,30 @@ class ClusterCdkStack(Stack):
             template_name=PCLUSTER_S3_ARTIFACTS_DICT.get("byos_template_name")
         )
 
-        self.byos_stack = CfnStack(self, "ByosStack", template_url=template_url, parameters={})
+        parameters = {
+            "ClusterName": self._stack_name,
+            "ParallelClusterStackId": self.stack_id,
+            "VpcId": self.config.vpc_id,
+            # Empty if passed in config and not created by pclsuter
+            "HeadNodeRoleName": self._managed_head_node_instance_role.ref
+            if self._managed_head_node_instance_role
+            else "",
+            # Comma separated list of compute_fleet roles that are created by pcluster not the ones passed in config
+            "ComputeFleetRoleNames": ",".join(
+                [
+                    "" if instance_role is None else instance_role.ref
+                    for _, instance_role in self._managed_compute_instance_roles.items()
+                ]
+            ),
+        }
+
+        for queue_name, queue in self._get_launch_templates_config()["Queues"].items():
+            for compute_resource_name, compute_resource in queue["ComputeResources"].items():
+                parameters[f"{queue_name}-{compute_resource_name}-LTVersion"] = compute_resource["LaunchTemplate"][
+                    "Version"
+                ]
+
+        self.byos_stack = CfnStack(self, "ByosStack", template_url=template_url, parameters=parameters)
 
     # -- Conditions -------------------------------------------------------------------------------------------------- #
 
