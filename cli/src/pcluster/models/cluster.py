@@ -527,7 +527,10 @@ class Cluster:
         # jinja rendering
         try:
             template = Template(file_content)
-            rendered_template = template.render(cluster_configuration=parse_config(self.source_config_text))
+            rendered_template = template.render(
+                cluster_configuration=parse_config(self.source_config_text),
+                cluster_name=self.name
+            )
         except Exception as e:
             raise BadRequestClusterActionError(
                 f"Error while rendering scheduler plugin template '{byos_template}': {str(e)}"
