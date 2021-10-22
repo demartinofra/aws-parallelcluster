@@ -1113,7 +1113,7 @@ class ClusterCdkStack(Stack):
 
         for queue_name, queue in self._get_launch_templates_config()["Queues"].items():
             for compute_resource_name, compute_resource in queue["ComputeResources"].items():
-                parameters[f"{queue_name}-{compute_resource_name}-LTVersion"] = compute_resource["LaunchTemplate"][
+                parameters[f"{queue_name}{compute_resource_name}LTVersion"] = compute_resource["LaunchTemplate"][
                     "Version"
                 ]
 
