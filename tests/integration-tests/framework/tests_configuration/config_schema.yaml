@@ -16,7 +16,7 @@ type: map
 mapping:
   test-suites:
     type: map
-    required:  true
+    required: true
     mapping:
       regex;(.+):
         type: map
@@ -54,3 +54,19 @@ mapping:
                         required: false
                         sequence:
                           - type: str
+  scheduler-plugins:
+    type: map
+    required: false
+    mapping:
+      regex;(.+):
+        type: map
+        required: true
+        mapping:
+          scheduler-definition:
+            type: str
+            required: true
+            pattern: (s3|https)://.+
+          scheduler-commands:
+            type: str
+            required: true
+            pattern: "[a-zA-Z0-9_-]+"

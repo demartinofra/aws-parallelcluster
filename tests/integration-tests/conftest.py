@@ -18,6 +18,7 @@ import logging
 import os
 import random
 import re
+from functools import partial
 from pathlib import Path
 from shutil import copyfile
 from traceback import format_tb
@@ -46,6 +47,8 @@ from images_factory import Image, ImagesFactory
 from jinja2 import Environment, FileSystemLoader
 from network_template_builder import Gateways, NetworkTemplateBuilder, SubnetConfig, VPCConfig
 from retrying import retry
+
+from tests.common.schedulers_common import get_scheduler_commands
 from utils import (
     InstanceTypesData,
     create_s3_bucket,
@@ -485,7 +488,7 @@ def test_datadir(request, datadir):
 
 
 @pytest.fixture()
-def pcluster_config_reader(test_datadir, vpc_stack, request, region):
+def pcluster_config_reader(test_datadir, vpc_stack, request, region, scheduler_plugin_configuration):
     """
     Define a fixture to render pcluster config templates associated to the running test.
 
@@ -511,7 +514,7 @@ def pcluster_config_reader(test_datadir, vpc_stack, request, region):
         rendered_template = env.get_template(config_file).render(**{**default_values, **kwargs})
         config_file_path.write_text(rendered_template)
         if not config_file.endswith("image.config.yaml"):
-            inject_additional_config_settings(config_file_path, request, region)
+            inject_additional_config_settings(config_file_path, request, region, scheduler_plugin_configuration)
         else:
             inject_additional_image_configs_settings(config_file_path, request)
         return config_file_path
@@ -543,7 +546,7 @@ def inject_additional_image_configs_settings(image_config, request):
         yaml.dump(config_content, conf_file)
 
 
-def inject_additional_config_settings(cluster_config, request, region):  # noqa C901
+def inject_additional_config_settings(cluster_config, request, region, scheduler_plugin_configuration=None):  # noqa C901
     with open(cluster_config, encoding="utf-8") as conf_file:
         config_content = yaml.safe_load(conf_file)
 
@@ -590,6 +593,7 @@ def inject_additional_config_settings(cluster_config, request, region):  # noqa 
     if instance_types_data:
         dict_add_nested_key(config_content, json.dumps(instance_types_data), ("DevSettings", "InstanceTypesData"))
 
+    scheduler = config_content["Scheduling"]["Scheduler"]
     for option, config_param in [("pre_install", "OnNodeStart"), ("post_install", "OnNodeConfigured")]:
         if request.config.getoption(option):
             if not dict_has_nested_key(config_content, ("HeadNode", "CustomActions", config_param)):
@@ -600,7 +604,6 @@ def inject_additional_config_settings(cluster_config, request, region):  # noqa 
                 )
                 _add_policy_for_pre_post_install(config_content["HeadNode"], option, request, region)
 
-            scheduler = config_content["Scheduling"]["Scheduler"]
             if scheduler != "awsbatch":
                 scheduler_prefix = "Scheduler" if scheduler == "plugin" else scheduler.capitalize()
                 for queue in config_content["Scheduling"][f"{scheduler_prefix}Queues"]:
@@ -616,6 +619,13 @@ def inject_additional_config_settings(cluster_config, request, region):  # noqa 
     ]:
         if request.config.getoption(option) and not dict_has_nested_key(config_content, ("DevSettings", config_param)):
             dict_add_nested_key(config_content, request.config.getoption(option), ("DevSettings", config_param))
+
+    if scheduler_plugin_configuration and not dict_has_nested_key(config_content, ("Scheduling", "SchedulerSettings", "SchedulerDefinition")):
+        dict_add_nested_key(
+            config_content,
+            scheduler_plugin_configuration["scheduler-definition"],
+            ("Scheduling", "SchedulerSettings", "SchedulerDefinition"),
+        )
 
     with open(cluster_config, "w", encoding="utf-8") as conf_file:
         yaml.dump(config_content, conf_file)
@@ -652,8 +662,14 @@ def _get_default_template_values(vpc_stack, request):
     default_values.update({dimension: request.node.funcargs.get(dimension) for dimension in DIMENSIONS_MARKER_ARGS})
     default_values["key_name"] = request.config.getoption("key_name")
 
-    scheduler = request.node.funcargs.get("scheduler")
-    default_values["imds_secured"] = scheduler in SCHEDULERS_SUPPORTING_IMDS_SECURED
+    if default_values.get("scheduler") in request.config.getoption("tests_config").get("scheduler-plugins", {}):
+        default_values["scheduler"] = "plugin"
+    default_values["imds_secured"] = default_values.get("scheduler") in SCHEDULERS_SUPPORTING_IMDS_SECURED
+    default_values["scheduler_prefix"] = {
+        "slurm": "Slurm",
+        "awsbatch": "AwsBatch",
+        "plugin": "Scheduler",
+    }.get(default_values.get("scheduler"))
 
     return default_values
 
@@ -1189,3 +1205,18 @@ def mpi_variants(architecture):
     if architecture == "x86_64":
         variants.append("intelmpi")
     return variants
+
+
+@pytest.fixture()
+def scheduler_plugin_configuration(request, scheduler):
+    return request.config.getoption("tests_config").get("scheduler-plugins", {}).get(scheduler)
+
+
+@pytest.fixture()
+def scheduler_commands(scheduler, scheduler_plugin_configuration):
+    if scheduler_plugin_configuration:
+        import importlib
+        module_name, class_name = scheduler_plugin_configuration["scheduler-commands"].rsplit(".", 1)
+        return getattr(importlib.import_module(module_name), class_name)
+    else:
+        return partial(get_scheduler_commands, scheduler=scheduler)
