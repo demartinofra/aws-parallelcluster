@@ -47,6 +47,13 @@ class SubnetsValidator(Validator):
                         FailureLevel.ERROR,
                     )
 
+            # Check all subnets are in the same AZ
+            if len({subnet.get("AvailabilityZone") for subnet in subnets}) > 1:
+                self._add_failure(
+                    "The SubnetIds used for all of the queues should be the same.",
+                    FailureLevel.ERROR,
+                )
+
             # Check for DNS support in the VPC
             if not AWSApi.instance().ec2.is_enable_dns_support(vpc_id):
                 self._add_failure(f"DNS Support is not enabled in the VPC {vpc_id}.", FailureLevel.ERROR)
