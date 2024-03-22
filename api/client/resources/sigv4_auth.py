@@ -12,7 +12,6 @@
 # OF ANY KIND, express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 
-import boto3
 import botocore
 import json
 import urllib.parse
@@ -23,7 +22,7 @@ def sigv4_auth(method, host, path, queries, body, headers):
     endpoint = host.replace('https://', '').replace('http://', '')
     _api_id, _service, region, _domain = endpoint.split('.', maxsplit=3)
 
-    request_parameters = urllib.parse.urlencode(queries)
+    request_parameters = '&'.join([f"{k}={urllib.parse.quote(v, safe='')}" for k, v in queries])
     url = f"{host}{path}?{request_parameters}"
 
     session = botocore.session.Session()
