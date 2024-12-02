@@ -11,14 +11,16 @@
 import datetime
 
 import six
-from connexion.apps.flask_app import FlaskJSONEncoder
+from flask.json.provider import DefaultJSONProvider
 
 from pcluster.api.models.base_model_ import Model
 from pcluster.utils import to_iso_timestr
 
 
-class JSONEncoder(FlaskJSONEncoder):
+class JSONEncoder(DefaultJSONProvider):
     """Make the model objects JSON serializable."""
+    def __init__(self, app):
+        super().__init__(app)
 
     include_nulls = False
 
@@ -35,4 +37,4 @@ class JSONEncoder(FlaskJSONEncoder):
             return dikt
         elif isinstance(obj, datetime.date):
             return to_iso_timestr(obj)
-        return FlaskJSONEncoder.default(self, obj)
+        return super().default(self, obj)
