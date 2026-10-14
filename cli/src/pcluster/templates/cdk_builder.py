@@ -28,7 +28,11 @@ class CDKTemplateBuilder:
 
     @staticmethod
     def build_cluster_template(
-        cluster_config: BaseClusterConfig, bucket: S3Bucket, stack_name: str, log_group_name: str = None
+        cluster_config: BaseClusterConfig,
+        bucket: S3Bucket,
+        stack_name: str,
+        log_group_name: str = None,
+        deployed_template: dict = None,
     ):
         """Build template for the given cluster and return as output in Yaml format."""
         LOGGER.info("Importing CDK...")
@@ -43,7 +47,7 @@ class CDKTemplateBuilder:
         with tempfile.TemporaryDirectory() as cloud_assembly_dir:
             output_file = str(stack_name)
             app = App(outdir=str(cloud_assembly_dir))
-            ClusterCdkStack(app, output_file, stack_name, cluster_config, bucket, log_group_name)
+            ClusterCdkStack(app, output_file, stack_name, cluster_config, bucket, log_group_name, deployed_template)
 
             cloud_assembly = app.synth()
             LOGGER.info("CDK template generation completed successfully")

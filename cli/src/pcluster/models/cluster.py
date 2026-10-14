@@ -888,6 +888,7 @@ class Cluster:
                     bucket=self.bucket,
                     stack_name=self.stack_name,
                     log_group_name=self.stack.log_group_name,
+                    deployed_template=self._get_stack_template(),
                 )
 
             # upload cluster artifacts and generated template

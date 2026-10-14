@@ -123,9 +123,12 @@ class ClusterCdkStack:
         cluster_config: SlurmClusterConfig,
         bucket: S3Bucket,
         log_group_name=None,
+        deployed_template=None,
         **kwargs,
     ) -> None:
         self.stack = Stack(scope=scope, id=construct_id, **kwargs)
+        # Template of the running stack (update only), used to keep replacement-only properties stable
+        self._deployed_resources = (deployed_template or {}).get("Resources", {})
         self._stack_name = stack_name
         self._launch_template_builder = CdkLaunchTemplateBuilder()
         self.config = cluster_config
@@ -1062,6 +1065,8 @@ class ClusterCdkStack:
             file_system_type_version=shared_fsx.file_system_type_version,
             tags=[CfnTag(key="Name", value=shared_fsx.name)],
         )
+        # Changing SubnetIds replaces the file system: keep the one already deployed
+        fsx_resource.subnet_ids = self._get_deployed_property(fsx_resource, "SubnetIds") or fsx_resource.subnet_ids
         for rule in security_group_rules:
             fsx_resource.add_depends_on(rule)
         fsx_resource.cfn_options.deletion_policy = fsx_resource.cfn_options.update_replace_policy = (
@@ -1185,8 +1190,16 @@ class ClusterCdkStack:
                 security_groups=[sg.ref for sg in security_groups],
                 subnet_id=subnet_id,
             )
+            # Moving a mount target to another subnet of the same AZ always fails (EFS allows one per AZ and
+            # CloudFormation creates the replacement before deleting the old one): keep the one already deployed
+            efs_resource.subnet_id = self._get_deployed_property(efs_resource, "SubnetId") or subnet_id
             efs_resource.cfn_options.deletion_policy = efs_resource.cfn_options.update_replace_policy = deletion_policy
             checked_availability_zones.append(availability_zone)
+
+    def _get_deployed_property(self, cfn_resource, property_name):
+        """Return the value of the given property of the resource in the running stack, if any."""
+        logical_id = self.stack.get_logical_id(cfn_resource)
+        return self._deployed_resources.get(logical_id, {}).get("Properties", {}).get(property_name)
 
     def _add_raid_volume(self, id_prefix: str, shared_ebs: SharedEbs):
         """Add specific Cfn Resources to map the RAID EBS storage."""

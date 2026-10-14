@@ -296,3 +296,42 @@ def test_efs_permissions(mocker, test_datadir, config_file_name):
     assert_that(statement["Action"]).contains_only(
         "elasticfilesystem:ClientMount", "elasticfilesystem:ClientRootAccess", "elasticfilesystem:ClientWrite"
     )
+
+
+@pytest.mark.parametrize(
+    "config_dir, resource_type, property_name, deployed_value",
+    [
+        ("test_shared_storage_efs", "AWS::EFS::MountTarget", "SubnetId", "subnet-deployed"),
+        ("test_shared_storage_fsx", "AWS::FSx::FileSystem", "SubnetIds", ["subnet-deployed"]),
+    ],
+)
+def test_shared_storage_keeps_deployed_subnet(
+    mocker, test_datadir, config_dir, resource_type, property_name, deployed_value
+):
+    """On update, replacement-only subnet properties must keep the value of the running stack."""
+    mock_aws_api(mocker)
+    mock_bucket_object_utils(mocker)
+    input_yaml = load_yaml_dict(test_datadir.parent / config_dir / "config.yaml")
+
+    def build(deployed_template=None):
+        cluster_config = ClusterSchema(cluster_name="clustername").load(input_yaml)
+        template, _ = CDKTemplateBuilder().build_cluster_template(
+            cluster_config=cluster_config,
+            bucket=dummy_cluster_bucket(),
+            stack_name="clustername",
+            deployed_template=deployed_template,
+        )
+        return get_resources(template, type=resource_type)
+
+    created = build()
+    assert_that(created).is_not_empty()
+    deployed_id = next(iter(created))
+    updated = build({"Resources": {deployed_id: {"Properties": {property_name: deployed_value}}}})
+
+    assert_that(updated[deployed_id]["Properties"][property_name]).is_equal_to(deployed_value)
+    for logical_id, resource in updated.items():
+        if logical_id != deployed_id:
+            # Resources not in the running stack keep the subnet chosen from the config
+            assert_that(resource["Properties"][property_name]).is_equal_to(
+                created[logical_id]["Properties"][property_name]
+            )
